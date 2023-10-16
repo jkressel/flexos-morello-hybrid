@@ -1,0 +1,1104 @@
+From 765ff40cae161aeeabac6ef0f95849f143959afe Mon Sep 17 00:00:00 2001
+From: Michalis Pappas <Michalis.Pappas@opensynergy.com>
+Date: Sat, 13 Nov 2021 11:35:46 +0100
+Subject: [PATCH 2/5] Rename test main functions
+
+Each test file defines its own main function, as sodium's native
+test system compiles one executable for every test. This is not
+suitable for Unikraft, where we build a single application.
+
+Rename the name function to a unique name. The pattern used is:
+	s/main/<test_name>_xmain/
+---
+ test/default/aead_aes256gcm2_test.c         | 2 +-
+ test/default/aead_aes256gcm_test.c          | 2 +-
+ test/default/aead_chacha20poly13052_test.c  | 2 +-
+ test/default/aead_chacha20poly1305_test.c   | 2 +-
+ test/default/aead_xchacha20poly1305_test.c  | 2 +-
+ test/default/auth2_test.c                   | 2 +-
+ test/default/auth3_test.c                   | 2 +-
+ test/default/auth5_test.c                   | 2 +-
+ test/default/auth6_test.c                   | 2 +-
+ test/default/auth7_test.c                   | 2 +-
+ test/default/auth_test.c                    | 2 +-
+ test/default/box2_test.c                    | 2 +-
+ test/default/box7_test.c                    | 2 +-
+ test/default/box8_test.c                    | 2 +-
+ test/default/box_easy2_test.c               | 2 +-
+ test/default/box_easy_test.c                | 2 +-
+ test/default/box_seal_test.c                | 2 +-
+ test/default/box_seed_test.c                | 2 +-
+ test/default/box_test.c                     | 2 +-
+ test/default/chacha20_test.c                | 2 +-
+ test/default/codecs_test.c                  | 2 +-
+ test/default/core1_test.c                   | 2 +-
+ test/default/core2_test.c                   | 2 +-
+ test/default/core3_test.c                   | 2 +-
+ test/default/core4_test.c                   | 2 +-
+ test/default/core5_test.c                   | 2 +-
+ test/default/core6_test.c                   | 2 +-
+ test/default/core_ed25519_test.c            | 2 +-
+ test/default/core_ristretto255_test.c       | 2 +-
+ test/default/ed25519_convert_test.c         | 2 +-
+ test/default/generichash2_test.c            | 2 +-
+ test/default/generichash3_test.c            | 2 +-
+ test/default/generichash_test.c             | 2 +-
+ test/default/hash3_test.c                   | 2 +-
+ test/default/hash_test.c                    | 2 +-
+ test/default/kdf_test.c                     | 2 +-
+ test/default/keygen_test.c                  | 2 +-
+ test/default/kx_test.c                      | 2 +-
+ test/default/metamorphic_test.c             | 2 +-
+ test/default/misuse_test.c                  | 4 ++--
+ test/default/onetimeauth2_test.c            | 2 +-
+ test/default/onetimeauth7_test.c            | 2 +-
+ test/default/onetimeauth_test.c             | 2 +-
+ test/default/pwhash_argon2i_test.c          | 2 +-
+ test/default/pwhash_argon2id_test.c         | 2 +-
+ test/default/pwhash_scrypt_ll_test.c        | 2 +-
+ test/default/pwhash_scrypt_test.c           | 2 +-
+ test/default/randombytes_test.c             | 2 +-
+ test/default/scalarmult2_test.c             | 2 +-
+ test/default/scalarmult5_test.c             | 2 +-
+ test/default/scalarmult6_test.c             | 2 +-
+ test/default/scalarmult7_test.c             | 2 +-
+ test/default/scalarmult8_test.c             | 2 +-
+ test/default/scalarmult_ed25519_test.c      | 2 +-
+ test/default/scalarmult_ristretto255_test.c | 2 +-
+ test/default/scalarmult_test.c              | 2 +-
+ test/default/secretbox2_test.c              | 2 +-
+ test/default/secretbox7_test.c              | 2 +-
+ test/default/secretbox8_test.c              | 2 +-
+ test/default/secretbox_easy2_test.c         | 2 +-
+ test/default/secretbox_easy_test.c          | 2 +-
+ test/default/secretbox_test.c               | 2 +-
+ test/default/secretstream_test.c            | 2 +-
+ test/default/shorthash_test.c               | 2 +-
+ test/default/sign_test.c                    | 2 +-
+ test/default/siphashx24_test.c              | 2 +-
+ test/default/sodium_core_test.c             | 2 +-
+ test/default/sodium_utils2_test.c           | 2 +-
+ test/default/sodium_utils3_test.c           | 2 +-
+ test/default/sodium_utils_test.c            | 2 +-
+ test/default/sodium_version_test.c          | 2 +-
+ test/default/stream2_test.c                 | 2 +-
+ test/default/stream3_test.c                 | 2 +-
+ test/default/stream4_test.c                 | 2 +-
+ test/default/stream_test.c                  | 2 +-
+ test/default/verify1_test.c                 | 2 +-
+ test/default/xchacha20_test.c               | 2 +-
+ 77 files changed, 78 insertions(+), 78 deletions(-)
+
+diff --git a/test/default/aead_aes256gcm2_test.c b/test/default/aead_aes256gcm2_test.c
+index 43170b5..266301e 100644
+--- a/test/default/aead_aes256gcm2_test.c
++++ b/test/default/aead_aes256gcm2_test.c
+@@ -265,7 +265,7 @@ tv(void)
+ }
+ 
+ int
+-main(void)
++aead_aes256gcm2_xmain(void)
+ {
+     if (crypto_aead_aes256gcm_is_available()) {
+         tv();
+diff --git a/test/default/aead_aes256gcm_test.c b/test/default/aead_aes256gcm_test.c
+index 1f83fdc..290de06 100644
+--- a/test/default/aead_aes256gcm_test.c
++++ b/test/default/aead_aes256gcm_test.c
+@@ -3226,7 +3226,7 @@ tv(void)
+ }
+ 
+ int
+-main(void)
++aead_aes256gcm_xmain(void)
+ {
+     if (crypto_aead_aes256gcm_is_available()) {
+         tv();
+diff --git a/test/default/aead_chacha20poly13052_test.c b/test/default/aead_chacha20poly13052_test.c
+index 8c59eca..e8d3887 100644
+--- a/test/default/aead_chacha20poly13052_test.c
++++ b/test/default/aead_chacha20poly13052_test.c
+@@ -1037,7 +1037,7 @@ tv(void)
+ }
+ 
+ int
+-main(void)
++aead_chacha20poly13052_xmain(void)
+ {
+     tv();
+     printf("OK\n");
+diff --git a/test/default/aead_chacha20poly1305_test.c b/test/default/aead_chacha20poly1305_test.c
+index 0a01afe..118e663 100644
+--- a/test/default/aead_chacha20poly1305_test.c
++++ b/test/default/aead_chacha20poly1305_test.c
+@@ -363,7 +363,7 @@ tv_ietf(void)
+ }
+ 
+ int
+-main(void)
++aead_chacha20poly1305_xmain(void)
+ {
+     tv();
+     tv_ietf();
+diff --git a/test/default/aead_xchacha20poly1305_test.c b/test/default/aead_xchacha20poly1305_test.c
+index 12059b6..9bb73cf 100644
+--- a/test/default/aead_xchacha20poly1305_test.c
++++ b/test/default/aead_xchacha20poly1305_test.c
+@@ -195,7 +195,7 @@ tv(void)
+ }
+ 
+ int
+-main(void)
++aead_xchacha20poly1305_xmain(void)
+ {
+     tv();
+ 
+diff --git a/test/default/auth2_test.c b/test/default/auth2_test.c
+index 583a2d4..1338a78 100644
+--- a/test/default/auth2_test.c
++++ b/test/default/auth2_test.c
+@@ -20,7 +20,7 @@ static unsigned char c[50] = { 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+ static unsigned char a[32];
+ 
+ int
+-main(void)
++auth2_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/auth3_test.c b/test/default/auth3_test.c
+index ca90aa7..3613e06 100644
+--- a/test/default/auth3_test.c
++++ b/test/default/auth3_test.c
+@@ -23,7 +23,7 @@ static unsigned char a[32] = { 0x37, 0x2e, 0xfc, 0xf9, 0xb4, 0x0b, 0x35, 0xc2,
+                                0x7b, 0xb1, 0x56, 0xd3, 0xd7, 0xb3, 0x0d, 0x3f };
+ 
+ int
+-main(void)
++auth3_xmain(void)
+ {
+     static unsigned char a2[crypto_auth_hmacsha256_BYTES];
+ 
+diff --git a/test/default/auth5_test.c b/test/default/auth5_test.c
+index 955c9cf..a4bd277 100644
+--- a/test/default/auth5_test.c
++++ b/test/default/auth5_test.c
+@@ -7,7 +7,7 @@ static unsigned char c[1000];
+ static unsigned char a[32];
+ 
+ int
+-main(void)
++auth5_xmain(void)
+ {
+     size_t clen;
+ 
+diff --git a/test/default/auth6_test.c b/test/default/auth6_test.c
+index f397a05..270d528 100644
+--- a/test/default/auth6_test.c
++++ b/test/default/auth6_test.c
+@@ -9,7 +9,7 @@ static unsigned char c[]     = "what do ya want for nothing?";
+ static unsigned char a[64];
+ 
+ int
+-main(void)
++auth6_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/auth7_test.c b/test/default/auth7_test.c
+index 3d087f8..4b15d62 100644
+--- a/test/default/auth7_test.c
++++ b/test/default/auth7_test.c
+@@ -7,7 +7,7 @@ static unsigned char c[600];
+ static unsigned char a[64];
+ 
+ int
+-main(void)
++auth7_xmain(void)
+ {
+     size_t clen;
+ 
+diff --git a/test/default/auth_test.c b/test/default/auth_test.c
+index 23ac927..5e2a715 100644
+--- a/test/default/auth_test.c
++++ b/test/default/auth_test.c
+@@ -17,7 +17,7 @@ static unsigned char a2[crypto_auth_hmacsha512_BYTES];
+ static unsigned char a3[crypto_auth_hmacsha512_BYTES];
+ 
+ int
+-main(void)
++auth_xmain(void)
+ {
+     crypto_auth_hmacsha512_state st;
+     crypto_auth_hmacsha256_state st256;
+diff --git a/test/default/box2_test.c b/test/default/box2_test.c
+index 3e46fda..19ec8d6 100644
+--- a/test/default/box2_test.c
++++ b/test/default/box2_test.c
+@@ -46,7 +46,7 @@ static unsigned char c[163] = {
+ static unsigned char m[163];
+ 
+ int
+-main(void)
++box2_xmain(void)
+ {
+     unsigned char k[crypto_box_BEFORENMBYTES];
+     int           i;
+diff --git a/test/default/box7_test.c b/test/default/box7_test.c
+index a58ea30..9769e0f 100644
+--- a/test/default/box7_test.c
++++ b/test/default/box7_test.c
+@@ -9,7 +9,7 @@ static unsigned char bobpk[crypto_box_PUBLICKEYBYTES];
+ static unsigned char n[crypto_box_NONCEBYTES];
+ 
+ int
+-main(void)
++box7_xmain(void)
+ {
+     unsigned char *m;
+     unsigned char *c;
+diff --git a/test/default/box8_test.c b/test/default/box8_test.c
+index 4d27f33..f2bd601 100644
+--- a/test/default/box8_test.c
++++ b/test/default/box8_test.c
+@@ -9,7 +9,7 @@ static unsigned char bobpk[crypto_box_PUBLICKEYBYTES];
+ static unsigned char n[crypto_box_NONCEBYTES];
+ 
+ int
+-main(void)
++box8_xmain(void)
+ {
+     unsigned char *m;
+     unsigned char *c;
+diff --git a/test/default/box_easy2_test.c b/test/default/box_easy2_test.c
+index 05cb099..065a902 100644
+--- a/test/default/box_easy2_test.c
++++ b/test/default/box_easy2_test.c
+@@ -9,7 +9,7 @@ static const unsigned char small_order_p[crypto_box_PUBLICKEYBYTES] = {
+ };
+ 
+ int
+-main(void)
++box_easy2_xmain(void)
+ {
+     unsigned char *alicepk;
+     unsigned char *alicesk;
+diff --git a/test/default/box_easy_test.c b/test/default/box_easy_test.c
+index 2e6a20f..78a0710 100644
+--- a/test/default/box_easy_test.c
++++ b/test/default/box_easy_test.c
+@@ -36,7 +36,7 @@ static unsigned char m[131] = {
+ static unsigned char c[147 + crypto_box_MACBYTES];
+ 
+ int
+-main(void)
++box_easy_xmain(void)
+ {
+     size_t i;
+     int    ret;
+diff --git a/test/default/box_seal_test.c b/test/default/box_seal_test.c
+index 01765ca..5ca6e5c 100644
+--- a/test/default/box_seal_test.c
++++ b/test/default/box_seal_test.c
+@@ -92,7 +92,7 @@ void tv2(void)
+ #endif
+ 
+ int
+-main(void)
++box_seal_xmain(void)
+ {
+     tv1();
+     tv2();
+diff --git a/test/default/box_seed_test.c b/test/default/box_seed_test.c
+index 95930d3..03f609e 100644
+--- a/test/default/box_seed_test.c
++++ b/test/default/box_seed_test.c
+@@ -9,7 +9,7 @@ static unsigned char seed[32] = { 0x77, 0x07, 0x6d, 0x0a, 0x73, 0x18, 0xa5,
+                                   0x1d, 0xb9, 0x2c, 0x2a };
+ 
+ int
+-main(void)
++box_seed_xmain(void)
+ {
+     int           i;
+     unsigned char sk[32];
+diff --git a/test/default/box_test.c b/test/default/box_test.c
+index 228aca7..cfd5368 100644
+--- a/test/default/box_test.c
++++ b/test/default/box_test.c
+@@ -46,7 +46,7 @@ static const unsigned char m[163] = {
+ static unsigned char c[163];
+ 
+ int
+-main(void)
++box_xmain(void)
+ {
+     unsigned char k[crypto_box_BEFORENMBYTES];
+     int           i;
+diff --git a/test/default/chacha20_test.c b/test/default/chacha20_test.c
+index d92b11e..a0eea75 100644
+--- a/test/default/chacha20_test.c
++++ b/test/default/chacha20_test.c
+@@ -166,7 +166,7 @@ void tv_ietf(void)
+ }
+ 
+ int
+-main(void)
++chacha20_xmain(void)
+ {
+     tv();
+     tv_ietf();
+diff --git a/test/default/codecs_test.c b/test/default/codecs_test.c
+index 726c96b..2682444 100644
+--- a/test/default/codecs_test.c
++++ b/test/default/codecs_test.c
+@@ -2,7 +2,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++codecs_xmain(void)
+ {
+     unsigned char  buf1[1000];
+     char           buf3[33];
+diff --git a/test/default/core1_test.c b/test/default/core1_test.c
+index f1d7b0b..e700704 100644
+--- a/test/default/core1_test.c
++++ b/test/default/core1_test.c
+@@ -16,7 +16,7 @@ static unsigned char c[16] = { 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x33,
+ static unsigned char firstkey[32];
+ 
+ int
+-main(void)
++core1_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/core2_test.c b/test/default/core2_test.c
+index 7e2dd7e..529022b 100644
+--- a/test/default/core2_test.c
++++ b/test/default/core2_test.c
+@@ -18,7 +18,7 @@ static unsigned char c[16] = { 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x33,
+ static unsigned char secondkey[32];
+ 
+ int
+-main(void)
++core2_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/core3_test.c b/test/default/core3_test.c
+index 09f2473..55b00eb 100644
+--- a/test/default/core3_test.c
++++ b/test/default/core3_test.c
+@@ -15,7 +15,7 @@ static unsigned char C[16] = { 0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x33,
+                                0x32, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b };
+ 
+ int
+-main(void)
++core3_xmain(void)
+ {
+     unsigned char *secondkey;
+     unsigned char *c;
+diff --git a/test/default/core4_test.c b/test/default/core4_test.c
+index cb174ab..49234f4 100644
+--- a/test/default/core4_test.c
++++ b/test/default/core4_test.c
+@@ -16,7 +16,7 @@ static unsigned char c[16] = { 101, 120, 112, 97,  110, 100, 32, 51,
+ static unsigned char out[64];
+ 
+ int
+-main(void)
++core4_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/core5_test.c b/test/default/core5_test.c
+index 02b0fd9..8ae5389 100644
+--- a/test/default/core5_test.c
++++ b/test/default/core5_test.c
+@@ -18,7 +18,7 @@ static unsigned char c[16] = { 101, 120, 112, 97,  110, 100, 32, 51,
+ unsigned char out[32];
+ 
+ int
+-main(void)
++core5_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/core6_test.c b/test/default/core6_test.c
+index f10c0d6..27dcf93 100644
+--- a/test/default/core6_test.c
++++ b/test/default/core6_test.c
+@@ -32,7 +32,7 @@ print(unsigned char *x, unsigned char *y)
+ }
+ 
+ int
+-main(void)
++core6_xmain(void)
+ {
+     crypto_core_salsa20(out, in, k, c);
+     print(out, c);
+diff --git a/test/default/core_ed25519_test.c b/test/default/core_ed25519_test.c
+index e3f39c3..40a5ca5 100644
+--- a/test/default/core_ed25519_test.c
++++ b/test/default/core_ed25519_test.c
+@@ -42,7 +42,7 @@ add_l64(unsigned char * const S)
+ }
+ 
+ int
+-main(void)
++core_ed25519_xmain(void)
+ {
+     unsigned char *h, *r;
+     unsigned char *p, *p2, *p3;
+diff --git a/test/default/core_ristretto255_test.c b/test/default/core_ristretto255_test.c
+index bd67f71..8ae9a2b 100644
+--- a/test/default/core_ristretto255_test.c
++++ b/test/default/core_ristretto255_test.c
+@@ -246,7 +246,7 @@ tv4(void)
+ }
+ 
+ int
+-main(void)
++core_ristretto255_xmain(void)
+ {
+     tv1();
+     tv2();
+diff --git a/test/default/ed25519_convert_test.c b/test/default/ed25519_convert_test.c
+index d067547..570992d 100644
+--- a/test/default/ed25519_convert_test.c
++++ b/test/default/ed25519_convert_test.c
+@@ -9,7 +9,7 @@ static const unsigned char keypair_seed[crypto_sign_ed25519_SEEDBYTES] = {
+ };
+ 
+ int
+-main(void)
++ed25519_convert_xmain(void)
+ {
+     unsigned char ed25519_pk[crypto_sign_ed25519_PUBLICKEYBYTES];
+     unsigned char ed25519_skpk[crypto_sign_ed25519_SECRETKEYBYTES];
+diff --git a/test/default/generichash2_test.c b/test/default/generichash2_test.c
+index b7e33e6..b5bdd2f 100644
+--- a/test/default/generichash2_test.c
++++ b/test/default/generichash2_test.c
+@@ -3,7 +3,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++generichash2_xmain(void)
+ {
+ #define MAXLEN 64
+     crypto_generichash_state *st;
+diff --git a/test/default/generichash3_test.c b/test/default/generichash3_test.c
+index ec86b35..4060126 100644
+--- a/test/default/generichash3_test.c
++++ b/test/default/generichash3_test.c
+@@ -3,7 +3,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++generichash3_xmain(void)
+ {
+ #define MAXLEN 64
+     crypto_generichash_blake2b_state st;
+diff --git a/test/default/generichash_test.c b/test/default/generichash_test.c
+index 2da877d..63aa784 100644
+--- a/test/default/generichash_test.c
++++ b/test/default/generichash_test.c
+@@ -1333,7 +1333,7 @@ tv(void)
+ }
+ 
+ int
+-main(void)
++generichash_xmain(void)
+ {
+     unsigned char in[MAXLEN];
+     unsigned char out[crypto_generichash_BYTES_MAX];
+diff --git a/test/default/hash3_test.c b/test/default/hash3_test.c
+index cfcb989..8e6cd5e 100644
+--- a/test/default/hash3_test.c
++++ b/test/default/hash3_test.c
+@@ -6,7 +6,7 @@ static unsigned char x[] = "testing\n";
+ static unsigned char h[crypto_hash_BYTES];
+ 
+ int
+-main(void)
++hash3_xmain(void)
+ {
+     size_t i;
+ 
+diff --git a/test/default/hash_test.c b/test/default/hash_test.c
+index 60d3527..2b2ccb3 100644
+--- a/test/default/hash_test.c
++++ b/test/default/hash_test.c
+@@ -10,7 +10,7 @@ static unsigned char x2[] =
+ static unsigned char h[crypto_hash_BYTES];
+ 
+ int
+-main(void)
++hash_xmain(void)
+ {
+     size_t i;
+ 
+diff --git a/test/default/kdf_test.c b/test/default/kdf_test.c
+index f10f034..3d68659 100644
+--- a/test/default/kdf_test.c
++++ b/test/default/kdf_test.c
+@@ -63,7 +63,7 @@ tv_kdf(void)
+ }
+ 
+ int
+-main(void)
++kdf_xmain(void)
+ {
+     tv_kdf();
+ 
+diff --git a/test/default/keygen_test.c b/test/default/keygen_test.c
+index a53d818..9f1e68f 100644
+--- a/test/default/keygen_test.c
++++ b/test/default/keygen_test.c
+@@ -59,7 +59,7 @@ tv_keygen(void)
+ }
+ 
+ int
+-main(void)
++keygen_xmain(void)
+ {
+     tv_keygen();
+ 
+diff --git a/test/default/kx_test.c b/test/default/kx_test.c
+index e03f2d0..c726c17 100644
+--- a/test/default/kx_test.c
++++ b/test/default/kx_test.c
+@@ -141,7 +141,7 @@ tv_kx(void)
+ }
+ 
+ int
+-main(void)
++kx_xmain(void)
+ {
+     tv_kx();
+ 
+diff --git a/test/default/metamorphic_test.c b/test/default/metamorphic_test.c
+index fc883c7..1af7c69 100644
+--- a/test/default/metamorphic_test.c
++++ b/test/default/metamorphic_test.c
+@@ -174,7 +174,7 @@ mm_hmacsha512(void)
+ }
+ 
+ int
+-main(void)
++metamorphic_xmain(void)
+ {
+     mm_generichash();
+     mm_onetimeauth();
+diff --git a/test/default/misuse_test.c b/test/default/misuse_test.c
+index 407d526..a4e334d 100644
+--- a/test/default/misuse_test.c
++++ b/test/default/misuse_test.c
+@@ -168,7 +168,7 @@ sigabrt_handler_1(int sig)
+ }
+ 
+ int
+-main(void)
++misuse_xmain(void)
+ {
+     signal(SIGABRT, sigabrt_handler_1);
+     assert(crypto_kx_client_session_keys(NULL, NULL, guard_page, guard_page,
+@@ -177,7 +177,7 @@ main(void)
+ }
+ #else
+ int
+-main(void)
++misuse_xmain(void)
+ {
+     return 0;
+ }
+diff --git a/test/default/onetimeauth2_test.c b/test/default/onetimeauth2_test.c
+index e429ce0..0020cfb 100644
+--- a/test/default/onetimeauth2_test.c
++++ b/test/default/onetimeauth2_test.c
+@@ -26,7 +26,7 @@ static unsigned char a[16] = { 0xf3, 0xff, 0xc7, 0x70, 0x3f, 0x94, 0x00, 0xe5,
+                                0x2a, 0x7d, 0xfb, 0x4b, 0x3d, 0x33, 0x05, 0xd9 };
+ 
+ int
+-main(void)
++onetimeauth2_xmain(void)
+ {
+     printf("%d\n", crypto_onetimeauth_verify(a, c, 131, rs));
+     return 0;
+diff --git a/test/default/onetimeauth7_test.c b/test/default/onetimeauth7_test.c
+index 7a77339..9fd5255 100644
+--- a/test/default/onetimeauth7_test.c
++++ b/test/default/onetimeauth7_test.c
+@@ -7,7 +7,7 @@ static unsigned char c[1000];
+ static unsigned char a[16];
+ 
+ int
+-main(void)
++onetimeauth7_xmain(void)
+ {
+     int clen;
+ 
+diff --git a/test/default/onetimeauth_test.c b/test/default/onetimeauth_test.c
+index 7a4931b..0b4e738 100644
+--- a/test/default/onetimeauth_test.c
++++ b/test/default/onetimeauth_test.c
+@@ -25,7 +25,7 @@ static unsigned char c[131] = {
+ static unsigned char a[16];
+ 
+ int
+-main(void)
++onetimeauth_xmain(void)
+ {
+     crypto_onetimeauth_state st;
+     int                      i;
+diff --git a/test/default/pwhash_argon2i_test.c b/test/default/pwhash_argon2i_test.c
+index 3e1195e..b1ecea2 100644
+--- a/test/default/pwhash_argon2i_test.c
++++ b/test/default/pwhash_argon2i_test.c
+@@ -396,7 +396,7 @@ str_tests(void)
+ }
+ 
+ int
+-main(void)
++pwhash_argon2i_xmain(void)
+ {
+     tv();
+     tv2();
+diff --git a/test/default/pwhash_argon2id_test.c b/test/default/pwhash_argon2id_test.c
+index 9546349..eeddf98 100644
+--- a/test/default/pwhash_argon2id_test.c
++++ b/test/default/pwhash_argon2id_test.c
+@@ -394,7 +394,7 @@ str_tests(void)
+ }
+ 
+ int
+-main(void)
++pwhash_argon2id_xmain(void)
+ {
+     tv();
+     tv2();
+diff --git a/test/default/pwhash_scrypt_ll_test.c b/test/default/pwhash_scrypt_ll_test.c
+index c2b3f3c..05b2894 100644
+--- a/test/default/pwhash_scrypt_ll_test.c
++++ b/test/default/pwhash_scrypt_ll_test.c
+@@ -49,7 +49,7 @@ tv(const char *passwd, const char *salt, uint64_t N, uint32_t r, uint32_t p)
+ }
+ 
+ int
+-main(void)
++pwhash_scrypt_ll_xmain(void)
+ {
+     tv(passwd1, salt1, N1, r1, p1);
+     tv(passwd2, salt2, N2, r2, p2);
+diff --git a/test/default/pwhash_scrypt_test.c b/test/default/pwhash_scrypt_test.c
+index a0efcd7..8087e79 100644
+--- a/test/default/pwhash_scrypt_test.c
++++ b/test/default/pwhash_scrypt_test.c
+@@ -366,7 +366,7 @@ str_tests(void)
+ }
+ 
+ int
+-main(void)
++pwhash_scrypt_xmain(void)
+ {
+     tv();
+     tv2();
+diff --git a/test/default/randombytes_test.c b/test/default/randombytes_test.c
+index d08066e..c054875 100644
+--- a/test/default/randombytes_test.c
++++ b/test/default/randombytes_test.c
+@@ -147,7 +147,7 @@ impl_tests(void)
+ }
+ 
+ int
+-main(void)
++randombytes_xmain(void)
+ {
+     compat_tests();
+     randombytes_tests();
+diff --git a/test/default/scalarmult2_test.c b/test/default/scalarmult2_test.c
+index 58776cf..2e2bfb1 100644
+--- a/test/default/scalarmult2_test.c
++++ b/test/default/scalarmult2_test.c
+@@ -11,7 +11,7 @@ static unsigned char bobsk[32] = { 0x5d, 0xab, 0x08, 0x7e, 0x62, 0x4a, 0x8a,
+ static unsigned char bobpk[32];
+ 
+ int
+-main(void)
++scalarmult2_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/scalarmult5_test.c b/test/default/scalarmult5_test.c
+index f92aa40..2efe1cc 100644
+--- a/test/default/scalarmult5_test.c
++++ b/test/default/scalarmult5_test.c
+@@ -17,7 +17,7 @@ static unsigned char bobpk[32] = { 0xde, 0x9e, 0xdb, 0x7d, 0x7b, 0x7d, 0xc1,
+ static unsigned char k[32];
+ 
+ int
+-main(void)
++scalarmult5_xmain(void)
+ {
+     int i;
+     int ret;
+diff --git a/test/default/scalarmult6_test.c b/test/default/scalarmult6_test.c
+index f8f0784..1d20dbc 100644
+--- a/test/default/scalarmult6_test.c
++++ b/test/default/scalarmult6_test.c
+@@ -15,7 +15,7 @@ static unsigned char alicepk_[crypto_scalarmult_SCALARBYTES] = {
+ };
+ 
+ int
+-main(void)
++scalarmult6_xmain(void)
+ {
+     unsigned char *k;
+     unsigned char *bobsk;
+diff --git a/test/default/scalarmult7_test.c b/test/default/scalarmult7_test.c
+index 54f64c2..b3f0391 100644
+--- a/test/default/scalarmult7_test.c
++++ b/test/default/scalarmult7_test.c
+@@ -19,7 +19,7 @@ static unsigned char out1[32];
+ static unsigned char out2[32];
+ 
+ int
+-main(void)
++scalarmult7_xmain(void)
+ {
+     int ret;
+ 
+diff --git a/test/default/scalarmult8_test.c b/test/default/scalarmult8_test.c
+index 25a541d..e3f95f0 100644
+--- a/test/default/scalarmult8_test.c
++++ b/test/default/scalarmult8_test.c
+@@ -535,7 +535,7 @@ static TestData test_data[] = {
+ };
+ 
+ int
+-main(void)
++scalarmult8_xmain(void)
+ {
+     unsigned char sk[crypto_scalarmult_SCALARBYTES];
+     unsigned char pk[crypto_scalarmult_BYTES];
+diff --git a/test/default/scalarmult_ed25519_test.c b/test/default/scalarmult_ed25519_test.c
+index 795647b..be8a487 100644
+--- a/test/default/scalarmult_ed25519_test.c
++++ b/test/default/scalarmult_ed25519_test.c
+@@ -20,7 +20,7 @@ static const unsigned char B[32] = {
+ };
+ 
+ int
+-main(void)
++scalarmult_ed25519_xmain(void)
+ {
+     unsigned char *n, *p, *q, *q2;
+ 
+diff --git a/test/default/scalarmult_ristretto255_test.c b/test/default/scalarmult_ristretto255_test.c
+index 1acd121..957d177 100644
+--- a/test/default/scalarmult_ristretto255_test.c
++++ b/test/default/scalarmult_ristretto255_test.c
+@@ -4,7 +4,7 @@
+ #define B_HEX "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76"
+ 
+ int
+-main(void)
++scalarmult_ristretto255_xmain(void)
+ {
+     unsigned char *b =
+         (unsigned char *) sodium_malloc(crypto_scalarmult_ristretto255_BYTES);
+diff --git a/test/default/scalarmult_test.c b/test/default/scalarmult_test.c
+index 0e05538..f77b31c 100644
+--- a/test/default/scalarmult_test.c
++++ b/test/default/scalarmult_test.c
+@@ -23,7 +23,7 @@ static const unsigned char small_order_p[crypto_scalarmult_BYTES] = {
+ static char hex[crypto_scalarmult_BYTES * 2 + 1];
+ 
+ int
+-main(void)
++scalarmult_xmain(void)
+ {
+     unsigned char *alicepk =
+         (unsigned char *) sodium_malloc(crypto_scalarmult_BYTES);
+diff --git a/test/default/secretbox2_test.c b/test/default/secretbox2_test.c
+index e6320b7..d63c480 100644
+--- a/test/default/secretbox2_test.c
++++ b/test/default/secretbox2_test.c
+@@ -34,7 +34,7 @@ static unsigned char c[163] = {
+ static unsigned char m[163];
+ 
+ int
+-main(void)
++secretbox2_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/secretbox7_test.c b/test/default/secretbox7_test.c
+index 389943d..cd0e8b3 100644
+--- a/test/default/secretbox7_test.c
++++ b/test/default/secretbox7_test.c
+@@ -9,7 +9,7 @@ static unsigned char c[10000];
+ static unsigned char m2[10000];
+ 
+ int
+-main(void)
++secretbox7_xmain(void)
+ {
+     size_t mlen;
+     size_t i;
+diff --git a/test/default/secretbox8_test.c b/test/default/secretbox8_test.c
+index acba5f0..e98b320 100644
+--- a/test/default/secretbox8_test.c
++++ b/test/default/secretbox8_test.c
+@@ -9,7 +9,7 @@ static unsigned char c[10000];
+ static unsigned char m2[10000];
+ 
+ int
+-main(void)
++secretbox8_xmain(void)
+ {
+     size_t mlen;
+     size_t i;
+diff --git a/test/default/secretbox_easy2_test.c b/test/default/secretbox_easy2_test.c
+index 7cacbd7..e7df10a 100644
+--- a/test/default/secretbox_easy2_test.c
++++ b/test/default/secretbox_easy2_test.c
+@@ -3,7 +3,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++secretbox_easy2_xmain(void)
+ {
+     unsigned char *m;
+     unsigned char *m2;
+diff --git a/test/default/secretbox_easy_test.c b/test/default/secretbox_easy_test.c
+index 4542bbd..09f06d3 100644
+--- a/test/default/secretbox_easy_test.c
++++ b/test/default/secretbox_easy_test.c
+@@ -28,7 +28,7 @@ static unsigned char m[131] = {
+ };
+ 
+ int
+-main(void)
++secretbox_easy_xmain(void)
+ {
+     unsigned char *c;
+     unsigned char *mac;
+diff --git a/test/default/secretbox_test.c b/test/default/secretbox_test.c
+index df1d62f..2ba5490 100644
+--- a/test/default/secretbox_test.c
++++ b/test/default/secretbox_test.c
+@@ -34,7 +34,7 @@ static unsigned char m[163] = {
+ static unsigned char c[163];
+ 
+ int
+-main(void)
++secretbox_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/secretstream_test.c b/test/default/secretstream_test.c
+index 63c6443..f2e7b09 100644
+--- a/test/default/secretstream_test.c
++++ b/test/default/secretstream_test.c
+@@ -3,7 +3,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++secretstream_xmain(void)
+ {
+     crypto_secretstream_xchacha20poly1305_state *state, *statesave;
+     crypto_secretstream_xchacha20poly1305_state state_copy;
+diff --git a/test/default/shorthash_test.c b/test/default/shorthash_test.c
+index e8fadec..d3e6387 100644
+--- a/test/default/shorthash_test.c
++++ b/test/default/shorthash_test.c
+@@ -5,7 +5,7 @@
+ #define MAXLEN 64
+ 
+ int
+-main(void)
++shorthash_xmain(void)
+ {
+     unsigned char in[MAXLEN];
+     unsigned char out[crypto_shorthash_BYTES];
+diff --git a/test/default/sign_test.c b/test/default/sign_test.c
+index 30a2882..4280d9b 100644
+--- a/test/default/sign_test.c
++++ b/test/default/sign_test.c
+@@ -1057,7 +1057,7 @@ static void add_l(unsigned char * const S)
+     sodium_add(S, l, sizeof l);
+ }
+ 
+-int main(void)
++int sign_xmain(void)
+ {
+     crypto_sign_state  st;
+     unsigned char      extracted_seed[crypto_sign_ed25519_SEEDBYTES];
+diff --git a/test/default/siphashx24_test.c b/test/default/siphashx24_test.c
+index 8ece23e..a8c57a5 100644
+--- a/test/default/siphashx24_test.c
++++ b/test/default/siphashx24_test.c
+@@ -5,7 +5,7 @@
+ #define MAXLEN 64
+ 
+ int
+-main(void)
++siphashx24_xmain(void)
+ {
+     unsigned char in[MAXLEN];
+     unsigned char out[crypto_shorthash_siphashx24_BYTES];
+diff --git a/test/default/sodium_core_test.c b/test/default/sodium_core_test.c
+index a3985b0..f0ce22c 100644
+--- a/test/default/sodium_core_test.c
++++ b/test/default/sodium_core_test.c
+@@ -10,7 +10,7 @@ misuse_handler(void)
+ }
+ 
+ int
+-main(void)
++sodium_core_xmain(void)
+ {
+     sodium_set_misuse_handler(NULL);
+     sodium_set_misuse_handler(misuse_handler);
+diff --git a/test/default/sodium_utils2_test.c b/test/default/sodium_utils2_test.c
+index a1801b1..80c3451 100644
+--- a/test/default/sodium_utils2_test.c
++++ b/test/default/sodium_utils2_test.c
+@@ -38,7 +38,7 @@ segv_handler(int sig)
+ }
+ 
+ int
+-main(void)
++sodium_utils2_xmain(void)
+ {
+     void *       buf;
+     size_t       size;
+diff --git a/test/default/sodium_utils3_test.c b/test/default/sodium_utils3_test.c
+index a39f0ee..405c4a0 100644
+--- a/test/default/sodium_utils3_test.c
++++ b/test/default/sodium_utils3_test.c
+@@ -34,7 +34,7 @@ segv_handler(int sig)
+ }
+ 
+ int
+-main(void)
++sodium_utils3_xmain(void)
+ {
+     void * buf;
+     size_t size;
+diff --git a/test/default/sodium_utils_test.c b/test/default/sodium_utils_test.c
+index 844e16c..531cd35 100644
+--- a/test/default/sodium_utils_test.c
++++ b/test/default/sodium_utils_test.c
+@@ -2,7 +2,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++sodium_utils_xmain(void)
+ {
+     unsigned char  buf_add[1000];
+     unsigned char  buf1[1000];
+diff --git a/test/default/sodium_version_test.c b/test/default/sodium_version_test.c
+index 2a8fddb..928a189 100644
+--- a/test/default/sodium_version_test.c
++++ b/test/default/sodium_version_test.c
+@@ -3,7 +3,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++sodium_version_xmain(void)
+ {
+     printf("%d\n", sodium_version_string() != NULL);
+     printf("%d\n", sodium_library_version_major() > 0);
+diff --git a/test/default/stream2_test.c b/test/default/stream2_test.c
+index 1e178a4..fdf533c 100644
+--- a/test/default/stream2_test.c
++++ b/test/default/stream2_test.c
+@@ -17,7 +17,7 @@ static const unsigned char noncesuffix[8] = {
+ 
+ 
+ int
+-main(void)
++stream2_xmain(void)
+ {
+     unsigned char *output;
+     char          *hex;
+diff --git a/test/default/stream3_test.c b/test/default/stream3_test.c
+index 4ed646f..d79064f 100644
+--- a/test/default/stream3_test.c
++++ b/test/default/stream3_test.c
+@@ -16,7 +16,7 @@ static unsigned char nonce[24] = { 0x69, 0x69, 0x6e, 0xe9, 0x55, 0xb6,
+ static unsigned char rs[32];
+ 
+ int
+-main(void)
++stream3_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/stream4_test.c b/test/default/stream4_test.c
+index 38f43f8..0952b8c 100644
+--- a/test/default/stream4_test.c
++++ b/test/default/stream4_test.c
+@@ -33,7 +33,7 @@ static unsigned char m[163] = {
+ static unsigned char c[163];
+ 
+ int
+-main(void)
++stream4_xmain(void)
+ {
+     int i;
+ 
+diff --git a/test/default/stream_test.c b/test/default/stream_test.c
+index 87ef371..2a7386c 100644
+--- a/test/default/stream_test.c
++++ b/test/default/stream_test.c
+@@ -18,7 +18,7 @@ static const unsigned char nonce[24] = {
+ };
+ 
+ int
+-main(void)
++stream_xmain(void)
+ {
+     unsigned char  h[32];
+     char          *hex;
+diff --git a/test/default/verify1_test.c b/test/default/verify1_test.c
+index 68257c9..d263789 100644
+--- a/test/default/verify1_test.c
++++ b/test/default/verify1_test.c
+@@ -3,7 +3,7 @@
+ #include "cmptest.h"
+ 
+ int
+-main(void)
++verify1_xmain(void)
+ {
+     unsigned char *v16, *v16x;
+     unsigned char *v32, *v32x;
+diff --git a/test/default/xchacha20_test.c b/test/default/xchacha20_test.c
+index 07eafcc..8e0f907 100644
+--- a/test/default/xchacha20_test.c
++++ b/test/default/xchacha20_test.c
+@@ -417,7 +417,7 @@ tv_box_xchacha20poly1305(void)
+ }
+ 
+ int
+-main(void)
++xchacha20_xmain(void)
+ {
+     tv_hchacha20();
+     tv_stream_xchacha20();
+-- 
+2.25.1
+

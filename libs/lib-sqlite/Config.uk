@@ -1,0 +1,10 @@
+menuconfig LIB-SQLITE
+	bool "lib-sqlite Unikraft library"
+	default n
+
+if LIB-SQLITE
+config LIB-SQLITE_MAIN_FUNCTION
+	bool "Provide main function"
+	default n
+
+endif

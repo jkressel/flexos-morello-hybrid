@@ -1,0 +1,836 @@
+diff --color -urNp sqlite-split20k-3300100/sqlite3-10.c sqlite-split20k-3300100-flexos/sqlite3-10.c
+--- sqlite-split20k-3300100/sqlite3-10.c	2021-07-30 09:16:07.237115102 +0200
++++ sqlite-split20k-3300100-flexos/sqlite3-10.c	2021-07-30 09:16:01.593171733 +0200
+@@ -1,3 +1,5 @@
++#include <flexos/isolation.h>
++
+ /************** Begin file main.c ********************************************/
+ /*
+ ** 2001 September 15
+@@ -3011,7 +3013,7 @@ SQLITE_PRIVATE int sqlite3ParseUri(
+     }
+ 
+   }else{
+-    zFile = sqlite3_malloc64(nUri+2);
++    zFile = flexos_malloc_whitelist(nUri+2, libvfscore);
+     if( !zFile ) return SQLITE_NOMEM_BKPT;
+     if( nUri ){
+       memcpy(zFile, zUri, nUri);
+@@ -3028,7 +3030,7 @@ SQLITE_PRIVATE int sqlite3ParseUri(
+   }
+  parse_uri_out:
+   if( rc!=SQLITE_OK ){
+-    sqlite3_free(zFile);
++    flexos_free_whitelist(zFile, libvfscore);
+     zFile = 0;
+   }
+   *pFlags = flags;
+@@ -3446,7 +3448,7 @@ opendb_out:
+ #if defined(SQLITE_HAS_CODEC)
+   if( rc==SQLITE_OK ) sqlite3CodecQueryParameters(db, 0, zOpen);
+ #endif
+-  sqlite3_free(zOpen);
++  flexos_free_whitelist(zOpen, libvfscore);
+   return rc & 0xff;
+ }
+ 
+diff --color -urNp sqlite-split20k-3300100/sqlite3-3.c sqlite-split20k-3300100-flexos/sqlite3-3.c
+--- sqlite-split20k-3300100/sqlite3-3.c	2021-07-30 09:16:07.249114982 +0200
++++ sqlite-split20k-3300100-flexos/sqlite3-3.c	2021-07-30 09:16:01.417173499 +0200
+@@ -1,3 +1,5 @@
++#include <flexos/isolation.h>
++
+ /************** Begin file os_unix.c *****************************************/
+ /*
+ ** 2004 May 22
+@@ -566,7 +568,9 @@ SQLITE_API extern int sqlite3_open_file_
+ ** which always has the same well-defined interface.
+ */
+ static int posixOpen(const char *zFile, int flags, int mode){
+-  return open(zFile, flags, mode);
++  int ret;
++  flexos_gate_r(libvfscore, ret, open, zFile, flags, mode);
++  return ret;
+ }
+ 
+ /* Forward reference */
+@@ -754,8 +758,10 @@ static struct unix_syscall {
+ ** we are not running as root.
+ */
+ static int robustFchown(int fd, uid_t uid, gid_t gid){
++  int ret;
++  flexos_gate_r(libvfscore, ret, fchown, fd, uid, gid);
+ #if defined(HAVE_FCHOWN)
+-  return osGeteuid() ? 0 : osFchown(fd,uid,gid);
++  return osGeteuid() ? 0 : ret;
+ #else
+   return 0;
+ #endif
+@@ -871,7 +877,8 @@ static const char *unixNextSystemCall(sq
+ ** recover the hot journals.
+ */
+ static int robust_open(const char *z, int f, mode_t m){
+-  int fd;
++  int fd, rc;
++  struct stat statbuf __attribute__((flexos_whitelist));
+   mode_t m2 = m ? m : SQLITE_DEFAULT_FILE_PERMISSIONS;
+   while(1){
+ #if defined(O_CLOEXEC)
+@@ -888,12 +895,12 @@ static int robust_open(const char *z, in
+     sqlite3_log(SQLITE_WARNING, 
+                 "attempt to open \"%s\" as file descriptor %d", z, fd);
+     fd = -1;
+-    if( osOpen("/dev/null", f, m)<0 ) break;
++    if( osOpen(FLEXOS_SHARED_LITERAL("/dev/null"), f, m)<0 ) break;
+   }
+   if( fd>=0 ){
+     if( m!=0 ){
+-      struct stat statbuf;
+-      if( osFstat(fd, &statbuf)==0 
++      flexos_gate_r(libvfscore, rc, fstat, fd, &statbuf)
++      if( rc==0 
+        && statbuf.st_size==0
+        && (statbuf.st_mode&0777)!=m 
+       ){
+@@ -1483,7 +1490,9 @@ static int unixLogErrorAtLine(
+ ** and move on.
+ */
+ static void robust_close(unixFile *pFile, int h, int lineno){
+-  if( osClose(h) ){
++  int ret;
++  flexos_gate_r(libvfscore, ret, close, h);
++  if( ret ){
+     unixLogErrorAtLine(SQLITE_IOERR_CLOSE, "close",
+                        pFile ? pFile->zPath : 0, lineno);
+   }
+@@ -1563,7 +1572,7 @@ static int findInodeInfo(
+   int rc;                        /* System call return code */
+   int fd;                        /* The file descriptor for pFile */
+   struct unixFileId fileId;      /* Lookup key for the unixInodeInfo */
+-  struct stat statbuf;           /* Low-level file information */
++  struct stat statbuf __attribute__((flexos_whitelist));           /* Low-level file information */
+   unixInodeInfo *pInode = 0;     /* Candidate unixInodeInfo object */
+ 
+   assert( unixMutexHeld() );
+@@ -1572,7 +1581,7 @@ static int findInodeInfo(
+   ** create a unique name for the file.
+   */
+   fd = pFile->h;
+-  rc = osFstat(fd, &statbuf);
++  flexos_gate_r(libvfscore, rc, fstat, fd, &statbuf)
+   if( rc!=0 ){
+     storeLastErrno(pFile, errno);
+ #if defined(EOVERFLOW) && defined(SQLITE_DISABLE_LFS)
+@@ -1649,14 +1658,12 @@ static int findInodeInfo(
+ ** Return TRUE if pFile has been renamed or unlinked since it was first opened.
+ */
+ static int fileHasMoved(unixFile *pFile){
+-#if OS_VXWORKS
+-  return pFile->pInode!=0 && pFile->pId!=pFile->pInode->fileId.pId;
+-#else
+-  struct stat buf;
+-  return pFile->pInode!=0 &&
+-      (osStat(pFile->zPath, &buf)!=0 
++  struct stat buf __attribute__((flexos_whitelist));
++  int ret1, ret2;
++  flexos_gate_r(libvfscore, ret1, stat, pFile->zPath, &buf);
++  ret2 = pFile->pInode!=0 && (ret1!=0 
+          || (u64)buf.st_ino!=pFile->pInode->fileId.ino);
+-#endif
++  return ret2;
+ }
+ 
+ 
+@@ -1670,13 +1677,13 @@ static int fileHasMoved(unixFile *pFile)
+ ** Issue sqlite3_log(SQLITE_WARNING,...) messages if anything is not right.
+ */
+ static void verifyDbFile(unixFile *pFile){
+-  struct stat buf;
++  struct stat buf __attribute__((flexos_whitelist));
+   int rc;
+ 
+   /* These verifications occurs for the main database only */
+   if( pFile->ctrlFlags & UNIXFILE_NOLOCK ) return;
+ 
+-  rc = osFstat(pFile->h, &buf);
++  flexos_gate_r(libvfscore, rc, fstat, pFile->h, &buf);
+   if( rc!=0 ){
+     sqlite3_log(SQLITE_WARNING, "cannot fstat db file %s", pFile->zPath);
+     return;
+@@ -1757,7 +1764,15 @@ static int unixCheckReservedLock(sqlite3
+ ** attempt to set the lock.
+ */
+ #ifndef SQLITE_ENABLE_SETLK_TIMEOUT
+-# define osSetPosixAdvisoryLock(h,x,t) osFcntl(h,F_SETLK,x)
++static int osSetPosixAdvisoryLock(
++  int h,                /* The file descriptor on which to take the lock */
++  struct flock *pLock,  /* The description of the lock */
++  unixFile *pFile       /* Structure holding timeout value */
++){
++  int rc;
++  flexos_gate_r(libvfscore, rc, fcntl, h, F_SETLK, pLock);
++  return rc;
++}
+ #else
+ static int osSetPosixAdvisoryLock(
+   int h,                /* The file descriptor on which to take the lock */
+@@ -3488,7 +3503,7 @@ static int seekAndRead(unixFile *id, sql
+   assert( id->h>2 );
+   do{
+ #if defined(USE_PREAD)
+-    got = osPread(id->h, pBuf, cnt, offset);
++    flexos_gate_r(libvfscore, got, pread, id->h, pBuf, cnt, offset);
+     SimulateIOError( got = -1 );
+ #elif defined(USE_PREAD64)
+     got = osPread64(id->h, pBuf, cnt, offset);
+@@ -3601,7 +3616,9 @@ static int seekAndWriteFd(
+   TIMER_START;
+ 
+ #if defined(USE_PREAD)
+-  do{ rc = (int)osPwrite(fd, pBuf, nBuf, iOff); }while( rc<0 && errno==EINTR );
++  do{
++	  flexos_gate_r(libvfscore, rc, pwrite, fd, pBuf, nBuf, iOff);
++  }while( rc<0 && errno==EINTR );
+ #elif defined(USE_PREAD64)
+   do{ rc = (int)osPwrite64(fd, pBuf, nBuf, iOff);}while( rc<0 && errno==EINTR);
+ #else
+@@ -3834,7 +3851,7 @@ static int full_fsync(int fd, int fullSy
+   */
+   rc = fsync(fd);
+ #else 
+-  rc = fdatasync(fd);
++  flexos_gate_r(libvfscore, rc, fdatasync, fd);
+ #if OS_VXWORKS
+   if( rc==-1 && errno==ENOTSUP ){
+     rc = fsync(fd);
+@@ -3874,7 +3891,7 @@ static int full_fsync(int fd, int fullSy
+ static int openDirectory(const char *zFilename, int *pFd){
+   int ii;
+   int fd = -1;
+-  char zDirname[MAX_PATHNAME+1];
++  char zDirname[MAX_PATHNAME+1] __attribute__((flexos_whitelist));
+ 
+   sqlite3_snprintf(MAX_PATHNAME, zDirname, "%s", zFilename);
+   for(ii=(int)strlen(zDirname); ii>0 && zDirname[ii]!='/'; ii--);
+@@ -4010,9 +4027,9 @@ static int unixTruncate(sqlite3_file *id
+ */
+ static int unixFileSize(sqlite3_file *id, i64 *pSize){
+   int rc;
+-  struct stat buf;
++  struct stat buf __attribute__((flexos_whitelist));
+   assert( id );
+-  rc = osFstat(((unixFile*)id)->h, &buf);
++  flexos_gate_r(libvfscore, rc, fstat, ((unixFile*)id)->h, &buf)
+   SimulateIOError( rc=1 );
+   if( rc!=0 ){
+     storeLastErrno((unixFile*)id, errno);
+@@ -5877,15 +5894,16 @@ static const char *unixTempFileDir(void)
+      "/tmp",
+      "."
+   };
+-  unsigned int i = 0;
+-  struct stat buf;
++  unsigned int i = 0, ret;
++  struct stat buf __attribute__((flexos_whitelist));
+   const char *zDir = sqlite3_temp_directory;
+ 
+   if( !azDirs[0] ) azDirs[0] = getenv("SQLITE_TMPDIR");
+   if( !azDirs[1] ) azDirs[1] = getenv("TMPDIR");
+   while(1){
++    flexos_gate_r(libvfscore, ret, stat, zDir, &buf)
+     if( zDir!=0
+-     && osStat(zDir, &buf)==0
++     && ret==0
+      && S_ISDIR(buf.st_mode)
+      && osAccess(zDir, 03)==0
+     ){
+@@ -5961,7 +5979,8 @@ static UnixUnusedFd *findReusableFd(cons
+   ** not to risk breaking vxworks support for the sake of such an obscure 
+   ** feature.  */
+ #if !OS_VXWORKS
+-  struct stat sStat;                   /* Results of stat() call */
++  struct stat sStat __attribute__((flexos_whitelist));                   /* Results of stat() call */
++  int ret;
+ 
+   unixEnterMutex();
+ 
+@@ -5973,7 +5992,8 @@ static UnixUnusedFd *findReusableFd(cons
+   **
+   ** Even if a subsequent open() call does succeed, the consequences of
+   ** not searching for a reusable file descriptor are not dire.  */
+-  if( inodeList!=0 && 0==osStat(zPath, &sStat) ){
++  flexos_gate_r(libvfscore, ret, stat, zPath, &sStat);
++  if( inodeList!=0 && 0==ret ){
+     unixInodeInfo *pInode;
+ 
+     pInode = inodeList;
+@@ -6008,9 +6028,10 @@ static int getFileMode(
+   uid_t *pUid,                    /* OUT: uid of zFile. */
+   gid_t *pGid                     /* OUT: gid of zFile. */
+ ){
+-  struct stat sStat;              /* Output of stat() on database file */
+-  int rc = SQLITE_OK;
+-  if( 0==osStat(zFile, &sStat) ){
++  struct stat sStat __attribute__((flexos_whitelist));              /* Output of stat() on database file */
++  int rc = SQLITE_OK, ret;
++  flexos_gate_r(libvfscore, ret, stat, zFile, &sStat);
++  if( 0==ret ){
+     *pMode = sStat.st_mode & 0777;
+     *pUid = sStat.st_uid;
+     *pGid = sStat.st_gid;
+@@ -6053,7 +6074,7 @@ static int findCreateFileMode(
+   *pUid = 0;
+   *pGid = 0;
+   if( flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL) ){
+-    char zDb[MAX_PATHNAME+1];     /* Database file path */
++    char *zDb = flexos_malloc_whitelist(MAX_PATHNAME+1, libvfscore);     /* Database file path */
+     int nDb;                      /* Number of valid bytes in zDb */
+ 
+     /* zPath is a path to a WAL or journal file. The following block derives
+@@ -6081,6 +6102,7 @@ static int findCreateFileMode(
+     zDb[nDb] = '\0';
+ 
+     rc = getFileMode(zDb, pMode, pUid, pGid);
++    flexos_free_whitelist(zDb, libvfscore);
+   }else if( flags & SQLITE_OPEN_DELETEONCLOSE ){
+     *pMode = 0600;
+   }else if( flags & SQLITE_OPEN_URI ){
+@@ -6158,7 +6180,7 @@ static int unixOpen(
+   /* If argument zPath is a NULL pointer, this function is required to open
+   ** a temporary file. Use this buffer to store the file name in.
+   */
+-  char zTmpname[MAX_PATHNAME+2];
++  char *zTmpname = flexos_malloc_whitelist(MAX_PATHNAME+2 * sizeof(char), libvfscore);
+   const char *zName = zPath;
+ 
+   /* Check the following statements are true: 
+@@ -6206,6 +6228,7 @@ static int unixOpen(
+     }else{
+       pUnused = sqlite3_malloc64(sizeof(*pUnused));
+       if( !pUnused ){
++	flexos_free_whitelist(zTmpname, libvfscore);
+         return SQLITE_NOMEM_BKPT;
+       }
+     }
+@@ -6221,6 +6244,7 @@ static int unixOpen(
+     assert(isDelete && !isNewJrnl);
+     rc = unixGetTempname(pVfs->mxPathname, zTmpname);
+     if( rc!=SQLITE_OK ){
++      flexos_free_whitelist(zTmpname, libvfscore);
+       return rc;
+     }
+     zName = zTmpname;
+@@ -6248,6 +6272,7 @@ static int unixOpen(
+     if( rc!=SQLITE_OK ){
+       assert( !p->pPreallocatedUnused );
+       assert( eType==SQLITE_OPEN_WAL || eType==SQLITE_OPEN_MAIN_JOURNAL );
++      flexos_free_whitelist(zTmpname, libvfscore);
+       return rc;
+     }
+     fd = robust_open(zName, openFlags, openMode);
+@@ -6308,6 +6333,7 @@ static int unixOpen(
+     zPath = sqlite3_mprintf("%s", zName);
+     if( zPath==0 ){
+       robust_close(p, fd, __LINE__);
++      flexos_free_whitelist(zTmpname, libvfscore);
+       return SQLITE_NOMEM_BKPT;
+     }
+ #else
+@@ -6324,6 +6350,7 @@ static int unixOpen(
+   if( fstatfs(fd, &fsInfo) == -1 ){
+     storeLastErrno(p, errno);
+     robust_close(p, fd, __LINE__);
++    flexos_free_whitelist(zTmpname, libvfscore);
+     return SQLITE_IOERR_ACCESS;
+   }
+   if (0 == strncmp("msdos", fsInfo.f_fstypename, 5)) {
+@@ -6367,6 +6394,7 @@ static int unixOpen(
+           ** pFile->pMethods will be NULL so sqlite3OsClose will be a no-op 
+           */
+           unixClose(pFile);
++          flexos_free_whitelist(zTmpname, libvfscore);
+           return rc;
+         }
+       }
+@@ -6384,6 +6412,7 @@ open_finished:
+   if( rc!=SQLITE_OK ){
+     sqlite3_free(p->pPreallocatedUnused);
+   }
++  flexos_free_whitelist(zTmpname, libvfscore);
+   return rc;
+ }
+ 
+@@ -6397,10 +6426,11 @@ static int unixDelete(
+   const char *zPath,        /* Name of file to be deleted */
+   int dirSync               /* If true, fsync() directory after deleting file */
+ ){
+-  int rc = SQLITE_OK;
++  int rc = SQLITE_OK, ret;
+   UNUSED_PARAMETER(NotUsed);
+   SimulateIOError(return SQLITE_IOERR_DELETE);
+-  if( osUnlink(zPath)==(-1) ){
++  flexos_gate_r(libvfscore, ret, unlink, zPath);
++  if( ret==(-1) ){
+     if( errno==ENOENT
+ #if OS_VXWORKS
+         || osAccess(zPath,0)!=0
+@@ -6446,6 +6476,8 @@ static int unixAccess(
+   int flags,              /* What do we want to learn about the zPath file? */
+   int *pResOut            /* Write result boolean here */
+ ){
++  struct stat buf __attribute__((flexos_whitelist));
++  int ret;
+   UNUSED_PARAMETER(NotUsed);
+   SimulateIOError( return SQLITE_IOERR_ACCESS; );
+   assert( pResOut!=0 );
+@@ -6455,8 +6487,8 @@ static int unixAccess(
+   assert( flags==SQLITE_ACCESS_EXISTS || flags==SQLITE_ACCESS_READWRITE );
+ 
+   if( flags==SQLITE_ACCESS_EXISTS ){
+-    struct stat buf;
+-    *pResOut = (0==osStat(zPath, &buf) && buf.st_size>0);
++    flexos_gate_r(libvfscore, ret, stat, zPath, &buf);
++    *pResOut = (0==ret && buf.st_size>0);
+   }else{
+     *pResOut = osAccess(zPath, W_OK|R_OK)==0;
+   }
+@@ -6472,9 +6504,10 @@ static int mkFullPathname(
+   int nOut                        /* Allocated size of buffer zOut */
+ ){
+   int nPath = sqlite3Strlen30(zPath);
+-  int iOff = 0;
++  int iOff = 0, ret;
+   if( zPath[0]!='/' ){
+-    if( osGetcwd(zOut, nOut-2)==0 ){
++    flexos_gate_r(libvfscore, ret, getcwd, zOut, nOut - 2);
++    if( ret==0 ){
+       return unixLogError(SQLITE_CANTOPEN_BKPT, "getcwd", zPath);
+     }
+     iOff = sqlite3Strlen30(zOut);
+@@ -6513,6 +6546,7 @@ static int unixFullPathname(
+   int nLink = 1;                /* Number of symbolic links followed so far */
+   const char *zIn = zPath;      /* Input path for each iteration of loop */
+   char *zDel = 0;
++  struct stat *buf = uk_malloc(flexos_shared_alloc, sizeof(struct stat));
+ 
+   assert( pVfs->mxPathname==MAX_PATHNAME );
+   UNUSED_PARAMETER(pVfs);
+@@ -6528,14 +6562,14 @@ static int unixFullPathname(
+ 
+     /* Call stat() on path zIn. Set bLink to true if the path is a symbolic
+     ** link, or false otherwise.  */
+-    int bLink = 0;
+-    struct stat buf;
+-    if( osLstat(zIn, &buf)!=0 ){
++    int bLink = 0, ret;
++    flexos_gate_r(libvfscore, ret, lstat, zIn, buf);
++    if( ret!=0 ){
+       if( errno!=ENOENT ){
+         rc = unixLogError(SQLITE_CANTOPEN_BKPT, "lstat", zIn);
+       }
+     }else{
+-      bLink = S_ISLNK(buf.st_mode);
++      bLink = S_ISLNK(buf->st_mode);
+     }
+ 
+     if( bLink ){
+@@ -6578,6 +6612,7 @@ static int unixFullPathname(
+   }while( rc==SQLITE_OK );
+ 
+   sqlite3_free(zDel);
++  uk_free(flexos_shared_alloc, buf);
+   return rc;
+ #endif   /* HAVE_READLINK && HAVE_LSTAT */
+ }
+@@ -6669,7 +6704,7 @@ static int unixRandomness(sqlite3_vfs *N
+ #if !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
+   {
+     int fd, got;
+-    fd = robust_open("/dev/urandom", O_RDONLY, 0);
++    fd = robust_open(FLEXOS_SHARED_LITERAL("/dev/urandom"), O_RDONLY, 0);
+     if( fd<0 ){
+       time_t t;
+       time(&t);
+@@ -6738,19 +6773,9 @@ SQLITE_API int sqlite3_current_time = 0;
+ static int unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow){
+   static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+   int rc = SQLITE_OK;
+-#if defined(NO_GETTOD)
+-  time_t t;
+-  time(&t);
+-  *piNow = ((sqlite3_int64)t)*1000 + unixEpoch;
+-#elif OS_VXWORKS
+-  struct timespec sNow;
+-  clock_gettime(CLOCK_REALTIME, &sNow);
+-  *piNow = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_nsec/1000000;
+-#else
+-  struct timeval sNow;
+-  (void)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
++  struct timeval sNow __attribute__((flexos_whitelist));
++  flexos_gate(libuktime, gettimeofday, &sNow, 0); /* Cannot fail given valid arguments */
+   *piNow = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_usec/1000;
+-#endif
+ 
+ #ifdef SQLITE_TEST
+   if( sqlite3_current_time ){
+@@ -16664,10 +16689,10 @@ static int pcache1InitBulk(PCache1 *pCac
+   if( szBulk > pCache->szAlloc*(i64)pCache->nMax ){
+     szBulk = pCache->szAlloc*(i64)pCache->nMax;
+   }
+-  zBulk = pCache->pBulk = sqlite3Malloc( szBulk );
++  zBulk = pCache->pBulk = flexos_malloc_whitelist(szBulk, libvfscore);
+   sqlite3EndBenignMalloc();
+   if( zBulk ){
+-    int nBulk = sqlite3MallocSize(zBulk)/pCache->szAlloc;
++    int nBulk = szBulk/pCache->szAlloc;
+     do{
+       PgHdr1 *pX = (PgHdr1*)&zBulk[pCache->szPage];
+       pX->page.pBuf = zBulk;
+@@ -16712,7 +16737,7 @@ static void *pcache1Alloc(int nByte){
+     /* Memory is not available in the SQLITE_CONFIG_PAGECACHE pool.  Get
+     ** it from sqlite3Malloc instead.
+     */
+-    p = sqlite3Malloc(nByte);
++    p = flexos_malloc_whitelist(nByte, libvfscore);
+ #ifndef SQLITE_DISABLE_PAGECACHE_OVERFLOW_STATS
+     if( p ){
+       int sz = sqlite3MallocSize(p);
+@@ -16755,7 +16780,7 @@ static void pcache1Free(void *p){
+       sqlite3_mutex_leave(pcache1.mutex);
+     }
+ #endif
+-    sqlite3_free(p);
++    flexos_free_whitelist(p, libvfscore);
+   }
+ }
+ 
+@@ -16994,7 +17019,7 @@ static void pcache1EnforceMaxPage(PCache
+     pcache1RemoveFromHash(p, 1);
+   }
+   if( pCache->nPage==0 && pCache->pBulk ){
+-    sqlite3_free(pCache->pBulk);
++    flexos_free_whitelist(pCache->pBulk, libvfscore);
+     pCache->pBulk = pCache->pFree = 0;
+   }
+ }
+diff --color -urNp sqlite-split20k-3300100/sqlite3-4.c sqlite-split20k-3300100-flexos/sqlite3-4.c
+--- sqlite-split20k-3300100/sqlite3-4.c	2021-07-30 09:16:07.265114821 +0200
++++ sqlite-split20k-3300100-flexos/sqlite3-4.c	2021-07-30 09:16:31.828868350 +0200
+@@ -1,3 +1,5 @@
++#include <flexos/isolation.h>
++
+ /************** Begin file pager.c *******************************************/
+ /*
+ ** 2001 September 15
+@@ -1299,7 +1301,7 @@ static int read32bits(sqlite3_file *fd,
+ ** on success or an error code is something goes wrong.
+ */
+ static int write32bits(sqlite3_file *fd, i64 offset, u32 val){
+-  char ac[4];
++  char ac[4] __attribute__((flexos_whitelist));
+   put32bits(ac, val);
+   return sqlite3OsWrite(fd, ac, 4, offset);
+ }
+@@ -4377,7 +4379,7 @@ SQLITE_PRIVATE int sqlite3PagerClose(Pag
+   assert( !pPager->aSavepoint && !pPager->pInJournal );
+   assert( !isOpen(pPager->jfd) && !isOpen(pPager->sjfd) );
+ 
+-  sqlite3_free(pPager);
++  flexos_free_whitelist(pPager, libvfscore);
+   return SQLITE_OK;
+ }
+ 
+@@ -4432,6 +4434,72 @@ SQLITE_PRIVATE void sqlite3PagerRef(DbPa
+ ** page currently held in memory before returning SQLITE_OK. If an IO
+ ** error is encountered, then the IO error code is returned to the caller.
+ */
++static int _syncJournal(Pager *pPager, const int iDc){
++  /* This block deals with an obscure problem. If the last connection
++  ** that wrote to this database was operating in persistent-journal
++  ** mode, then the journal file may at this point actually be larger
++  ** than Pager.journalOff bytes. If the next thing in the journal
++  ** file happens to be a journal-header (written as part of the
++  ** previous connection's transaction), and a crash or power-failure 
++  ** occurs after nRec is updated but before this connection writes 
++  ** anything else to the journal file (or commits/rolls back its 
++  ** transaction), then SQLite may become confused when doing the 
++  ** hot-journal rollback following recovery. It may roll back all
++  ** of this connections data, then proceed to rolling back the old,
++  ** out-of-date data that follows it. Database corruption.
++  **
++  ** To work around this, if the journal file does appear to contain
++  ** a valid header following Pager.journalOff, then write a 0x00
++  ** byte to the start of it to prevent it from being recognized.
++  **
++  ** Variable iNextHdrOffset is set to the offset at which this
++  ** problematic header will occur, if it exists. aMagic is used 
++  ** as a temporary buffer to inspect the first couple of bytes of
++  ** the potential journal header.
++  */
++  u8 zHeader[sizeof(aJournalMagic)+4] __attribute__((flexos_whitelist));
++  i64 iNextHdrOffset;
++  u8 aMagic[8];
++  u8 zerobyte __attribute__((flexos_whitelist)) = 0;
++  int rc;
++
++  memcpy(zHeader, aJournalMagic, sizeof(aJournalMagic));
++  put32bits(&zHeader[sizeof(aJournalMagic)], pPager->nRec);
++
++  iNextHdrOffset = journalHdrOffset(pPager);
++  rc = sqlite3OsRead(pPager->jfd, aMagic, 8, iNextHdrOffset);
++  if( rc==SQLITE_OK && 0==memcmp(aMagic, aJournalMagic, 8) ){
++    rc = sqlite3OsWrite(pPager->jfd, &zerobyte, 1, iNextHdrOffset);
++  }
++  if( rc!=SQLITE_OK && rc!=SQLITE_IOERR_SHORT_READ ){
++    return rc;
++  }
++
++  /* Write the nRec value into the journal file header. If in
++  ** full-synchronous mode, sync the journal first. This ensures that
++  ** all data has really hit the disk before nRec is updated to mark
++  ** it as a candidate for rollback.
++  **
++  ** This is not required if the persistent media supports the
++  ** SAFE_APPEND property. Because in this case it is not possible 
++  ** for garbage data to be appended to the file, the nRec field
++  ** is populated with 0xFFFFFFFF when the journal header is written
++  ** and never needs to be updated.
++  */
++  if( pPager->fullSync && 0==(iDc&SQLITE_IOCAP_SEQUENTIAL) ){
++    PAGERTRACE(("SYNC journal of %d\n", PAGERID(pPager)));
++    IOTRACE(("JSYNC %p\n", pPager))
++    rc = sqlite3OsSync(pPager->jfd, pPager->syncFlags);
++    if( rc!=SQLITE_OK ) return rc;
++  }
++  IOTRACE(("JHDR %p %lld\n", pPager, pPager->journalHdr));
++  rc = sqlite3OsWrite(
++      pPager->jfd, zHeader, sizeof(zHeader), pPager->journalHdr
++  );
++  if( rc!=SQLITE_OK ) return rc;
++  return SQLITE_OK;
++}
++
+ static int syncJournal(Pager *pPager, int newHdr){
+   int rc;                         /* Return code */
+ 
+@@ -4451,67 +4519,8 @@ static int syncJournal(Pager *pPager, in
+       assert( isOpen(pPager->jfd) );
+ 
+       if( 0==(iDc&SQLITE_IOCAP_SAFE_APPEND) ){
+-        /* This block deals with an obscure problem. If the last connection
+-        ** that wrote to this database was operating in persistent-journal
+-        ** mode, then the journal file may at this point actually be larger
+-        ** than Pager.journalOff bytes. If the next thing in the journal
+-        ** file happens to be a journal-header (written as part of the
+-        ** previous connection's transaction), and a crash or power-failure 
+-        ** occurs after nRec is updated but before this connection writes 
+-        ** anything else to the journal file (or commits/rolls back its 
+-        ** transaction), then SQLite may become confused when doing the 
+-        ** hot-journal rollback following recovery. It may roll back all
+-        ** of this connections data, then proceed to rolling back the old,
+-        ** out-of-date data that follows it. Database corruption.
+-        **
+-        ** To work around this, if the journal file does appear to contain
+-        ** a valid header following Pager.journalOff, then write a 0x00
+-        ** byte to the start of it to prevent it from being recognized.
+-        **
+-        ** Variable iNextHdrOffset is set to the offset at which this
+-        ** problematic header will occur, if it exists. aMagic is used 
+-        ** as a temporary buffer to inspect the first couple of bytes of
+-        ** the potential journal header.
+-        */
+-        i64 iNextHdrOffset;
+-        u8 aMagic[8];
+-        u8 zHeader[sizeof(aJournalMagic)+4];
+-
+-        memcpy(zHeader, aJournalMagic, sizeof(aJournalMagic));
+-        put32bits(&zHeader[sizeof(aJournalMagic)], pPager->nRec);
+-
+-        iNextHdrOffset = journalHdrOffset(pPager);
+-        rc = sqlite3OsRead(pPager->jfd, aMagic, 8, iNextHdrOffset);
+-        if( rc==SQLITE_OK && 0==memcmp(aMagic, aJournalMagic, 8) ){
+-          static const u8 zerobyte = 0;
+-          rc = sqlite3OsWrite(pPager->jfd, &zerobyte, 1, iNextHdrOffset);
+-        }
+-        if( rc!=SQLITE_OK && rc!=SQLITE_IOERR_SHORT_READ ){
+-          return rc;
+-        }
+-
+-        /* Write the nRec value into the journal file header. If in
+-        ** full-synchronous mode, sync the journal first. This ensures that
+-        ** all data has really hit the disk before nRec is updated to mark
+-        ** it as a candidate for rollback.
+-        **
+-        ** This is not required if the persistent media supports the
+-        ** SAFE_APPEND property. Because in this case it is not possible 
+-        ** for garbage data to be appended to the file, the nRec field
+-        ** is populated with 0xFFFFFFFF when the journal header is written
+-        ** and never needs to be updated.
+-        */
+-        if( pPager->fullSync && 0==(iDc&SQLITE_IOCAP_SEQUENTIAL) ){
+-          PAGERTRACE(("SYNC journal of %d\n", PAGERID(pPager)));
+-          IOTRACE(("JSYNC %p\n", pPager))
+-          rc = sqlite3OsSync(pPager->jfd, pPager->syncFlags);
+-          if( rc!=SQLITE_OK ) return rc;
+-        }
+-        IOTRACE(("JHDR %p %lld\n", pPager, pPager->journalHdr));
+-        rc = sqlite3OsWrite(
+-            pPager->jfd, zHeader, sizeof(zHeader), pPager->journalHdr
+-        );
+-        if( rc!=SQLITE_OK ) return rc;
++        rc = _syncJournal(pPager, iDc);
++	if( rc!=SQLITE_OK ) return rc;
+       }
+       if( 0==(iDc&SQLITE_IOCAP_SEQUENTIAL) ){
+         PAGERTRACE(("SYNC journal of %d\n", PAGERID(pPager)));
+@@ -4943,7 +4952,7 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
+   if( zFilename && zFilename[0] ){
+     const char *z;
+     nPathname = pVfs->mxPathname+1;
+-    zPathname = sqlite3DbMallocRaw(0, nPathname*2);
++    zPathname = flexos_malloc_whitelist(nPathname*2, libvfscore);
+     if( zPathname==0 ){
+       return SQLITE_NOMEM_BKPT;
+     }
+@@ -4967,7 +4976,7 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
+       rc = SQLITE_CANTOPEN_BKPT;
+     }
+     if( rc!=SQLITE_OK ){
+-      sqlite3DbFree(0, zPathname);
++      flexos_free_whitelist(zPathname, libvfscore);
+       return rc;
+     }
+   }
+@@ -4984,20 +4993,31 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
+   **     Database file name              (nPathname+1 bytes)
+   **     Journal file name               (nPathname+8+1 bytes)
+   */
+-  pPtr = (u8 *)sqlite3MallocZero(
++#ifdef SQLITE_OMIT_WAL
++  pPtr = (u8 *)flexos_calloc_whitelist(1,
++    ROUND8(sizeof(*pPager)) +      /* Pager structure */
++    ROUND8(pcacheSize) +           /* PCache object */
++    ROUND8(pVfs->szOsFile) +       /* The main db file */
++    journalFileSize * 2 +          /* The two journal files */ 
++    nPathname + 1 + nUri +         /* zFilename */
++    nPathname + 8 + 2              /* zJournal */,
++    libvfscore
++  );
++#else
++  pPtr = (u8 *)flexos_calloc_whitelist(1,
+     ROUND8(sizeof(*pPager)) +      /* Pager structure */
+     ROUND8(pcacheSize) +           /* PCache object */
+     ROUND8(pVfs->szOsFile) +       /* The main db file */
+     journalFileSize * 2 +          /* The two journal files */ 
+     nPathname + 1 + nUri +         /* zFilename */
+     nPathname + 8 + 2              /* zJournal */
+-#ifndef SQLITE_OMIT_WAL
+-    + nPathname + 4 + 2            /* zWal */
+-#endif
++    + nPathname + 4 + 2            /* zWal */,
++    libvfscore
+   );
++#endif
+   assert( EIGHT_BYTE_ALIGNMENT(SQLITE_INT_TO_PTR(journalFileSize)) );
+   if( !pPtr ){
+-    sqlite3DbFree(0, zPathname);
++    flexos_free_whitelist(zPathname, libvfscore);
+     return SQLITE_NOMEM_BKPT;
+   }
+   pPager =              (Pager*)(pPtr);
+@@ -5023,7 +5043,7 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
+     memcpy(&pPager->zWal[nPathname], "-wal\000", 4+1);
+     sqlite3FileSuffix3(pPager->zFilename, pPager->zWal);
+ #endif
+-    sqlite3DbFree(0, zPathname);
++    flexos_free_whitelist(zPathname, libvfscore);
+   }
+   pPager->pVfs = pVfs;
+   pPager->vfsFlags = vfsFlags;
+@@ -5121,7 +5141,7 @@ act_like_temp_file:
+   if( rc!=SQLITE_OK ){
+     sqlite3OsClose(pPager->fd);
+     sqlite3PageFree(pPager->pTmpSpace);
+-    sqlite3_free(pPager);
++    flexos_free_whitelist(pPager, libvfscore);
+     return rc;
+   }
+ 
+@@ -5337,6 +5357,7 @@ static int hasHotJournal(Pager *pPager,
+ */
+ SQLITE_PRIVATE int sqlite3PagerSharedLock(Pager *pPager){
+   int rc = SQLITE_OK;                /* Return code */
++  char dbFileVers[sizeof(pPager->dbFileVers)] __attribute__((flexos_whitelist));
+ 
+   /* This routine is only called from b-tree and only when there are no
+   ** outstanding pages. This implies that the pager state should either
+@@ -5488,10 +5509,9 @@ SQLITE_PRIVATE int sqlite3PagerSharedLoc
+       ** detected.  The chance of an undetected change is so small that
+       ** it can be neglected.
+       */
+-      char dbFileVers[sizeof(pPager->dbFileVers)];
+ 
+       IOTRACE(("CKVERS %p %d\n", pPager, sizeof(dbFileVers)));
+-      rc = sqlite3OsRead(pPager->fd, &dbFileVers, sizeof(dbFileVers), 24);
++      rc = sqlite3OsRead(pPager->fd, dbFileVers, sizeof(dbFileVers), 24);
+       if( rc!=SQLITE_OK ){
+         if( rc!=SQLITE_IOERR_SHORT_READ ){
+           goto failed;
+diff --color -urNp sqlite-split20k-3300100/sqlite3-5.c sqlite-split20k-3300100-flexos/sqlite3-5.c
+--- sqlite-split20k-3300100/sqlite3-5.c	2021-07-30 09:16:07.277114701 +0200
++++ sqlite-split20k-3300100-flexos/sqlite3-5.c	2021-07-30 09:16:01.365174021 +0200
+@@ -1,3 +1,5 @@
++#include <flexos/isolation.h>
++
+ /************** Begin file btree.c *******************************************/
+ /*
+ ** 2004 April 6
+@@ -2337,7 +2339,7 @@ SQLITE_PRIVATE int sqlite3BtreeOpen(
+   sqlite3_mutex *mutexOpen = 0;  /* Prevents a race condition. Ticket #3537 */
+   int rc = SQLITE_OK;            /* Result code from this function */
+   u8 nReserve;                   /* Byte of unused space on each page */
+-  unsigned char zDbHeader[100];  /* Database header content */
++  unsigned char *zDbHeader = flexos_malloc_whitelist(sizeof(unsigned char) * 100, libvfscore); /* Database header content */
+ 
+   /* True if opening an ephemeral, temporary database */
+   const int isTempDb = zFilename==0 || zFilename[0]==0;
+@@ -2372,6 +2374,7 @@ SQLITE_PRIVATE int sqlite3BtreeOpen(
+   }
+   p = sqlite3MallocZero(sizeof(Btree));
+   if( !p ){
++    flexos_free_whitelist(zDbHeader, libvfscore);
+     return SQLITE_NOMEM_BKPT;
+   }
+   p->inTrans = TRANS_NONE;
+@@ -2396,6 +2399,7 @@ SQLITE_PRIVATE int sqlite3BtreeOpen(
+       p->sharable = 1;
+       if( !zFullPathname ){
+         sqlite3_free(p);
++        flexos_free_whitelist(zDbHeader, libvfscore);
+         return SQLITE_NOMEM_BKPT;
+       }
+       if( isMemdb ){
+@@ -2406,6 +2410,7 @@ SQLITE_PRIVATE int sqlite3BtreeOpen(
+         if( rc ){
+           sqlite3_free(zFullPathname);
+           sqlite3_free(p);
++          flexos_free_whitelist(zDbHeader, libvfscore);
+           return rc;
+         }
+       }
+@@ -2427,6 +2432,7 @@ SQLITE_PRIVATE int sqlite3BtreeOpen(
+               sqlite3_mutex_leave(mutexOpen);
+               sqlite3_free(zFullPathname);
+               sqlite3_free(p);
++              flexos_free_whitelist(zDbHeader, libvfscore);
+               return SQLITE_CONSTRAINT;
+             }
+           }
+@@ -2609,6 +2615,7 @@ btree_open_out:
+     sqlite3_mutex_leave(mutexOpen);
+   }
+   assert( rc!=SQLITE_OK || sqlite3BtreeConnectionCount(*ppBtree)>0 );
++  flexos_free_whitelist(zDbHeader, libvfscore);
+   return rc;
+ }
+ 

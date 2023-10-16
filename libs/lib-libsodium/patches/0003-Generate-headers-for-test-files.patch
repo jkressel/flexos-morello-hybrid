@@ -1,0 +1,2582 @@
+From c926032f93975c6c9354b0a8db7fe27d6c8168a7 Mon Sep 17 00:00:00 2001
+From: Michalis Pappas <Michalis.Pappas@opensynergy.com>
+Date: Sat, 13 Nov 2021 13:03:50 +0100
+Subject: [PATCH 3/5] Generate headers for test files
+
+Generate a header file for each test that defines:
+* The test's main function
+* The test's expected result
+
+The latter removes the filesystem dependency from sodium's tests.
+
+---
+ test/default/aead_aes256gcm2_test.h         | 10 +++
+ test/default/aead_aes256gcm_test.h          | 10 +++
+ test/default/aead_chacha20poly13052_test.h  | 10 +++
+ test/default/aead_chacha20poly1305_test.h   | 72 ++++++++++++++++
+ test/default/aead_xchacha20poly1305_test.h  | 60 ++++++++++++++
+ test/default/auth2_test.h                   | 13 +++
+ test/default/auth3_test.h                   | 10 +++
+ test/default/auth5_test.h                   |  9 ++
+ test/default/auth6_test.h                   | 17 ++++
+ test/default/auth7_test.h                   |  9 ++
+ test/default/auth_test.h                    | 39 +++++++++
+ test/default/box2_test.h                    | 43 ++++++++++
+ test/default/box7_test.h                    |  9 ++
+ test/default/box8_test.h                    |  9 ++
+ test/default/box_easy2_test.h               | 16 ++++
+ test/default/box_easy_test.h                | 12 +++
+ test/default/box_seal_test.h                | 17 ++++
+ test/default/box_seed_test.h                | 17 ++++
+ test/default/box_test.h                     | 47 +++++++++++
+ test/default/chacha20_test.h                | 73 ++++++++++++++++
+ test/default/codecs_test.h                  | 39 +++++++++
+ test/default/core1_test.h                   | 13 +++
+ test/default/core2_test.h                   | 13 +++
+ test/default/core3_test.h                   | 12 +++
+ test/default/core4_test.h                   | 17 ++++
+ test/default/core5_test.h                   | 13 +++
+ test/default/core6_test.h                   | 13 +++
+ test/default/core_ed25519_test.h            | 27 ++++++
+ test/default/core_ristretto255_test.h       | 17 ++++
+ test/default/ed25519_convert_test.h         | 12 +++
+ test/default/generichash2_test.h            | 73 ++++++++++++++++
+ test/default/generichash3_test.h            | 84 +++++++++++++++++++
+ test/default/generichash_test.h             | 74 +++++++++++++++++
+ test/default/hash2_test.h                   | 10 +++
+ test/default/hash3_test.h                   | 10 +++
+ test/default/hash_test.h                    | 13 +++
+ test/default/kdf_test.h                     | 86 +++++++++++++++++++
+ test/default/keygen_test.h                  | 10 +++
+ test/default/kx_test.h                      | 16 ++++
+ test/default/metamorphic_test.h             | 10 +++
+ test/default/misuse_test.h                  |  9 ++
+ test/default/onetimeauth2_test.h            | 10 +++
+ test/default/onetimeauth7_test.h            |  9 ++
+ test/default/onetimeauth_test.h             | 13 +++
+ test/default/pwhash_argon2i_test.h          | 20 +++++
+ test/default/pwhash_argon2id_test.h         | 23 ++++++
+ test/default/pwhash_scrypt_ll_test.h        | 24 ++++++
+ test/default/pwhash_scrypt_test.h           | 46 +++++++++++
+ test/default/randombytes_test.h             | 11 +++
+ test/default/scalarmult2_test.h             | 13 +++
+ test/default/scalarmult5_test.h             | 13 +++
+ test/default/scalarmult6_test.h             | 13 +++
+ test/default/scalarmult7_test.h             | 10 +++
+ test/default/scalarmult8_test.h             | 74 +++++++++++++++++
+ test/default/scalarmult_ed25519_test.h      | 10 +++
+ test/default/scalarmult_ristretto255_test.h | 27 ++++++
+ test/default/scalarmult_test.h              | 13 +++
+ test/default/secretbox2_test.h              | 26 ++++++
+ test/default/secretbox7_test.h              |  9 ++
+ test/default/secretbox8_test.h              |  9 ++
+ test/default/secretbox_easy2_test.h         | 14 ++++
+ test/default/secretbox_easy_test.h          | 18 ++++
+ test/default/secretbox_test.h               | 47 +++++++++++
+ test/default/secretstream_test.h            | 10 +++
+ test/default/shorthash_test.h               | 73 ++++++++++++++++
+ test/default/sign_test.h                    | 14 ++++
+ test/default/siphashx24_test.h              | 73 ++++++++++++++++
+ test/default/sodium_core_test.h             | 10 +++
+ test/default/sodium_utils2_test.h           | 12 +++
+ test/default/sodium_utils3_test.h           | 11 +++
+ test/default/sodium_utils_test.h            | 34 ++++++++
+ test/default/sodium_version_test.h          | 12 +++
+ test/default/stream2_test.h                 | 11 +++
+ test/default/stream3_test.h                 | 13 +++
+ test/default/stream4_test.h                 | 26 ++++++
+ test/default/stream_test.h                  | 92 +++++++++++++++++++++
+ test/default/verify1_test.h                 | 11 +++
+ test/default/xchacha20_test.h               | 14 ++++
+ 78 files changed, 1941 insertions(+)
+ create mode 100644 test/default/aead_aes256gcm2_test.h
+ create mode 100644 test/default/aead_aes256gcm_test.h
+ create mode 100644 test/default/aead_chacha20poly13052_test.h
+ create mode 100644 test/default/aead_chacha20poly1305_test.h
+ create mode 100644 test/default/aead_xchacha20poly1305_test.h
+ create mode 100644 test/default/auth2_test.h
+ create mode 100644 test/default/auth3_test.h
+ create mode 100644 test/default/auth5_test.h
+ create mode 100644 test/default/auth6_test.h
+ create mode 100644 test/default/auth7_test.h
+ create mode 100644 test/default/auth_test.h
+ create mode 100644 test/default/box2_test.h
+ create mode 100644 test/default/box7_test.h
+ create mode 100644 test/default/box8_test.h
+ create mode 100644 test/default/box_easy2_test.h
+ create mode 100644 test/default/box_easy_test.h
+ create mode 100644 test/default/box_seal_test.h
+ create mode 100644 test/default/box_seed_test.h
+ create mode 100644 test/default/box_test.h
+ create mode 100644 test/default/chacha20_test.h
+ create mode 100644 test/default/codecs_test.h
+ create mode 100644 test/default/core1_test.h
+ create mode 100644 test/default/core2_test.h
+ create mode 100644 test/default/core3_test.h
+ create mode 100644 test/default/core4_test.h
+ create mode 100644 test/default/core5_test.h
+ create mode 100644 test/default/core6_test.h
+ create mode 100644 test/default/core_ed25519_test.h
+ create mode 100644 test/default/core_ristretto255_test.h
+ create mode 100644 test/default/ed25519_convert_test.h
+ create mode 100644 test/default/generichash2_test.h
+ create mode 100644 test/default/generichash3_test.h
+ create mode 100644 test/default/generichash_test.h
+ create mode 100644 test/default/hash2_test.h
+ create mode 100644 test/default/hash3_test.h
+ create mode 100644 test/default/hash_test.h
+ create mode 100644 test/default/kdf_test.h
+ create mode 100644 test/default/keygen_test.h
+ create mode 100644 test/default/kx_test.h
+ create mode 100644 test/default/metamorphic_test.h
+ create mode 100644 test/default/misuse_test.h
+ create mode 100644 test/default/onetimeauth2_test.h
+ create mode 100644 test/default/onetimeauth7_test.h
+ create mode 100644 test/default/onetimeauth_test.h
+ create mode 100644 test/default/pwhash_argon2i_test.h
+ create mode 100644 test/default/pwhash_argon2id_test.h
+ create mode 100644 test/default/pwhash_scrypt_ll_test.h
+ create mode 100644 test/default/pwhash_scrypt_test.h
+ create mode 100644 test/default/randombytes_test.h
+ create mode 100644 test/default/scalarmult2_test.h
+ create mode 100644 test/default/scalarmult5_test.h
+ create mode 100644 test/default/scalarmult6_test.h
+ create mode 100644 test/default/scalarmult7_test.h
+ create mode 100644 test/default/scalarmult8_test.h
+ create mode 100644 test/default/scalarmult_ed25519_test.h
+ create mode 100644 test/default/scalarmult_ristretto255_test.h
+ create mode 100644 test/default/scalarmult_test.h
+ create mode 100644 test/default/secretbox2_test.h
+ create mode 100644 test/default/secretbox7_test.h
+ create mode 100644 test/default/secretbox8_test.h
+ create mode 100644 test/default/secretbox_easy2_test.h
+ create mode 100644 test/default/secretbox_easy_test.h
+ create mode 100644 test/default/secretbox_test.h
+ create mode 100644 test/default/secretstream_test.h
+ create mode 100644 test/default/shorthash_test.h
+ create mode 100644 test/default/sign_test.h
+ create mode 100644 test/default/siphashx24_test.h
+ create mode 100644 test/default/sodium_core_test.h
+ create mode 100644 test/default/sodium_utils2_test.h
+ create mode 100644 test/default/sodium_utils3_test.h
+ create mode 100644 test/default/sodium_utils_test.h
+ create mode 100644 test/default/sodium_version_test.h
+ create mode 100644 test/default/stream2_test.h
+ create mode 100644 test/default/stream3_test.h
+ create mode 100644 test/default/stream4_test.h
+ create mode 100644 test/default/stream_test.h
+ create mode 100644 test/default/verify1_test.h
+ create mode 100644 test/default/xchacha20_test.h
+
+diff --git a/test/default/aead_aes256gcm2_test.h b/test/default/aead_aes256gcm2_test.h
+new file mode 100644
+index 0000000..44fa1c7
+--- /dev/null
++++ b/test/default/aead_aes256gcm2_test.h
+@@ -0,0 +1,10 @@
++#ifndef __AEAD_AES256GCM2_TEST_H__
++#define __AEAD_AES256GCM2_TEST_H__
++
++int aead_aes256gcm2_xmain(void);
++
++#define aead_aes256gcm2_res "\
++OK\n\
++"
++
++#endif /* __AEAD_AES256GCM2_TEST_H__ */
+diff --git a/test/default/aead_aes256gcm_test.h b/test/default/aead_aes256gcm_test.h
+new file mode 100644
+index 0000000..6b3379b
+--- /dev/null
++++ b/test/default/aead_aes256gcm_test.h
+@@ -0,0 +1,10 @@
++#ifndef __AEAD_AES256GCM_TEST_H__
++#define __AEAD_AES256GCM_TEST_H__
++
++int aead_aes256gcm_xmain(void);
++
++#define aead_aes256gcm_res "\
++OK\n\
++"
++
++#endif /* __AEAD_AES256GCM_TEST_H__ */
+diff --git a/test/default/aead_chacha20poly13052_test.h b/test/default/aead_chacha20poly13052_test.h
+new file mode 100644
+index 0000000..cdb6d31
+--- /dev/null
++++ b/test/default/aead_chacha20poly13052_test.h
+@@ -0,0 +1,10 @@
++#ifndef __AEAD_CHACHA20POLY13052_TEST_H__
++#define __AEAD_CHACHA20POLY13052_TEST_H__
++
++int aead_chacha20poly13052_xmain(void);
++
++#define aead_chacha20poly13052_res "\
++OK\n\
++"
++
++#endif /* __AEAD_CHACHA20POLY13052_TEST_H__ */
+diff --git a/test/default/aead_chacha20poly1305_test.h b/test/default/aead_chacha20poly1305_test.h
+new file mode 100644
+index 0000000..c60b58b
+--- /dev/null
++++ b/test/default/aead_chacha20poly1305_test.h
+@@ -0,0 +1,72 @@
++#ifndef __AEAD_CHACHA20POLY1305_TEST_H__
++#define __AEAD_CHACHA20POLY1305_TEST_H__
++
++int aead_chacha20poly1305_xmain(void);
++
++#define aead_chacha20poly1305_res "\
++,0xe3,0xe4,0x46,0xf7,0xed,0xe9,0xa1,0x9b\n\
++,0x62,0xa4,0x67,0x7d,0xab,0xf4,0xe3,0xd2\n\
++,0x4b,0x87,0x6b,0xb2,0x84,0x75,0x38,0x96\n\
++,0xe1,0xd6\n\
++,0xe3,0xe4,0x46,0xf7,0xed,0xe9,0xa1,0x9b\n\
++,0x62,0xa4,0x69,0xe7,0x78,0x9b,0xcd,0x95\n\
++,0x4e,0x65,0x8e,0xd3,0x84,0x23,0xe2,0x31\n\
++,0x61,0xdc\n\
++,0xe3,0xe4,0x46,0xf7,0xed,0xe9,0xa1,0x9b\n\
++,0x62,0xa4,0x69,0xe7,0x78,0x9b,0xcd,0x95\n\
++,0x4e,0x65,0x8e,0xd3,0x84,0x23,0xe2,0x31\n\
++,0x61,0xdc\n\
++,0xd3,0x1a,0x8d,0x34,0x64,0x8e,0x60,0xdb\n\
++,0x7b,0x86,0xaf,0xbc,0x53,0xef,0x7e,0xc2\n\
++,0xa4,0xad,0xed,0x51,0x29,0x6e,0x08,0xfe\n\
++,0xa9,0xe2,0xb5,0xa7,0x36,0xee,0x62,0xd6\n\
++,0x3d,0xbe,0xa4,0x5e,0x8c,0xa9,0x67,0x12\n\
++,0x82,0xfa,0xfb,0x69,0xda,0x92,0x72,0x8b\n\
++,0x1a,0x71,0xde,0x0a,0x9e,0x06,0x0b,0x29\n\
++,0x05,0xd6,0xa5,0xb6,0x7e,0xcd,0x3b,0x36\n\
++,0x92,0xdd,0xbd,0x7f,0x2d,0x77,0x8b,0x8c\n\
++,0x98,0x03,0xae,0xe3,0x28,0x09,0x1b,0x58\n\
++,0xfa,0xb3,0x24,0xe4,0xfa,0xd6,0x75,0x94\n\
++,0x55,0x85,0x80,0x8b,0x48,0x31,0xd7,0xbc\n\
++,0x3f,0xf4,0xde,0xf0,0x8e,0x4b,0x7a,0x9d\n\
++,0xe5,0x76,0xd2,0x65,0x86,0xce,0xc6,0x4b\n\
++,0x61,0x16,0x1a,0xe1,0x0b,0x59,0x4f,0x09\n\
++,0xe2,0x6a,0x7e,0x90,0x2e,0xcb,0xd0,0x60\n\
++,0x06,0x91\n\
++,0xd3,0x1a,0x8d,0x34,0x64,0x8e,0x60,0xdb\n\
++,0x7b,0x86,0xaf,0xbc,0x53,0xef,0x7e,0xc2\n\
++,0xa4,0xad,0xed,0x51,0x29,0x6e,0x08,0xfe\n\
++,0xa9,0xe2,0xb5,0xa7,0x36,0xee,0x62,0xd6\n\
++,0x3d,0xbe,0xa4,0x5e,0x8c,0xa9,0x67,0x12\n\
++,0x82,0xfa,0xfb,0x69,0xda,0x92,0x72,0x8b\n\
++,0x1a,0x71,0xde,0x0a,0x9e,0x06,0x0b,0x29\n\
++,0x05,0xd6,0xa5,0xb6,0x7e,0xcd,0x3b,0x36\n\
++,0x92,0xdd,0xbd,0x7f,0x2d,0x77,0x8b,0x8c\n\
++,0x98,0x03,0xae,0xe3,0x28,0x09,0x1b,0x58\n\
++,0xfa,0xb3,0x24,0xe4,0xfa,0xd6,0x75,0x94\n\
++,0x55,0x85,0x80,0x8b,0x48,0x31,0xd7,0xbc\n\
++,0x3f,0xf4,0xde,0xf0,0x8e,0x4b,0x7a,0x9d\n\
++,0xe5,0x76,0xd2,0x65,0x86,0xce,0xc6,0x4b\n\
++,0x61,0x16,0x6a,0x23,0xa4,0x68,0x1f,0xd5\n\
++,0x94,0x56,0xae,0xa1,0xd2,0x9f,0x82,0x47\n\
++,0x72,0x16\n\
++,0xd3,0x1a,0x8d,0x34,0x64,0x8e,0x60,0xdb\n\
++,0x7b,0x86,0xaf,0xbc,0x53,0xef,0x7e,0xc2\n\
++,0xa4,0xad,0xed,0x51,0x29,0x6e,0x08,0xfe\n\
++,0xa9,0xe2,0xb5,0xa7,0x36,0xee,0x62,0xd6\n\
++,0x3d,0xbe,0xa4,0x5e,0x8c,0xa9,0x67,0x12\n\
++,0x82,0xfa,0xfb,0x69,0xda,0x92,0x72,0x8b\n\
++,0x1a,0x71,0xde,0x0a,0x9e,0x06,0x0b,0x29\n\
++,0x05,0xd6,0xa5,0xb6,0x7e,0xcd,0x3b,0x36\n\
++,0x92,0xdd,0xbd,0x7f,0x2d,0x77,0x8b,0x8c\n\
++,0x98,0x03,0xae,0xe3,0x28,0x09,0x1b,0x58\n\
++,0xfa,0xb3,0x24,0xe4,0xfa,0xd6,0x75,0x94\n\
++,0x55,0x85,0x80,0x8b,0x48,0x31,0xd7,0xbc\n\
++,0x3f,0xf4,0xde,0xf0,0x8e,0x4b,0x7a,0x9d\n\
++,0xe5,0x76,0xd2,0x65,0x86,0xce,0xc6,0x4b\n\
++,0x61,0x16,0x6a,0x23,0xa4,0x68,0x1f,0xd5\n\
++,0x94,0x56,0xae,0xa1,0xd2,0x9f,0x82,0x47\n\
++,0x72,0x16\n\
++"
++
++#endif /* __AEAD_CHACHA20POLY1305_TEST_H__ */
+diff --git a/test/default/aead_xchacha20poly1305_test.h b/test/default/aead_xchacha20poly1305_test.h
+new file mode 100644
+index 0000000..e49c160
+--- /dev/null
++++ b/test/default/aead_xchacha20poly1305_test.h
+@@ -0,0 +1,60 @@
++#ifndef __AEAD_XCHACHA20POLY1305_TEST_H__
++#define __AEAD_XCHACHA20POLY1305_TEST_H__
++
++int aead_xchacha20poly1305_xmain(void);
++
++#define aead_xchacha20poly1305_res "\
++,0xf8,0xeb,0xea,0x48,0x75,0x04,0x40,0x66\n\
++,0xfc,0x16,0x2a,0x06,0x04,0xe1,0x71,0xfe\n\
++,0xec,0xfb,0x3d,0x20,0x42,0x52,0x48,0x56\n\
++,0x3b,0xcf,0xd5,0xa1,0x55,0xdc,0xc4,0x7b\n\
++,0xbd,0xa7,0x0b,0x86,0xe5,0xab,0x9b,0x55\n\
++,0x00,0x2b,0xd1,0x27,0x4c,0x02,0xdb,0x35\n\
++,0x32,0x1a,0xcd,0x7a,0xf8,0xb2,0xe2,0xd2\n\
++,0x50,0x15,0xe1,0x36,0xb7,0x67,0x94,0x58\n\
++,0xe9,0xf4,0x32,0x43,0xbf,0x71,0x9d,0x63\n\
++,0x9b,0xad,0xb5,0xfe,0xac,0x03,0xf8,0x0a\n\
++,0x19,0xa9,0x6e,0xf1,0x0c,0xb1,0xd1,0x53\n\
++,0x33,0xa8,0x37,0xb9,0x09,0x46,0xba,0x38\n\
++,0x54,0xee,0x74,0xda,0x3f,0x25,0x85,0xef\n\
++,0xc7,0xe1,0xe1,0x70,0xe1,0x7e,0x15,0xe5\n\
++,0x63,0xe7,0x76,0x01,0xf4,0xf8,0x5c,0xaf\n\
++,0xa8,0xe5,0x87,0x76,0x14,0xe1,0x43,0xe6\n\
++,0x84,0x20\n\
++,0xf8,0xeb,0xea,0x48,0x75,0x04,0x40,0x66\n\
++,0xfc,0x16,0x2a,0x06,0x04,0xe1,0x71,0xfe\n\
++,0xec,0xfb,0x3d,0x20,0x42,0x52,0x48,0x56\n\
++,0x3b,0xcf,0xd5,0xa1,0x55,0xdc,0xc4,0x7b\n\
++,0xbd,0xa7,0x0b,0x86,0xe5,0xab,0x9b,0x55\n\
++,0x00,0x2b,0xd1,0x27,0x4c,0x02,0xdb,0x35\n\
++,0x32,0x1a,0xcd,0x7a,0xf8,0xb2,0xe2,0xd2\n\
++,0x50,0x15,0xe1,0x36,0xb7,0x67,0x94,0x58\n\
++,0xe9,0xf4,0x32,0x43,0xbf,0x71,0x9d,0x63\n\
++,0x9b,0xad,0xb5,0xfe,0xac,0x03,0xf8,0x0a\n\
++,0x19,0xa9,0x6e,0xf1,0x0c,0xb1,0xd1,0x53\n\
++,0x33,0xa8,0x37,0xb9,0x09,0x46,0xba,0x38\n\
++,0x54,0xee,0x74,0xda,0x3f,0x25,0x85,0xef\n\
++,0xc7,0xe1,0xe1,0x70,0xe1,0x7e,0x15,0xe5\n\
++,0x63,0xe7,0xe0,0x96,0xe0,0x33,0xd9,0x1b\n\
++,0x63,0xf7,0xac,0x92,0xe9,0x97,0x2e,0x0d\n\
++,0x43,0xe5\n\
++,0xf8,0xeb,0xea,0x48,0x75,0x04,0x40,0x66\n\
++,0xfc,0x16,0x2a,0x06,0x04,0xe1,0x71,0xfe\n\
++,0xec,0xfb,0x3d,0x20,0x42,0x52,0x48,0x56\n\
++,0x3b,0xcf,0xd5,0xa1,0x55,0xdc,0xc4,0x7b\n\
++,0xbd,0xa7,0x0b,0x86,0xe5,0xab,0x9b,0x55\n\
++,0x00,0x2b,0xd1,0x27,0x4c,0x02,0xdb,0x35\n\
++,0x32,0x1a,0xcd,0x7a,0xf8,0xb2,0xe2,0xd2\n\
++,0x50,0x15,0xe1,0x36,0xb7,0x67,0x94,0x58\n\
++,0xe9,0xf4,0x32,0x43,0xbf,0x71,0x9d,0x63\n\
++,0x9b,0xad,0xb5,0xfe,0xac,0x03,0xf8,0x0a\n\
++,0x19,0xa9,0x6e,0xf1,0x0c,0xb1,0xd1,0x53\n\
++,0x33,0xa8,0x37,0xb9,0x09,0x46,0xba,0x38\n\
++,0x54,0xee,0x74,0xda,0x3f,0x25,0x85,0xef\n\
++,0xc7,0xe1,0xe1,0x70,0xe1,0x7e,0x15,0xe5\n\
++,0x63,0xe7,0xe0,0x96,0xe0,0x33,0xd9,0x1b\n\
++,0x63,0xf7,0xac,0x92,0xe9,0x97,0x2e,0x0d\n\
++,0x43,0xe5\n\
++"
++
++#endif /* __AEAD_XCHACHA20POLY1305_TEST_H__ */
+diff --git a/test/default/auth2_test.h b/test/default/auth2_test.h
+new file mode 100644
+index 0000000..4d44c20
+--- /dev/null
++++ b/test/default/auth2_test.h
+@@ -0,0 +1,13 @@
++#ifndef __AUTH2_TEST_H__
++#define __AUTH2_TEST_H__
++
++int auth2_xmain(void);
++
++#define auth2_res "\
++,0x37,0x2e,0xfc,0xf9,0xb4,0x0b,0x35,0xc2\n\
++,0x11,0x5b,0x13,0x46,0x90,0x3d,0x2e,0xf4\n\
++,0x2f,0xce,0xd4,0x6f,0x08,0x46,0xe7,0x25\n\
++,0x7b,0xb1,0x56,0xd3,0xd7,0xb3,0x0d,0x3f\n\
++"
++
++#endif /* __AUTH2_TEST_H__ */
+diff --git a/test/default/auth3_test.h b/test/default/auth3_test.h
+new file mode 100644
+index 0000000..ed8076d
+--- /dev/null
++++ b/test/default/auth3_test.h
+@@ -0,0 +1,10 @@
++#ifndef __AUTH3_TEST_H__
++#define __AUTH3_TEST_H__
++
++int auth3_xmain(void);
++
++#define auth3_res "\
++0\n\
++"
++
++#endif /* __AUTH3_TEST_H__ */
+diff --git a/test/default/auth5_test.h b/test/default/auth5_test.h
+new file mode 100644
+index 0000000..8549344
+--- /dev/null
++++ b/test/default/auth5_test.h
+@@ -0,0 +1,9 @@
++#ifndef __AUTH5_TEST_H__
++#define __AUTH5_TEST_H__
++
++int auth5_xmain(void);
++
++#define auth5_res "\
++"
++
++#endif /* __AUTH5_TEST_H__ */
+diff --git a/test/default/auth6_test.h b/test/default/auth6_test.h
+new file mode 100644
+index 0000000..173fb55
+--- /dev/null
++++ b/test/default/auth6_test.h
+@@ -0,0 +1,17 @@
++#ifndef __AUTH6_TEST_H__
++#define __AUTH6_TEST_H__
++
++int auth6_xmain(void);
++
++#define auth6_res "\
++,0x16,0x4b,0x7a,0x7b,0xfc,0xf8,0x19,0xe2\n\
++,0xe3,0x95,0xfb,0xe7,0x3b,0x56,0xe0,0xa3\n\
++,0x87,0xbd,0x64,0x22,0x2e,0x83,0x1f,0xd6\n\
++,0x10,0x27,0x0c,0xd7,0xea,0x25,0x05,0x54\n\
++,0x97,0x58,0xbf,0x75,0xc0,0x5a,0x99,0x4a\n\
++,0x6d,0x03,0x4f,0x65,0xf8,0xf0,0xe6,0xfd\n\
++,0xca,0xea,0xb1,0xa3,0x4d,0x4a,0x6b,0x4b\n\
++,0x63,0x6e,0x07,0x0a,0x38,0xbc,0xe7,0x37\n\
++"
++
++#endif /* __AUTH6_TEST_H__ */
+diff --git a/test/default/auth7_test.h b/test/default/auth7_test.h
+new file mode 100644
+index 0000000..757fc4a
+--- /dev/null
++++ b/test/default/auth7_test.h
+@@ -0,0 +1,9 @@
++#ifndef __AUTH7_TEST_H__
++#define __AUTH7_TEST_H__
++
++int auth7_xmain(void);
++
++#define auth7_res "\
++"
++
++#endif /* __AUTH7_TEST_H__ */
+diff --git a/test/default/auth_test.h b/test/default/auth_test.h
+new file mode 100644
+index 0000000..f094c39
+--- /dev/null
++++ b/test/default/auth_test.h
+@@ -0,0 +1,39 @@
++#ifndef __AUTH_TEST_H__
++#define __AUTH_TEST_H__
++
++int auth_xmain(void);
++
++#define auth_res "\
++,0x16,0x4b,0x7a,0x7b,0xfc,0xf8,0x19,0xe2\n\
++,0xe3,0x95,0xfb,0xe7,0x3b,0x56,0xe0,0xa3\n\
++,0x87,0xbd,0x64,0x22,0x2e,0x83,0x1f,0xd6\n\
++,0x10,0x27,0x0c,0xd7,0xea,0x25,0x05,0x54\n\
++\n\
++,0x7b,0x9d,0x83,0x38,0xeb,0x1e,0x3d,0xdd\n\
++,0xba,0x8a,0x9a,0x35,0x08,0xd0,0x34,0xa1\n\
++,0xec,0xbe,0x75,0x11,0x37,0xfa,0x1b,0xcb\n\
++,0xa0,0xf9,0x2a,0x3e,0x6d,0xfc,0x79,0x80\n\
++,0xb8,0x81,0xa8,0x64,0x5f,0x92,0x67,0x22\n\
++,0x74,0x37,0x96,0x4b,0xf3,0x07,0x0b,0xe2\n\
++,0xb3,0x36,0xb3,0xa3,0x20,0xf8,0x25,0xce\n\
++,0xc9,0x87,0x2d,0xb2,0x50,0x4b,0xf3,0x6d\n\
++\n\
++,0x73,0xe0,0x0d,0xcb,0xf4,0xf8,0xa3,0x33\n\
++,0x30,0xac,0x52,0xed,0x2c,0xc9,0xd1,0xb2\n\
++,0xef,0xb1,0x77,0x13,0xd3,0xec,0xe3,0x96\n\
++,0x14,0x9f,0x37,0x65,0x3c,0xfe,0x70,0xe7\n\
++,0x1f,0x2c,0x6f,0x9a,0x62,0xc3,0xc5,0x3a\n\
++,0x31,0x8a,0x9a,0x0b,0x3b,0x78,0x60,0xa4\n\
++,0x31,0x6f,0x72,0x9b,0x8d,0x30,0x0f,0x15\n\
++,0x9b,0x2f,0x60,0x93,0xa8,0x60,0xc1,0xed\n\
++,0x62,0x27,0xe4,0xce,0x7c,0x7f,0xe7,0xa4\n\
++,0xba,0x9e,0x2a,0xc3,0x42,0xc3,0x5d,0x24\n\
++,0x03,0x3e,0x38,0x8c,0x9b,0xdc,0x29,0x9b\n\
++,0x4a,0x50,0x50,0xf6,0x71,0x70,0xf4,0x83\n\
++,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00\n\
++,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00\n\
++,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00\n\
++,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00\n\
++"
++
++#endif /* __AUTH_TEST_H__ */
+diff --git a/test/default/box2_test.h b/test/default/box2_test.h
+new file mode 100644
+index 0000000..5846fa2
+--- /dev/null
++++ b/test/default/box2_test.h
+@@ -0,0 +1,43 @@
++#ifndef __BOX2_TEST_H__
++#define __BOX2_TEST_H__
++
++int box2_xmain(void);
++
++#define box2_res "\
++,0xbe,0x07,0x5f,0xc5,0x3c,0x81,0xf2,0xd5\n\
++,0xcf,0x14,0x13,0x16,0xeb,0xeb,0x0c,0x7b\n\
++,0x52,0x28,0xc5,0x2a,0x4c,0x62,0xcb,0xd4\n\
++,0x4b,0x66,0x84,0x9b,0x64,0x24,0x4f,0xfc\n\
++,0xe5,0xec,0xba,0xaf,0x33,0xbd,0x75,0x1a\n\
++,0x1a,0xc7,0x28,0xd4,0x5e,0x6c,0x61,0x29\n\
++,0x6c,0xdc,0x3c,0x01,0x23,0x35,0x61,0xf4\n\
++,0x1d,0xb6,0x6c,0xce,0x31,0x4a,0xdb,0x31\n\
++,0x0e,0x3b,0xe8,0x25,0x0c,0x46,0xf0,0x6d\n\
++,0xce,0xea,0x3a,0x7f,0xa1,0x34,0x80,0x57\n\
++,0xe2,0xf6,0x55,0x6a,0xd6,0xb1,0x31,0x8a\n\
++,0x02,0x4a,0x83,0x8f,0x21,0xaf,0x1f,0xde\n\
++,0x04,0x89,0x77,0xeb,0x48,0xf5,0x9f,0xfd\n\
++,0x49,0x24,0xca,0x1c,0x60,0x90,0x2e,0x52\n\
++,0xf0,0xa0,0x89,0xbc,0x76,0x89,0x70,0x40\n\
++,0xe0,0x82,0xf9,0x37,0x76,0x38,0x48,0x64\n\
++,0x5e,0x07,0x05\n\
++,0xbe,0x07,0x5f,0xc5,0x3c,0x81,0xf2,0xd5\n\
++,0xcf,0x14,0x13,0x16,0xeb,0xeb,0x0c,0x7b\n\
++,0x52,0x28,0xc5,0x2a,0x4c,0x62,0xcb,0xd4\n\
++,0x4b,0x66,0x84,0x9b,0x64,0x24,0x4f,0xfc\n\
++,0xe5,0xec,0xba,0xaf,0x33,0xbd,0x75,0x1a\n\
++,0x1a,0xc7,0x28,0xd4,0x5e,0x6c,0x61,0x29\n\
++,0x6c,0xdc,0x3c,0x01,0x23,0x35,0x61,0xf4\n\
++,0x1d,0xb6,0x6c,0xce,0x31,0x4a,0xdb,0x31\n\
++,0x0e,0x3b,0xe8,0x25,0x0c,0x46,0xf0,0x6d\n\
++,0xce,0xea,0x3a,0x7f,0xa1,0x34,0x80,0x57\n\
++,0xe2,0xf6,0x55,0x6a,0xd6,0xb1,0x31,0x8a\n\
++,0x02,0x4a,0x83,0x8f,0x21,0xaf,0x1f,0xde\n\
++,0x04,0x89,0x77,0xeb,0x48,0xf5,0x9f,0xfd\n\
++,0x49,0x24,0xca,0x1c,0x60,0x90,0x2e,0x52\n\
++,0xf0,0xa0,0x89,0xbc,0x76,0x89,0x70,0x40\n\
++,0xe0,0x82,0xf9,0x37,0x76,0x38,0x48,0x64\n\
++,0x5e,0x07,0x05\n\
++"
++
++#endif /* __BOX2_TEST_H__ */
+diff --git a/test/default/box7_test.h b/test/default/box7_test.h
+new file mode 100644
+index 0000000..5ac6190
+--- /dev/null
++++ b/test/default/box7_test.h
+@@ -0,0 +1,9 @@
++#ifndef __BOX7_TEST_H__
++#define __BOX7_TEST_H__
++
++int box7_xmain(void);
++
++#define box7_res "\
++"
++
++#endif /* __BOX7_TEST_H__ */
+diff --git a/test/default/box8_test.h b/test/default/box8_test.h
+new file mode 100644
+index 0000000..edeea55
+--- /dev/null
++++ b/test/default/box8_test.h
+@@ -0,0 +1,9 @@
++#ifndef __BOX8_TEST_H__
++#define __BOX8_TEST_H__
++
++int box8_xmain(void);
++
++#define box8_res "\
++"
++
++#endif /* __BOX8_TEST_H__ */
+diff --git a/test/default/box_easy2_test.h b/test/default/box_easy2_test.h
+new file mode 100644
+index 0000000..376654c
+--- /dev/null
++++ b/test/default/box_easy2_test.h
+@@ -0,0 +1,16 @@
++#ifndef __BOX_EASY2_TEST_H__
++#define __BOX_EASY2_TEST_H__
++
++int box_easy2_xmain(void);
++
++#define box_easy2_res "\
++0\n\
++0\n\
++0\n\
++0\n\
++0\n\
++0\n\
++OK\n\
++"
++
++#endif /* __BOX_EASY2_TEST_H__ */
+diff --git a/test/default/box_easy_test.h b/test/default/box_easy_test.h
+new file mode 100644
+index 0000000..be50967
+--- /dev/null
++++ b/test/default/box_easy_test.h
+@@ -0,0 +1,12 @@
++#ifndef __BOX_EASY_TEST_H__
++#define __BOX_EASY_TEST_H__
++
++int box_easy_xmain(void);
++
++#define box_easy_res "\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74,0xe3,0x55,0xa5\n\
++,0x25,0x39,0x12,0x1d,0x8e,0x23,0x4e,0x65,0x2d,0x65,0x1f,0xa4,0xc8,0xcf,0xf8,0x80,0x8e\n\
++,0x25,0x39,0x12,0x1d,0x8e,0x23,0x4e,0x65,0x2d,0x65,0x1f,0xa4,0xc8,0xcf,0xf8,0x80,0x8e\n\
++"
++
++#endif /* __BOX_EASY_TEST_H__ */
+diff --git a/test/default/box_seal_test.h b/test/default/box_seal_test.h
+new file mode 100644
+index 0000000..0a76dfa
+--- /dev/null
++++ b/test/default/box_seal_test.h
+@@ -0,0 +1,17 @@
++#ifndef __BOX_SEAL_TEST_H__
++#define __BOX_SEAL_TEST_H__
++
++int box_seal_xmain(void);
++
++#define box_seal_res "\
++0\n\
++-1\n\
++-1\n\
++-1\n\
++0\n\
++-1\n\
++-1\n\
++-1\n\
++"
++
++#endif /* __BOX_SEAL_TEST_H__ */
+diff --git a/test/default/box_seed_test.h b/test/default/box_seed_test.h
+new file mode 100644
+index 0000000..7fe5fb9
+--- /dev/null
++++ b/test/default/box_seed_test.h
+@@ -0,0 +1,17 @@
++#ifndef __BOX_SEED_TEST_H__
++#define __BOX_SEED_TEST_H__
++
++int box_seed_xmain(void);
++
++#define box_seed_res "\
++,0xed,0x77,0x49,0xb4,0xd9,0x89,0xf6,0x95\n\
++,0x7f,0x3b,0xfd,0xe6,0xc5,0x67,0x67,0xe9\n\
++,0x88,0xe2,0x1c,0x9f,0x87,0x84,0xd9,0x1d\n\
++,0x61,0x00,0x11,0xcd,0x55,0x3f,0x9b,0x06\n\
++,0xac,0xcd,0x44,0xeb,0x8e,0x93,0x31,0x9c\n\
++,0x05,0x70,0xbc,0x11,0x00,0x5c,0x0e,0x01\n\
++,0x89,0xd3,0x4f,0xf0,0x2f,0x6c,0x17,0x77\n\
++,0x34,0x11,0xad,0x19,0x12,0x93,0xc9,0x8f\n\
++"
++
++#endif /* __BOX_SEED_TEST_H__ */
+diff --git a/test/default/box_test.h b/test/default/box_test.h
+new file mode 100644
+index 0000000..2ec7ed4
+--- /dev/null
++++ b/test/default/box_test.h
+@@ -0,0 +1,47 @@
++#ifndef __BOX_TEST_H__
++#define __BOX_TEST_H__
++
++int box_xmain(void);
++
++#define box_res "\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5\n\
++,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9\n\
++,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73\n\
++,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce\n\
++,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4\n\
++,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a\n\
++,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b\n\
++,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72\n\
++,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2\n\
++,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38\n\
++,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a\n\
++,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae\n\
++,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea\n\
++,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda\n\
++,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde\n\
++,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3\n\
++,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6\n\
++,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74\n\
++,0xe3,0x55,0xa5\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5\n\
++,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9\n\
++,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73\n\
++,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce\n\
++,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4\n\
++,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a\n\
++,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b\n\
++,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72\n\
++,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2\n\
++,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38\n\
++,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a\n\
++,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae\n\
++,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea\n\
++,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda\n\
++,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde\n\
++,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3\n\
++,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6\n\
++,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74\n\
++,0xe3,0x55,0xa5\n\
++"
++
++#endif /* __BOX_TEST_H__ */
+diff --git a/test/default/chacha20_test.h b/test/default/chacha20_test.h
+new file mode 100644
+index 0000000..dda1bd1
+--- /dev/null
++++ b/test/default/chacha20_test.h
+@@ -0,0 +1,73 @@
++#ifndef __CHACHA20_TEST_H__
++#define __CHACHA20_TEST_H__
++
++int chacha20_xmain(void);
++
++#define chacha20_res "\
++[76b8e0ada0f13d90405d6ae55386bd28bdd219b8a08ded1aa836efcc8b770dc7da41597c5157488d7724e03fb8d84a376a43b8f41518a11cc387b669b2ee65869f07e7be5551387a98ba977c732d080dcb0f29a048e3656912c6533e32ee7aed29b721769ce64e43d57133b074d839d531ed1f28510afb45ace10a1f4b794d6f2d09a0e663266ce1ae7ed1081968a0758e718e997bd362c6b0c34634a9a0b35d]\n\
++[4540f05a9f1fb296d7736e7b208e3c96eb4fe1834688d2604f450952ed432d41bbe2a0b6ea7566d2a5d1e7e20d42af2c53d792b1c43fea817e9ad275ae5469633aeb5224ecf849929b9d828db1ced4dd832025e8018b8160b82284f3c949aa5a8eca00bbb4a73bdad192b5c42f73f2fd4e273644c8b36125a64addeb006c13a096d68b9ff7b57e7090f880392effd5b297a83bbaf2fbe8cf5d4618965e3dc776]\n\
++[de9cba7bf3d69ef5e786dc63973f653a0b49e015adbff7134fcb7df137821031e85a050278a7084527214f73efc7fa5b5277062eb7a0433e445f41e31afab757283547e3d3d30ee0371c1e6025ff4c91b794a291cf7568d48ff84b37329e2730b12738a072a2b2c7169e326fe4893a7b2421bb910b79599a7ce4fbaee86be427c5ee0e8225eb6f48231fd504939d59eac8bd106cc138779b893c54da8758f62a]\n\
++[ef3fdfd6c61578fbf5cf35bd3dd33b8009631634d21e42ac33960bd138e50d32111e4caf237ee53ca8ad6426194a88545ddc497a0b466e7d6bbdb0041b2f586b5305e5e44aff19b235936144675efbe4409eb7e8e5f1430f5f5836aeb49bb5328b017c4b9dc11f8a03863fa803dc71d5726b2b6b31aa32708afe5af1d6b690584d58792b271e5fdb92c486051c48b79a4d48a109bb2d0477956e74c25e93c3c2]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59ea1c53f15916155c2be8241a38008b9a26bc35941e2444177c8ade6689de95264986d95889fb60e84629c9bd9a5acb1cc118be563eb9b3a4a472f82e09a7e778492b562ef7130e88dfe031c79db9d4f7c7a899151b9a475032b63fc385245fe054e3dd5a97a5f576fe064025]\n\
++[f7010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101]\n\
++[f798a189040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404]\n\
++[f798a189f195e6070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707]\n\
++[f798a189f195e66982100a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a]\n\
++[f798a189f195e66982105ffb640d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d]\n\
++[f798a189f195e66982105ffb640bb775101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010]\n\
++[f798a189f195e66982105ffb640bb7757f579d131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac561c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac31f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b73252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b4641282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c92b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c94400492e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59ea1c53373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59ea1c53f159163a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59ea1c53f15916155c2b3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59ea1c53f15916155c2be8241a404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040]\n\
++[f798a189f195e66982105ffb640bb7757f579da31602fc93ec01ac56f85ac3c134a4547b733b46413042c9440049176905d3be59ea1c53f15916155c2be8241a38008b9a26bc35941e2444177c8ade6689de95264986d95889fb60e84629c9bd9a5acb1cc118be563eb9b3a4a472f82e09a7e778492b562ef7130e88dfe031c79db9d4f7c7a899151b9a475032b63fc385245fe054e3dd5a97a5f576fe064025]\n\
++[b5dae3cbb3d7a42bc0521db92649f5373d15dfe15440bed1ae43ee14ba18818376e616393179040372008b06420b552b4791fc1ba85e11b31b54571e69aa66587a42c9d864fe77d65c6606553ec89c24cb9cd7640bc49b1acbb922aa046b8bffd818895e835afc147cfbf1e6e630ba6c4be5a53a0b69146cb5514cca9da27385dffb96b585eadb5759d8051270f47d81c7661da216a19f18d5e7b734bc440267]\n\
++[42424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242]\n\
++[7a42c9d864fe77d65c6606553ec89c24cb9cd7640bc49b1acbb922aa046b8bffd818895e835afc147cfbf1e6e630ba6c4be5a53a0b69146cb5514cca9da27385dffb96b585eadb5759d8051270f47d81c7661da216a19f18d5e7b734bc440267918c466e1428f08745f37a99c77c7f2b1b244bd4162e8b86e4a8bf85358202954ced04b52fef7b3ba787744e715554285ecb0ed6e133c528d69d346abc0ce8b0]\n\
++[76b8e0ada0f13d90405d6ae55386bd28bdd219b8a08ded1aa836efcc8b770dc7da41597c5157488d7724e03fb8d84a376a43b8f41518a11cc387b669b2ee65869f07e7be5551387a98ba977c732d080dcb0f29a048e3656912c6533e32ee7aed29b721769ce64e43d57133b074d839d531ed1f28510afb45ace10a1f4b794d6f2d09a0e663266ce1ae7ed1081968a0758e718e997bd362c6b0c34634a9a0b35d]\n\
++[9f07e7be5551387a98ba977c732d080dcb0f29a048e3656912c6533e32ee7aed29b721769ce64e43d57133b074d839d531ed1f28510afb45ace10a1f4b794d6f2d09a0e663266ce1ae7ed1081968a0758e718e997bd362c6b0c34634a9a0b35d012737681f7b5d0f281e3afde458bc1e73d2d313c9cf94c05ff3716240a248f21320a058d7b3566bd520daaa3ed2bf0ac5b8b120fb852773c3639734b45c91a4]\n\
++[3aeb5224ecf849929b9d828db1ced4dd832025e8018b8160b82284f3c949aa5a8eca00bbb4a73bdad192b5c42f73f2fd4e273644c8b36125a64addeb006c13a096d68b9ff7b57e7090f880392effd5b297a83bbaf2fbe8cf5d4618965e3dc776cd430d9b4e7eda8a767fb0e860319aadb5fd96a855de1fbfc92cb0489190cfdd87da6dbf1f736a2d499941ca097e5170bd685578611323120cebf296181ed4f5]\n\
++[72d54dfbf12ec44b362692df94137f328fea8da73990265ec1bbbea1ae9af0ca13b25aa26cb4a648cb9b9d1be65b2c0924a66c54d545ec1b7374f4872e99f096bf74dbd52cc4fc95ceb6097fe5e65358c9dbc0a5ecbf7894a132a9a54ae3e951f2e9f209aa9c3d9a877ac9dab62433d2961a17d103e455dfb7337c90f6857aad233065955a212b5c7a8eab4dc8a629e5b6b8ba914afd06de7177054b33d21c96]\n\
++[c2c64d378cd536374ae204b9ef933fcd1a8b2288b3dfa49672ab765b54ee27c78a970e0e955c14f3a88e741b97c286f75f8fc299e8148362fa198a39531bed6d1a91288c874ec254f322c2a197340c55bb3e9b3998f7de2309486a0bb494abd20c9c5ef99c1370d61e77f408ac5514f49202bcc6828d45409d2d1416f8ae106b06ebd2541256264fa415bd54cb12e1d4449ed85299a1b7a249b75ff6c89b2e3f]\n\
++[10f1e7e4d13b5915500fdd1fa32071c4c7d1f4c733c068030422aa9ac3d46c4ed2826446079faa0914c2d705d98b02a2b5129cd1de164eb9cbd083e8a2503c4e0a88837739d7bf4ef8ccacb0ea2bb9d69d56c394aa351dfda5bf459f0a2e9fe8e721f89255f9c486bf21679c683d4f9c5cf2fa27865526005b06ca374c86af3bdcbfbdcb83be65862ed5c20eae5a43241d6a92da6dca9a156be25297f51c2718]\n\
++[75924bad7831b25662dbac54b46827990b6168ae990e7bd7e1fd2ad282bf23ef052c7d1a0a6c1ef862070943a0d4da24705fbc006dfb85e2af18c0a264d772a44c70fbedac9d6a6867ff6be0a32826507f2c784101583211c9e2453d4cc8b283d5e86682bd4bf511271b91dbd351415f5a009d1f78b64085a9a4341be7d42e2679d57e2747097f0129950e2c9e9ca1356022d45da252af71ac37f351a2e77911]\n\
++[61010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101]\n\
++[6146f256040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404]\n\
++[6146f2564fe1bd070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707]\n\
++[6146f2564fe1bdf9bccd0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a]\n\
++[6146f2564fe1bdf9bccd0fe1ed0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb00161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af1021c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7081f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f6222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828282828]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c2973032e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c297303ace1e2313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c297303ace1e2e34130343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c297303ace1e2e3413018ff7e373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c297303ace1e2e3413018ff7ed87cfa3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c297303ace1e2e3413018ff7ed87cfa95b60f3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d]\n\
++[6146f2564fe1bdf9bccd0fe1edf0da5d92f1fa76cb002937ba9af10230a7085f55f67bf6ab410fba060c2c297303ace1e2e3413018ff7ed87cfa95b60f094ee5404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040]\n\
++[8adc91fd9ff4f0f51b0fad50ff15d637e40efda206cc52c783a74200503c1582cd9833367d0a54d57d3c9e998f490ee69ca34c1ff9e939a75584c52d690a35d410f1e7e4d13b5915500fdd1fa32071c4c7d1f4c733c068030422aa9ac3d46c4ed2826446079faa0914c2d705d98b02a2b5129cd1de164eb9cbd083e8a2503c4e0a88837739d7bf4ef8ccacb0ea2bb9d69d56c394aa351dfda5bf459f0a2e9fe8]\n\
++[c89ed3bfddb6b2b7594def12bd579475a64cbfe0448e1085c1e50042127e57c08fda71743f4816973f7edcdbcd0b4ca4dee10e5dbbab7be517c6876f2b48779652b3a5a693791b57124d9f5de16233868593b68571822a414660e8d881962e0c90c0260445dde84b568095479bc940e0f750de939c540cfb8992c1aae0127e0c48cac1357b95fd0cba8eeef2a869fb94df1481d6e8775fbfe7fd07dd486cddaa]\n\
++[42424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242]\n\
++[52b3a5a693791b57124d9f5de16233868593b68571822a414660e8d881962e0c90c0260445dde84b568095479bc940e0f750de939c540cfb8992c1aae0127e0c48cac1357b95fd0cba8eeef2a869fb94df1481d6e8775fbfe7fd07dd486cddaaa563bad017bb86c4fd6325de2a7f0dde1eb0b865c4176442194488750ec4ed799efdff89c1fc27c46c97804cec1801665f28d0982f88d85729a010d5b75e655a]\n\
++"
++
++#endif /* __CHACHA20_TEST_H__ */
+diff --git a/test/default/codecs_test.h b/test/default/codecs_test.h
+new file mode 100644
+index 0000000..5a40017
+--- /dev/null
++++ b/test/default/codecs_test.h
+@@ -0,0 +1,39 @@
++#ifndef __CODECS_TEST_H__
++#define __CODECS_TEST_H__
++
++int codecs_xmain(void);
++
++#define codecs_res "\
++30313233343536373839414243444546\n\
++bin2hex(..., guard_page, 0):\n\
++bin2hex(..., \"\", 0):\n\
++4:cafe6942\n\
++dt1: 11\n\
++4:cafe6942\n\
++dt2: 2\n\
++dt3: 11\n\
++dt4: 11\n\
++dt5: 11\n\
++dt6: 11\n\
+++/DxMDEyMzQ1Njc4OUFCQ0RFRmFi\n\
+++/DxMDEyMzQ1Njc4OUFCQ0RFRmFiYw\n\
++-_DxMDEyMzQ1Njc4OUFCQ0RFRmFi\n\
++-_DxMDEyMzQ1Njc4OUFCQ0RFRmFiYw\n\
++\n\
++YQ==\n\
++YWI=\n\
++YWJj\n\
++\n\
++YQ\n\
++YWI\n\
++YWJj\n\
++[]\n\
++[BpcyBhIGpvdXJu\n\
++ZXkgaW50by Bzb3VuZA==]\n\
++[This is a journey into sound]\n\
++[This is a journ]\n\
++[\n\
++ZXkgaW50by Bzb3VuZA==]\n\
++"
++
++#endif /* __CODECS_TEST_H__ */
+diff --git a/test/default/core1_test.h b/test/default/core1_test.h
+new file mode 100644
+index 0000000..35db1d1
+--- /dev/null
++++ b/test/default/core1_test.h
+@@ -0,0 +1,13 @@
++#ifndef __CORE1_TEST_H__
++#define __CORE1_TEST_H__
++
++int core1_xmain(void);
++
++#define core1_res "\
++ 0x1b,0x27,0x55,0x64,0x73,0xe9,0x85,0xd4\n\
++,0x62,0xcd,0x51,0x19,0x7a,0x9a,0x46,0xc7\n\
++,0x60,0x09,0x54,0x9e,0xac,0x64,0x74,0xf2\n\
++,0x06,0xc4,0xee,0x08,0x44,0xf6,0x83,0x89\n\
++"
++
++#endif /* __CORE1_TEST_H__ */
+diff --git a/test/default/core2_test.h b/test/default/core2_test.h
+new file mode 100644
+index 0000000..af0f831
+--- /dev/null
++++ b/test/default/core2_test.h
+@@ -0,0 +1,13 @@
++#ifndef __CORE2_TEST_H__
++#define __CORE2_TEST_H__
++
++int core2_xmain(void);
++
++#define core2_res "\
++ 0xdc,0x90,0x8d,0xda,0x0b,0x93,0x44,0xa9\n\
++,0x53,0x62,0x9b,0x73,0x38,0x20,0x77,0x88\n\
++,0x80,0xf3,0xce,0xb4,0x21,0xbb,0x61,0xb9\n\
++,0x1c,0xbd,0x4c,0x3e,0x66,0x25,0x6c,0xe4\n\
++"
++
++#endif /* __CORE2_TEST_H__ */
+diff --git a/test/default/core3_test.h b/test/default/core3_test.h
+new file mode 100644
+index 0000000..d3d290c
+--- /dev/null
++++ b/test/default/core3_test.h
+@@ -0,0 +1,12 @@
++#ifndef __CORE3_TEST_H__
++#define __CORE3_TEST_H__
++
++int core3_xmain(void);
++
++#define core3_res "\
++662b9d0e3463029156069b12f918691a98f7dfb2ca0393c96bbfc6b1fbd630a2\n\
++a4e3147dddd2ba7775939b50208a22eb3277d4e4bad8a1cfbc999c6bd392b638\n\
++017421baa9959cbe894bd003ec87938254f47c1e757eb66cf89c353d0c2b68de\n\
++"
++
++#endif /* __CORE3_TEST_H__ */
+diff --git a/test/default/core4_test.h b/test/default/core4_test.h
+new file mode 100644
+index 0000000..2526e33
+--- /dev/null
++++ b/test/default/core4_test.h
+@@ -0,0 +1,17 @@
++#ifndef __CORE4_TEST_H__
++#define __CORE4_TEST_H__
++
++int core4_xmain(void);
++
++#define core4_res "\
++  69, 37, 68, 39, 41, 15,107,193\n\
++,255,139,122,  6,170,233,217, 98\n\
++, 89,144,182,106, 21, 51,200, 65\n\
++,239, 49,222, 34,215,114, 40,126\n\
++,104,197,  7,225,197,153, 31,  2\n\
++,102, 78, 76,176, 84,245,246,184\n\
++,177,160,133,130,  6, 72,149,119\n\
++,192,195,132,236,234,103,246, 74\n\
++"
++
++#endif /* __CORE4_TEST_H__ */
+diff --git a/test/default/core5_test.h b/test/default/core5_test.h
+new file mode 100644
+index 0000000..c9fea8b
+--- /dev/null
++++ b/test/default/core5_test.h
+@@ -0,0 +1,13 @@
++#ifndef __CORE5_TEST_H__
++#define __CORE5_TEST_H__
++
++int core5_xmain(void);
++
++#define core5_res "\
++,0xbc,0x1b,0x30,0xfc,0x07,0x2c,0xc1,0x40\n\
++,0x75,0xe4,0xba,0xa7,0x31,0xb5,0xa8,0x45\n\
++,0xea,0x9b,0x11,0xe9,0xa5,0x19,0x1f,0x94\n\
++,0xe1,0x8c,0xba,0x8f,0xd8,0x21,0xa7,0xcd\n\
++"
++
++#endif /* __CORE5_TEST_H__ */
+diff --git a/test/default/core6_test.h b/test/default/core6_test.h
+new file mode 100644
+index 0000000..ab47cfc
+--- /dev/null
++++ b/test/default/core6_test.h
+@@ -0,0 +1,13 @@
++#ifndef __CORE6_TEST_H__
++#define __CORE6_TEST_H__
++
++int core6_xmain(void);
++
++#define core6_res "\
++,0xbc,0x1b,0x30,0xfc,0x07,0x2c,0xc1,0x40\n\
++,0x75,0xe4,0xba,0xa7,0x31,0xb5,0xa8,0x45\n\
++,0xea,0x9b,0x11,0xe9,0xa5,0x19,0x1f,0x94\n\
++,0xe1,0x8c,0xba,0x8f,0xd8,0x21,0xa7,0xcd\n\
++"
++
++#endif /* __CORE6_TEST_H__ */
+diff --git a/test/default/core_ed25519_test.h b/test/default/core_ed25519_test.h
+new file mode 100644
+index 0000000..46514e3
+--- /dev/null
++++ b/test/default/core_ed25519_test.h
+@@ -0,0 +1,27 @@
++#ifndef __CORE_ED25519_TEST_H__
++#define __CORE_ED25519_TEST_H__
++
++int core_ed25519_xmain(void);
++
++#define core_ed25519_res "\
++inv1: 5858cdec40a044b1548b3bb08f8ce0d71103d1f887df84ebc502643dac4df40b\n\
++inv2: 09688ce78a8ff8273f636b0bc748c0cceeeeedecebeae9e8e7e6e5e4e3e2e100\n\
++inv3: f70b4f272b47bd6a1015a511fb3c9fc1b9c21ca4ca2e17d5a225b4c410b9b60d\n\
++inv4: 201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a090807060504030201\n\
++neg1: e46b69758fd3193097398c9717b11e48111112131415161718191a1b1c1d1e0f\n\
++neg2: 09688ce78a8ff8273f636b0bc748c0cceeeeedecebeae9e8e7e6e5e4e3e2e100\n\
++neg3: cdb4d73ffe47f83ebe85e18dcae6cc03f0f0f1f2f3f4f5f6f7f8f9fafbfcfd0e\n\
++neg4: 201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a090807060504030201\n\
++comp1: e56b69758fd3193097398c9717b11e48111112131415161718191a1b1c1d1e0f\n\
++comp2: 09688ce78a8ff8273f636b0bc748c0cceeeeedecebeae9e8e7e6e5e4e3e2e100\n\
++comp3: ceb4d73ffe47f83ebe85e18dcae6cc03f0f0f1f2f3f4f5f6f7f8f9fafbfcfd0e\n\
++comp4: 201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a090807060504030201\n\
++add1: f7567cd87c82ec1c355a6304c143bcc9ecedededededededededededededed0d\n\
++sub1: f67c79849de0253ba142949e1db6224b13121212121212121212121212121202\n\
++add2: b02e8581ce62f69922427c23f970f7e951525252525252525252525252525202\n\
++sub2: 3da570db4b001cbeb35a7b7fe588e72aaeadadadadadadadadadadadadadad0d\n\
++mul: 4453ef38408c06677c1b810e4bf8b1991f01c88716fbfa2f075a518b77da400b\n\
++OK\n\
++"
++
++#endif /* __CORE_ED25519_TEST_H__ */
+diff --git a/test/default/core_ristretto255_test.h b/test/default/core_ristretto255_test.h
+new file mode 100644
+index 0000000..122cb1f
+--- /dev/null
++++ b/test/default/core_ristretto255_test.h
+@@ -0,0 +1,17 @@
++#ifndef __CORE_RISTRETTO255_TEST_H__
++#define __CORE_RISTRETTO255_TEST_H__
++
++int core_ristretto255_xmain(void);
++
++#define core_ristretto255_res "\
++3066f82a1a747d45120d1740f14358531a8f04bbffe6a819f86dfe50f44a0a46\n\
++f26e5b6f7d362d2d2a94c5d0e7602cb4773c95a2e5c31a64f133189fa76ed61b\n\
++006ccd2a9e6867e6a2c5cea83d3302cc9de128dd2a9a57dd8ee7b9d7ffe02826\n\
++f8f0c87cf237953c5890aec3998169005dae3eca1fbb04548c635953c817f92a\n\
++ae81e7dedf20a497e10c304a765c1767a42d6e06029758d2d7e8ef7cc4c41179\n\
++e2705652ff9f5e44d3e841bf1c251cf7dddb77d140870d1ab2ed64f1a9ce8628\n\
++80bd07262511cdde4863f8a7434cef696750681cb9510eea557088f76d9e5065\n\
++OK\n\
++"
++
++#endif /* __CORE_RISTRETTO255_TEST_H__ */
+diff --git a/test/default/ed25519_convert_test.h b/test/default/ed25519_convert_test.h
+new file mode 100644
+index 0000000..4bb1e44
+--- /dev/null
++++ b/test/default/ed25519_convert_test.h
+@@ -0,0 +1,12 @@
++#ifndef __ED25519_CONVERT_TEST_H__
++#define __ED25519_CONVERT_TEST_H__
++
++int ed25519_convert_xmain(void);
++
++#define ed25519_convert_res "\
++curve25519 pk: [f1814f0e8ff1043d8a44d25babff3cedcae6c22c3edaa48f857ae70de2baae50]\n\
++curve25519 sk: [8052030376d47112be7f73ed7a019293dd12ad910b654455798b4667d73de166]\n\
++ok\n\
++"
++
++#endif /* __ED25519_CONVERT_TEST_H__ */
+diff --git a/test/default/generichash2_test.h b/test/default/generichash2_test.h
+new file mode 100644
+index 0000000..4996400
+--- /dev/null
++++ b/test/default/generichash2_test.h
+@@ -0,0 +1,73 @@
++#ifndef __GENERICHASH2_TEST_H__
++#define __GENERICHASH2_TEST_H__
++
++int generichash2_xmain(void);
++
++#define generichash2_res "\
++05\n\
++22a8\n\
++287a9d\n\
++d8eeab1c\n\
++d4ce34973f\n\
++584f7ac46f0c\n\
++32c848bb67545b\n\
++8438e21361bca125\n\
++27a6faae998b4fabb4\n\
++508c05a4f2daee150bad\n\
++68c886c97dce370e8c72fa\n\
++d41e90824ace31ba7bf512ac\n\
++6e0d7a1e2b92a68e45ea867895\n\
++1fc5ee8715312db38da9066152a5\n\
++3138504ba58fcd56c62752bc98a6d2\n\
++b689ecd5357cb5276007627fbdf4082e\n\
++afe251881beb8b9dfa3d4f76aafc7b2995\n\
++980eaa215cb0911027c5564db809bb8ac0a1\n\
++56048436883efdfc8feaa239d960fa5ce24d42\n\
++fce905b6d57fd841f58899a77887a4988e6aa2d1\n\
++6f7afd81d24ccf4d98188b71bdbb7e6c637620879b\n\
++50406b4c37b48621505942b35dff30a75f7d2868146b\n\
++32c21792e18e7a79a4a20ef291721d7eab4e4cf99fbe79\n\
++4b9d9ac5dbfb825acd87588667e6683e0fde4cdcd0a532f9\n\
++2b55a3ebb461623e5de4fbacfb8b26819cfa8adeb094c8c13b\n\
++4c7d261780b25a864a008352ad64d1ae7fc21d608317813cf63f\n\
++f0ca06b8e12c48f1511d0991ba562f06dbe6ba6d5e18280224cc6a\n\
++838a5f7056bfbca65a245796dd3510cb07ff1614b44989d91ac650b2\n\
++a58a8da276577160441f8b9e9c52a041b7caf7cd316acc506f620ab0e1\n\
++e03940a7231049ff2b86c47a28e4951f105d2a3aa3421190fe0ed6aa4ad6\n\
++a7af977c0b34294b1a03d0cc2dcf6eb72f9a32721c3f70128384aeb1f56047\n\
++0e5625d74ada70b8a3b23ca76894e9a0f9dee88f5e3e370e27ad25061ea9dd6f\n\
++775fd9257b265997a16557a445985091798af60e68d06e3ae8e2e886d23ed12f6e\n\
++852e8d4208166a990e215ed06b86c708f491e014584ac9b08f97f24d9f08a84c8e83\n\
++fbdca0db9a933fcffcce2ae694d7e16e7571b100564fcb3d69cec82ea42f254a493a32\n\
++50530ae5eb9780f3fafc5d179f7b363a0d69314a8545d68588b5fec28c8e8d1a011857f6\n\
++5eb71553ff1ac4aba3f84faeb70281c738e3428aae68edc9842ebf55ffd7184a015e323445\n\
++39b279c6d9cca89f8052f953abf71041faf3491b2b965cef503d715e8bf339e02a58fd0e0fba\n\
++e315bef5f4918e881dc8d39d3c6b3948c2ea8e21ac00ee7c7ab875a53e194add0c3d9b8bcba5b2\n\
++4e950f0e1da3111d054136fbdf10b4b88b20de6ad0c6bd5024a5e0a8b4cd7059685c0b663a00cbfa\n\
++b1ed8d99fd62a4f504ecdd58a01759a85932a7783f88f314cdca5019e05063dcc1fcb3c39b8c07758e\n\
++e4d78e734b0cb5bbd83e22bc67f97bbc8a3644f789f6c26a3ec2fe72c75b4d48a3bc000e6f2f2f0726fe\n\
++162e01beb796433a2771eab54611fc93677ed12c73a93ea4d75e148bec7ab14b3e31ab7f395456fb2b47ab\n\
++759c30631fd52e80a22f0614125dcd136287db65079908b75fb5b03be1cdf6dd0a1c9de0cc759cdd82c33758\n\
++af2992acdaf0908f03a2025854de6446123c919b1e24db711df6cb070091343b4e6f5b2716c20c2547f50f1fde\n\
++b833064955778a611fe41a9f1a2de730a16fb4e61a7e2fb67425ce199101d4e71dd7b0c731ea4188e9cc30e9bc52\n\
++e546ee327168d9b4e0d73d9a043f9ef03f880bc8aee91b0923704eb7361ac916b00f5c71c872e2f911a77ef76704b5\n\
++83d86f056729fa1a6e1d3fe8c3d2ebe42b327025747f2e6ba923d2b7b893e31571839937222852033844e585b17d462f\n\
++5d70402524fbef569552a3ff6854087e090ff9ac9ea03aba92cf9f33a28845fa6a1631090dca10e05cdd3341b391a15fcf\n\
++64f4d3ebf0717900f7c04512d1e18f9985975991d4254d76c4e2ee02c0edd6f912f715991984731b808b8370be1f201e53bf\n\
++7d45eae6626dfc9ec3591764b8c39c72ca67e6c1893ab590963a75922719937d1d0ff188a510ffbdf9c777a4d565b3683cbf38\n\
++68e007db5067874548c0d12a9ca709221f9bd352e3eb9847fde6c5de4a8550f4b85b67fe4e5aad70626ebb27d71e5b528effb2e6\n\
++b0dc4dc0bd0d41a8ccfa45a127542079bc4e6f63a63863a9ce21f44481d23eff1060ea03851759b9317209405d5b7cc4387cc2759b\n\
++adf6a9df484e93eb3a6113c3fd68a49b2166878fc652833c9cbef3fd8dd281d385ad0374bc25bc865b216ca395e21c30b9eda1d58a8d\n\
++f1df9bc169323da338daa8a94867db96a1a2a6feb26569198fb4591ae602ba6f766a879e745d71e93b6cb8886b914f2bf4aa55d4c48045\n\
++0c7446078a5077f33bba1ebfad60bbf1b1df47aab2eb3f3f3274ce56ead7800cf095af8208b6d570c4c832fe33227bbbc0842a13e1e82ad9\n\
++accd0b4682e56698ecc55a60a8db8b3f950b6bffc5a1d160daf6ca25e13e3b4983ced5903df0bdc21f70c2ec5adb1a2ec9617df645cdd17ac9\n\
++b787bae190ff2608eb383e0299cc10d6b7232de67ab74285e7bfa933d79f91226066537d74a9d40140d7b1683c2d42cd1935f6430cc554db2b69\n\
++d09b717a0c80f581c07b8813e0ae79cec2188f77122f7477954610655a20420f13eb1b68cacde8c1fdf7a9a398efa72f40c85f0122812eaa33aba0\n\
++87fff156d9895917468e92848fdcfacc134ca3bfc7fce484bd6db41c682ee2ee47151df0fa863d5641633d908c0328e6cbe080e80d8293530ffd2c4f\n\
++1b17b2c0e7afcd224ec9bbe9ce9a13a00bd0a336b863f1b4d5304043778244323bd23fb6154a2e1e94aa48f6ff0e12787a50ca09e9e72ece9e038f6218\n\
++23ac1ccd5e7df51b65b284650158d662e7ef51ebae01b879f39cec484b688c792f8e854bd8ca31ffe8796d28f10e49ab402dab47878a21cb95556dc32b0a\n\
++f8f5323ebcc28bf927e72d342b5b70d80ba67794afb4c28debad21b0dae24c7a9252e862eb4b83bea6d9c0bb7c108983c987f13d73f250c7f14483f0454a24\n\
++55b97ca594d68ccf69a0a93fe7fa4004c7e2947a8cac4ca4a44e17ac6876f472e3f221b341a28004cd35a79cfad7fabb9378ce5af03e4c0445ebbe9540943bbd\n\
++"
++
++#endif /* __GENERICHASH2_TEST_H__ */
+diff --git a/test/default/generichash3_test.h b/test/default/generichash3_test.h
+new file mode 100644
+index 0000000..547a3a9
+--- /dev/null
++++ b/test/default/generichash3_test.h
+@@ -0,0 +1,84 @@
++#ifndef __GENERICHASH3_TEST_H__
++#define __GENERICHASH3_TEST_H__
++
++int generichash3_xmain(void);
++
++#define generichash3_res "\
++ba\n\
++6139\n\
++3a1666\n\
++5797e9d0\n\
++834a26efe6\n\
++d7e9e862bbce\n\
++40d8b84c374750\n\
++276789189244cf04\n\
++16f73ffe0673cc9992\n\
++b3835bfaf6eb71d94078\n\
++8c624e844d34f4a59f34cc\n\
++e0a394962413ad09975df3cf\n\
++47f043c3aacb501f97e0458ae3\n\
++b4a11f2fb72a7e6f96fdacf98d49\n\
++f434079e9adeb244047cb6855f9854\n\
++5fbe885c4b2d4e0d78dc5905622a277a\n\
++e262ba3e2ab76efdf83513108e3b987d1b\n\
++add93dde78d32e77bc039c34a49043f19d26\n\
++093842ac10e2eb1237ddc9ca9e7990cf397772\n\
++09e7f6a0e2ea4888f1dbf6562effd1561c65029c\n\
++bd33a9ec914f5b81864a49184338e4062d6c6b2b2e\n\
++8dc46295235d94f5881d429a5ad47f9db9e35cf8c6b3\n\
++ba5df554dca7ac1cba4889fa88adf3070fbf4ab5d187b5\n\
++1ff84715e71c66214d271d421395fb6166db97b1d47ed697\n\
++75a0d227c70549f5b0c933b7b21f151355bd47e04b6085c91f\n\
++a32a5c9439a0fa771dcbe7f338b5dcef62a754edc4952614d6f0\n\
++53a87de519cdcc7f64730d58bce6baaf7b44c5c428a4611a208ad4\n\
++5e5ad8f0c4f083f9b7a5154d9c0dfd0f3d2fce94cf54fc215450314a\n\
++9c76b9e63c77e6564b1e5111c2fb140046e1e5a4f900a7cfc2bac3fcfa\n\
++bb919251ca310eb9b994e5d7883bc9fa2144b59b8d5d940677b7130ac777\n\
++faa492a66f08ef0c7adb868fcb7b523aedd35b8ff1414bd1d554794f144474\n\
++9b273ebe335540b87be899abe169389ed61ed262c3a0a16e4998bbf752f0bee3\n\
++1e0070b92429c151b33bdd1bb4430a0e650a3dfc94d404054e93c8568330ecc505\n\
++e3b64149f1b76231686d592d1d4af984ce2826ba03c2224a92f95f9526130ce4eb40\n\
++5f8e378120b73db9eefa65ddcdcdcb4acd8046c31a5e47f298caa400937d5623f1394b\n\
++74c757a4165a1782c933e587353a9fd8f6d7bf26b7f51b52c542747030bfb3d560c2e5c2\n\
++2d5ee85cc238b923806dd98db18919d1924f2340ec88917d4ce1799cbfd5f2cb9df99db2e1\n\
++c93ff727e6f9822efec0a77eed0025c0eff19127bf8746b7c71c2a098f57cef02febb86a1e6c\n\
++adfb6d7ba13779a5dd1bbf268e400f4156f0f5c9d5b670ff539e1d9c1a63373416f3001f338407\n\
++3a6900e58a448887d77c5911e4bdde620e64f25b2d71723fa60f7cb3efa7c320b6153bdbc3287949\n\
++413eb0fd379b32dd88e82242a87cc58ce3e64c72352387a4c70f92ee5c8d23fa7ecd86f6df170a32d2\n\
++92d0d3cacc3e25628caf6f2c4cd50d25d154ac45098f531d690230b859f37cfe089eb169f76bba72a3ff\n\
++92f6ccc11a9a3bee520b17e0cddc4550c0e9cf47ddd9a6161284259ffb161c1d0675b505cb1066872768e8\n\
++a3cd675804e6be7f120138a9eaadcd56bb7763d1c046e87fe0d358c8276b0d24621f46c60b46e397933b75b4\n\
++304a1af53cbdd6486b8419d1ebd5e9528c540d8dc46a10be49067f46a0617229577015d776783f702b2954df43\n\
++d8a6358970446453ac0c82c758644ab68989b5b4f06f9768807ce0c5f2a0dbac1e8450f4e3a02deecf7b54b6a45d\n\
++1264b8dee9ac4aa8de69a43ada95cc95f20230f33836d4a1db8c2466ab38361686e5ac282025ccc2e0f6a1cd98a4dd\n\
++7eed787abaa7f4e8b8aa3090f0676201cfbaaf350899661cdd5216ac0b5cd874443f5c0688ffd7ca1ccbfe1ca7e1a3f5\n\
++8907f0218585167962a8e8213559a643dd03c2bf1a7a5ad3e3bc5f88c0ff1532ee8cd29880e7e0e68da22a5798aef27cc5\n\
++12dea17b0733e5060751b1115e10c3d4b2f4583bcd009d9f1f42ec23d4a6a0df1185d3abbdbe86de08569e70583d6de1c1fe\n\
++8ff75e91f1de547dc3a25472db2f51f5910a290c449603da54207b5e39bd735d240ec913b52df90709b5d29357971d6c341452\n\
++4a3b16b12400f38e74778efc3a4caa52ec6fdf6b0180a5bfac9189e52e162c10e8911a54ab33e2b389ee1949e58edaa119e2b2b9\n\
++c9943e7186fdc9bbfa1d7087fa7086babe6fcf95a6196d1772187854071304e2f1fff39e6e6f48f76addb16d5c00249e0523aac91f\n\
++0297f16fdd34add9cc87b4adf816525b590ba08ac733c43f8d225d194df4f9c83b4dce617be51e25b5f6c80dff249f27c707de20e422\n\
++576bb891eab9930998e2e73b5d0498e3c5f040f8dec9397a8c7a622c17de01fee7cc936e3bd4de1f7fd8b31dea9e70c65462bbb5dc7b50\n\
++9416a57ae7c8c51c6e008f940fe06d8ebc02c350c19a2f71583a6d260b085670d73a95248fef0f4cae5292ba7db1189a7cd9c51122ba7913\n\
++ea644b9051cca5eee8868a553e3f0f4e14739e1555474151156e10578256b288a233870dd43a380765400ea446df7f452c1e03a9e5b6731256\n\
++f99cc1603de221abc1ecb1a7eb4bbf06e99561d1cc5541d8d601bae2b1dd3cbe448ac276667f26de5e269183a09f7deaf35d33174b3cc8ad4aa2\n\
++ee2be1ec57fdac23f89402a534177eca0f4b982a4ed2c2e900b6a79e1f47a2d023eff2e647baf4f4c0da3a28d08a44bc780516974074e2523e6651\n\
++9cda001868949a2bad96c5b3950a8315e6e5214d0b54dcd596280565d351806ef22cf3053f63623da72fcad9afa3896641658632334c9ec4f644c984\n\
++c6d6722a916651a8671383d8260873347d9c248696b4cb3dac4dea9ba57ed971127cb18e44211d7e14177ace248b3c6e0785356ee261ebdc6ef0faf143\n\
++5dd258a3e7505bc6b9776b0df25676a1c19e2c8258c7b5f2e361423523d96299eb6827bc7c27e7bca2d2b59d717c2ebcb05e6dcaa32289d96fae9a4077ef\n\
++19c14de35fe19c92cc0e624280e4136355d4cfa9a0a98b090c4b06f5665021920725852ff1f566b0c8c37157b25fb9f947a2e70b40577a17860a0732c170ac\n\
++5fcdcc02be7714a0dbc77df498bf999ea9225d564adca1c121c9af03af92cac8177b9b4a86bcc47c79aa32aac58a3fef967b2132e9352d4613fe890beed2571b\n\
++1afc8ec818bef0a479d2b4cac81d40a52cafa27f6d80c42fc23cbaf4141882ab59ab1101922fcb6e707ef2f61efd07cce5d09094e6bee420b1b96998c7cee96d\n\
++1afc8ec818bef0a479d2b4cac81d40a52cafa27f6d80c42fc23cbaf4141882ab59ab1101922fcb6e707ef2f61efd07cce5d09094e6bee420b1b96998c7cee96d\n\
++5789f474edd5206ededaccfc35e7dd3ed730748125b5395abf802b2601126b19b109a1db67556945bc79bb25e1ab59610599d155070e0e04354f11a6a5d6f3ac\n\
++e78efc663a5547c089f2b3b08973c974c4bfd365eac18b80c68bdb3b1ba4554b54d6b8465a68a3b9aa0bc020621f16efd5b8dd8c7c01ed9ee3ec5544aae465ff\n\
++1afc8ec818bef0a479d2b4cac81d40a52cafa27f6d80c42fc23cbaf4141882ab59ab1101922fcb6e707ef2f61efd07cce5d09094e6bee420b1b96998c7cee96d\n\
++1afc8ec818bef0a479d2b4cac81d40a52cafa27f6d80c42fc23cbaf4141882ab59ab1101922fcb6e707ef2f61efd07cce5d09094e6bee420b1b96998c7cee96d\n\
++fb4e2ad6b7fe6afd2ba06d5c1d79379c5bf10e336a35c89a1aaf408a805171716e0635a5b1d18190131e15b6888510bcb3e3752b050f892a09dbbde60b051495\n\
++5789f474edd5206ededaccfc35e7dd3ed730748125b5395abf802b2601126b19b109a1db67556945bc79bb25e1ab59610599d155070e0e04354f11a6a5d6f3ac\n\
++e78efc663a5547c089f2b3b08973c974c4bfd365eac18b80c68bdb3b1ba4554b54d6b8465a68a3b9aa0bc020621f16efd5b8dd8c7c01ed9ee3ec5544aae465ff\n\
++4f9875a42ba0da8ae3448d2d62b1ff51be672eb1b8a1b0fa5bcd5334c861eff06b5903d672d318fd04e0ef94ddd37eca6d4ad2051a36a0236dc4cc09a5a44358\n\
++ec9f272db92d1fa99324115f34cda8b4690ad029c1df36986cf9e1f844d8fdeca8e8e8311620ad24cbbfa12eccb676b979565405c8e2e20a2e4f18fb27c93d76\n\
++"
++
++#endif /* __GENERICHASH3_TEST_H__ */
+diff --git a/test/default/generichash_test.h b/test/default/generichash_test.h
+new file mode 100644
+index 0000000..b459dfa
+--- /dev/null
++++ b/test/default/generichash_test.h
+@@ -0,0 +1,74 @@
++#ifndef __GENERICHASH_TEST_H__
++#define __GENERICHASH_TEST_H__
++
++int generichash_xmain(void);
++
++#define generichash_res "\
++05\n\
++5d8c\n\
++22221b\n\
++d4974470\n\
++be8492fb36\n\
++edc178279907\n\
++26848f2ae0c2e6\n\
++045cf1235112b9f6\n\
++5110bad569356dfa6c\n\
++1339d95145bc8a33d3aa\n\
++3dbb39b4d57c5566808a88\n\
++22378260939cee01022686a2\n\
++e18b37abcead6cc520e6504dac\n\
++3cbb356604cf862e62ad2f534323\n\
++44c41ba227b191961b475ec5875057\n\
++0c7c9c3922d41a7b2b3b20f92685d560\n\
++8508c01d19709bdd881866aa1f8c63ca06\n\
++f6b2dddfbece6d7d52e114c7e5a97772e18d\n\
++d36b5af9591d0cd3747254e26bc6e1de5b6081\n\
++f7f7ce69149418d7ec33327bd86e14bcca4b8ed7\n\
++2c9aba9a56de21165753c4f3cee9310a9c8fe546b9\n\
++ee5e08cee5fbbcb51900341bb30db6695920faecda6a\n\
++fe9ffb56dc5716b91bc7d77ce7b05e7cc39c31683bec91\n\
++c500ae0f5bff0f1106ce104ae9c291add7207e0d8ebcb1ed\n\
++68e23d12000b387158afd6458d3bcef9c26936ca68b5c0f3d6\n\
++220efa2c09f67dbb02aa623bbc0cb92107a30f53b633e78d4b44\n\
++54df984b47e4bcd489d9c045c488743fac91c9b3e0cbcc37495fac\n\
++b4852cf66c6ce164c002bbb62ded0faeb4a39c39fdffb372ff14dd31\n\
++d79cafb5565e7775616e1c9b09100d61fb71efaf25affcf2d480d2c980\n\
++ae557883145e374adef583ba0550429d5cdd86b254c33bf52d02e070efda\n\
++9f53d28c0df7b327c2eb4c8a12c742829225b7f30fda7baf64135098fdb01b\n\
++a9f51bb7f6a3e9cdb96ce652c07d177962a348a9cced1b92f948187e59b44463\n\
++f2960cf5fd57fc92f549cd5a2803147964f60e7703e1b8897c088cded74c7bd39f\n\
++89981acbb690eb03ed2a67510d1d85a1b4f9d496fdfe134550ae14146bb05fd5fedd\n\
++6d8245383fd7c418b46511339e711b9d4a0d1f5fdf6de45fdd3d0664164b7bf878a124\n\
++1f0b6b083d524e0741710ddef499ce88f51083bb3ad80a1815cc57acf006436e9b6ad72b\n\
++fc35bfe34c915020bb8b44fa0a19933774eaaf61919780fd55564e085bc31646dfc1d426e9\n\
++117d58f1f8cb2c036102686035975be90550795e5a0e3469a8f7a2cba9bc88961852b18c8ae3\n\
++c679c950818729c799bb7f39cef2d89fa80a147817f379a073ef1ccafea5d369815c70373bf5be\n\
++d487ad2143024ee8c645a066c035b74abe3a11f1c9fcd738b154b8ca37134d74fb78c40d1a2274cf\n\
++2d3ee00828b0ccea6812b40f214fab6d4f23f7e74ae228115bcb208ced2d5e1cb9cdff41de912af7a8\n\
++a697b26d4c4475e312288b98ae2ec4954d3c74c8e144c0ab518616ff9f52918a946fd765af75e761178c\n\
++f647bcba2a711f431d6d453aa7d75dcf5bb9ab6f8b83f89117230f633e7580f27c71c4f4c211cadd04f587\n\
++1fc1d6a4db753e2f4fd1456b2b709dd70ad58547eeda9d5a55762b5cd4097a7a1bd73cc633ec27168ee65631\n\
++1cfe0f63ab155379b4a1b5bf694a33635097b8e4b6dbd3b983d62454d36d7bf4550bece301abdd27b2dd76ca9f\n\
++73dee8a0a558e7b6f6eefe411280e253b05ef006d499849fea5d6a95f9141ee160322fff3a3f70e10c84025e02ce\n\
++edf9e706f4acae4f4bed72404f14458ba075d2b9d9a4a1ed46d1f1c5e23113a74cce9f7735432a922a3d8097f22c7a\n\
++95d5cd54c6722ac4335fa0ab38d388c9fd0baea48a9078605e400534ef38f13abb1d770da84b90b0256e1c1b64f54ba9\n\
++fe6b85ee8b5eb7da035264ed46e6dcd948571018d1f6976de4102fcb4bb5f1422e7df1b5aaa5b6b56c5961966db29ead6e\n\
++499ab83c01e4bf74ea5036392f9f810eae8a066fff49e316e4288baccb2001efa24f64cef7bfae70c90f139b198e53ad87f1\n\
++eac6c9d97264241a8adba22ee925438ed9787a547018608a10676a7594bc51c60294bd9159fbcada9022b44880a37c5b07c1b4\n\
++0771e3ae24bbfe424800d4bae776fef3da1607990019e7c4b30bc8140061ebf0b64aad7b018a878d579caa67154b98a04402735e\n\
++d569e5f5fe197387451441911a2be2effa606dad39820af44cea056bd9d1499dde41fa1c6c3a0459d5866c944bec2ac83328953726\n\
++68e523ded865c4d8318d61c312189a59597bbc3995e312e85137611af761a5f73508ac79e359edf729d4508830fc642b432f09185914\n\
++601af664ae596166707244adbb4f704593b355c6a659c844d853c6647fb265cdbcea26ed43657251dec37f2d6453fa0ace55f22d303cb0\n\
++703d8e552236b2090143444545f0a61a809d8ef9843bcf6883f61671fb31c8d6ac9fd373e7f9f79a0c72fa6a37dc655ba1fb01a5f41e36d1\n\
++03896f594afd1bf97acb862106eb05a1d8b54ec08d184812a79f4dc7b287a7486e60927b6c23e5f51fcbc94798648b28fd13438300567bec95\n\
++cc66a891768e95a2717b040c111996f14942f10f2475c33aa5f1c97476e6f8386733d6b21c16102d01ff1f715475f01099e1f19aa763238a38a9\n\
++007aac8eae29e5bf2be1b54857f5fe80c324424a3273b46e55482fbc4ae1033df4a97016b60c81a5344abd6366f56d8cee2c2e94619418293990de\n\
++50c81e92605a6111ea4c7c602acfb3945d4c2631c8c08fa4b594134577f5c2ffcca90d48604162cfdb2a0bb40416ff9134a275461b829ff1b875f995\n\
++661b7a1c70170aa7559aa82639fa65c1bdcfb5e336cb23b40a9edf5b4f6eeca1a176a9844da705cafb990dd94b9dc6194eb6b2de3eca9dbd255bb267a1\n\
++9ff11c233aaf5e0242b0dbe6e110a42e58b86141ad0ef130fd2bb895700019782de66d435bf0a8d6f5eda5d7d1105e7a6f3ef17a9da8f9c16fc21075431a\n\
++bdd3d0fafe8ba2b29d1ac0b79aa46e249cc9d3a82d0f772d690637bbdd353722356658d00436ff5dd5239ab747979329345eb8c7ed11b7331456ae87350fcf\n\
++bd965bf31e87d70327536f2a341cebc4768eca275fa05ef98f7f1b71a0351298de006fba73fe6733ed01d75801b4a928e54231b38e38c562b2e33ea1284992fa\n\
++2fc6e69fa26a89a5ed269092cb9b2a449a4409a7a44011eecad13d7c4b0456602d402fa5844f1a7a758136ce3d5d8d0e8b86921ffff4f692dd95bdc8e5ff0052\n\
++"
++
++#endif /* __GENERICHASH_TEST_H__ */
+diff --git a/test/default/hash2_test.h b/test/default/hash2_test.h
+new file mode 100644
+index 0000000..b3e2b4b
+--- /dev/null
++++ b/test/default/hash2_test.h
+@@ -0,0 +1,10 @@
++#ifndef __HASH2_TEST_H__
++#define __HASH2_TEST_H__
++
++int hash2_xmain(void);
++
++#define hash2_res "\
++24f950aac7b9ea9b3cb728228a0c82b67c39e96b4b344798870d5daee93e3ae5931baae8c7cacfea4b629452c38026a81d138bc7aad1af3ef7bfd5ec646d6c28\n\
++"
++
++#endif /* __HASH2_TEST_H__ */
+diff --git a/test/default/hash3_test.h b/test/default/hash3_test.h
+new file mode 100644
+index 0000000..b7ed73a
+--- /dev/null
++++ b/test/default/hash3_test.h
+@@ -0,0 +1,10 @@
++#ifndef __HASH3_TEST_H__
++#define __HASH3_TEST_H__
++
++int hash3_xmain(void);
++
++#define hash3_res "\
++24f950aac7b9ea9b3cb728228a0c82b67c39e96b4b344798870d5daee93e3ae5931baae8c7cacfea4b629452c38026a81d138bc7aad1af3ef7bfd5ec646d6c28\n\
++"
++
++#endif /* __HASH3_TEST_H__ */
+diff --git a/test/default/hash_test.h b/test/default/hash_test.h
+new file mode 100644
+index 0000000..8009c06
+--- /dev/null
++++ b/test/default/hash_test.h
+@@ -0,0 +1,13 @@
++#ifndef __HASH_TEST_H__
++#define __HASH_TEST_H__
++
++int hash_xmain(void);
++
++#define hash_res "\
++24f950aac7b9ea9b3cb728228a0c82b67c39e96b4b344798870d5daee93e3ae5931baae8c7cacfea4b629452c38026a81d138bc7aad1af3ef7bfd5ec646d6c28\n\
++a77abe1ccf8f5497e228fbc0acd73a521ededb21b89726684a6ebbc3baa32361aca5a244daa84f24bf19c68baf78e6907625a659b15479eb7bd426fc62aafa73\n\
++12a61f4e173fb3a11c05d6471f74728f76231b4a5fcd9667cef3af87a3ae4dc2\n\
++71cc8123fef8c236e451d3c3ddf1adae9aa6cd9521e7041769d737024900a03a\n\
++"
++
++#endif /* __HASH_TEST_H__ */
+diff --git a/test/default/kdf_test.h b/test/default/kdf_test.h
+new file mode 100644
+index 0000000..19bcb44
+--- /dev/null
++++ b/test/default/kdf_test.h
+@@ -0,0 +1,86 @@
++#ifndef __KDF_TEST_H__
++#define __KDF_TEST_H__
++
++int kdf_xmain(void);
++
++#define kdf_res "\
++a0c724404728c8bb95e5433eb6a9716171144d61efb23e74b873fcbeda51d8071b5d70aae12066dfc94ce943f145aa176c055040c3dd73b0a15e36254d450614\n\
++02507f144fa9bf19010bf7c70b235b4c2663cc00e074f929602a5e2c10a780757d2a3993d06debc378a90efdac196dd841817b977d67b786804f6d3cd585bab5\n\
++1944da61ff18dc2028c3578ac85be904931b83860896598f62468f1cb5471c6a344c945dbc62c9aaf70feb62472d17775ea5db6ed5494c68b7a9a59761f39614\n\
++131c0ca1633ed074986215b264f6e0474f362c52b029effc7b0f75977ee89cc95d85c3db87f7e399197a25411592beeeb7e5128a74646a460ecd6deb4994b71e\n\
++a7023a0bf9be245d078aed26bcde0465ff0cc0961196a5482a0ff4ff8b4015971e13611f50529cb408f5776b14a90e7c3dd9160a22211db64ff4b5c0b9953680\n\
++50f49313f3a05b2e565c13feedb44daa675cafd42c2b2cf9edbce9c949fbfc3f175dcb738671509ae2ea66fb85e552394d479afa7fa3affe8791744796b94176\n\
++13b58d6d69780089293862cd59a1a8a4ef79bb850e3f3ba41fb22446a7dd1dc4da4667d37b33bf1225dcf8173c4c349a5d911c5bd2db9c5905ed70c11e809e3b\n\
++15d44b4b44ffa006eeceeb508c98a970aaa573d65905687b9e15854dec6d49c612757e149f78268f727660dedf9abce22a9691feb20a01b0525f4b47a3cf19db\n\
++9aebba11c5428ae8225716369e30a48943be39159a899f804e9963ef78822e186c21fe95bb0b85e60ef03a6f58d0b9d06e91f79d0ab998450b8810c73ca935b4\n\
++70f9b83e463fb441e7a4c43275125cd5b19d8e2e4a5d179a39f5db10bbce745a199104563d308cf8d4c6b27bbb759ded232f5bdb7c367dd632a9677320dfe416\n\
++Failure -- probably expected for output length=0\n\
++Failure -- probably expected for output length=1\n\
++Failure -- probably expected for output length=2\n\
++Failure -- probably expected for output length=3\n\
++Failure -- probably expected for output length=4\n\
++Failure -- probably expected for output length=5\n\
++Failure -- probably expected for output length=6\n\
++Failure -- probably expected for output length=7\n\
++Failure -- probably expected for output length=8\n\
++Failure -- probably expected for output length=9\n\
++Failure -- probably expected for output length=10\n\
++Failure -- probably expected for output length=11\n\
++Failure -- probably expected for output length=12\n\
++Failure -- probably expected for output length=13\n\
++Failure -- probably expected for output length=14\n\
++Failure -- probably expected for output length=15\n\
++a529216624ef9161e4cf117272aafff2\n\
++068bd6940b80c6cc2530a68c31d9f4e323\n\
++0acf4f6c74a590c8a1c0997ec9a1a3f48b2a\n\
++ac17a37ce74c0efece75f9337de20795dbadcc\n\
++268214dc9477a2e3c1022829f934ab992a5a3d84\n\
++33b76197b4531665e494760909eda1cc570e7da9bb\n\
++3d4efbc569ca7f858ad4f49c56b820986a406e6eebbc\n\
++983fea27520f507c40231f9557908f07c095bdf4a4ce5d\n\
++94d678717625e011995c7355f2092267dee47bf0722dd380\n\
++198901896c4f51e74ffa8b2805415c6eaba5accfc85a6e6b34\n\
++4ffabb81d49021f85ef5d2a713ab02ae86bc2e7d1522f5e077fe\n\
++eebc3d55b3f4fc8b64d2474063254da7db98e7398dfdd510e28075\n\
++22c134b9d664e1bdb14dc309a936bf1512b19e4f5175642efb1a0df7\n\
++4b179762bfc8e27a9e575113faa76247b9c046d6f22d5a02e2910a299b\n\
++abc45eb2b031307b8822c7e59a43f4108850c34a7445936bc848422251c4\n\
++d6565bd3265b6373f4f6a6b6458e981006da5e9d532ce94ca4737e188995e9\n\
++154b291f11196737f8b7f491e4ca11764e0227d34f94295408a869f007aa8618\n\
++e9dd395570e09ebb523ffc6ba098a38b17bc4944f14bd3725bdd7edbd8bcff54fb\n\
++7248294d37159e85bacde68c7762a673794c91b811e05f4e3b9e3ecc82bfcf63a2cd\n\
++d060ee4d93f8de6d9ae60fca9596413455183a1f83c7a2381227cec8f7a217e4072f85\n\
++20790290347b9b0f413a954f40e52e270b3b45417e96c8733161672188701c08dd76cc3d\n\
++7674188112a1ab8d3926d468be8e51d788ce4144bb20ff842034e4d1ddab3929a4f1a13a74\n\
++a2ab1f980a47472d8a539f20410cc9bf143d941331ab2259ea73684c0608939c5b23e9cbcb3d\n\
++f4cfbe3050f15ebbaf8d2f3bf3a678c01fc21ee1f4be07d0744c7fbf4835ea9d9472a3d785c24c\n\
++66efa5dfe3efd4cc8ca25f2d622c97a20a192d7add965f26b002b7eb81aae4203c0e5f07fd945845\n\
++ad5d8031055c96dc9db10285206d7edc38d3af85736df8a3b5fdd30a318e80c28d9b26c95a60fa3e68\n\
++9107c8a57a2c9ca40158f33ca0bfb64c095d2f21ca98bb7138477599330a36cdfc2ae5751e370d0e024e\n\
++b0c190177358b955ebebc5e0b86ec91dde3b6f1982ea4d68ec5ec3bdd6527c362e5275600b263601c98452\n\
++31bfaaad4adde0f87d87372e398c42cb7befe065ab2957ebb91ef9dc534b410783899b2e1e84221286f3bab4\n\
++2258dd1f3e516cb8e3d1f6c45808573c365192f073698939721af8961a02a8bdd002a31fd239b9498663a01f27\n\
++7c7a88016610493bb44a9432a88b50f97e2e94383972ff95da826692d96c52d82f86899b3561ec9c95a8b1bf3213\n\
++3929dc7473be4c633be9e08801a8abd284dc0c6154c5c81a4c18259699dd86753c5e14fbd723be46ebb04f4ab3058c\n\
++30b720220015fa60daa69c83f9754d772b1b2dd12ab6baaa2f4edab458d4d251c1cddb8c4a554f3eb13969316b890fbd\n\
++33fa2412a5c3294d49e964419e96d043a2099a72b3351e3bed0f07e12255c95b509ea9bf2963a4c0fe9cc2314dbc44f673\n\
++ca891d2c82a6a8f833dc1a05f190bab6de221307eab1dd2c88341d4d2537a2fc0056b0d04d8104fd3fe89e1ea20877893e81\n\
++fd78ac89a64d03672ad99d663f2613d15277cda1636e334a1706b7211ff1f3a3b3d2e671e391c75e3d242c482ce7e1b8b427ed\n\
++36a6072743d3aafd3ee89344b9ef92cb58a2853ae92b20283520439fcb55afffd3d4b5e4e8c92a85d3cf74497bdcf68bbf1fcf93\n\
++a90afcfaffec1105ad05fdaa9473fb5daf1bf8fb376b7326db46ef4c120c553188c69131933371d409eb56d66d5adca618e1dac65b\n\
++9b990d1fcddbdb5e5c7a48a6a2a666e02e7d4d4a814ece40660d99e1c02d5f023c56ae82526fc6dc8c933d0add92fc376efcddd55a42\n\
++ec545dcf456d1b0907c07418a42bf2b3d668b4797ba6874bf0d563f5f429a820f02177dd4d05e639a06807c9619fee54ffe07712493543\n\
++b0106957626894586682a275f69ed4533e2f94334cc0430394b68d82679aca00dd579e712bdd2d7f5bbce9a050269739bd8427b75b06027f\n\
++05751bfeebb480c9bca0d25d8197e2673845f405d7fb9793e29169ac19956c525f6e637f3d5ea50597b04342afed4ca16f988b4f21a34f1902\n\
++7b4e4294d3f64085b5c09be73548f1f5cb5c6f04e57ce6cdd3077e2fb37640bf1ca0c6393b87d48a6b7e3e42628bd30fca132ded03ce51f71d9d\n\
++082d248862cbfd71a634769a4b1cf52a4af47ace5b9ea4d583ca52207efc7234a6d321788130cbdec122579ad03afe00bc68c9fb3f68dd0532a96f\n\
++a2b39b4428d981013e8a9c0e41b3eed504983fc18dc4b60332b1ab28b9705228147bdb95cc17889d5f0f9cfb7fd16f9d414b1a829346a8922e945b40\n\
++efbf0f8bda1b9ef24fe389f1cf0c0c8a08bca03fc95badabb79a487d8ce1351683f59183aa6229f880d69ad60114ac128f69b2be250109972ab1f3fc3b\n\
++dfe0ba2a6de25fa06b47375e9d9cf6c6fa1493a8a2a81c28d6e09bc161057b445659db76e92e349ff44f34a2a9e3bcaa6b84b21bae56f1499c170ab81af0\n\
++02f9cbdb10759314515b01379c474ad74a1b575137bd3949776dbcfc3e18060cb13ee1f6dcf86035768fc7be63e01de321cacbfade209900dd94273fd8e176\n\
++06ae14308eeeda62a00cb6d5edf18d1707029515db98f472bbf0617419301b1d4f4f2ab65849446be46f87e1d31c6c74283897b9976f70d8a16253ac927e0d9f\n\
++Failure -- probably expected for output length=65\n\
++tv_kdf: ok\n\
++"
++
++#endif /* __KDF_TEST_H__ */
+diff --git a/test/default/keygen_test.h b/test/default/keygen_test.h
+new file mode 100644
+index 0000000..d9bf849
+--- /dev/null
++++ b/test/default/keygen_test.h
+@@ -0,0 +1,10 @@
++#ifndef __KEYGEN_TEST_H__
++#define __KEYGEN_TEST_H__
++
++int keygen_xmain(void);
++
++#define keygen_res "\
++tv_keygen: ok\n\
++"
++
++#endif /* __KEYGEN_TEST_H__ */
+diff --git a/test/default/kx_test.h b/test/default/kx_test.h
+new file mode 100644
+index 0000000..38c3163
+--- /dev/null
++++ b/test/default/kx_test.h
+@@ -0,0 +1,16 @@
++#ifndef __KX_TEST_H__
++#define __KX_TEST_H__
++
++int kx_xmain(void);
++
++#define kx_res "\
++client_pk: [0e0216223f147143d32615a91189c288c1728cba3cc5f9f621b1026e03d83129]\n\
++client_sk: [cb2f5160fc1f7e05a55ef49d340b48da2e5a78099d53393351cd579dd42503d6]\n\
++server_rx: [62c8f4fa81800abd0577d99918d129b65deb789af8c8351f391feb0cbf238604]\n\
++server_tx: [749519c68059bce69f7cfcc7b387a3de1a1e8237d110991323bf62870115731a]\n\
++client_rx: [749519c68059bce69f7cfcc7b387a3de1a1e8237d110991323bf62870115731a]\n\
++client_tx: [62c8f4fa81800abd0577d99918d129b65deb789af8c8351f391feb0cbf238604]\n\
++tv_kx: ok\n\
++"
++
++#endif /* __KX_TEST_H__ */
+diff --git a/test/default/metamorphic_test.h b/test/default/metamorphic_test.h
+new file mode 100644
+index 0000000..bd2d376
+--- /dev/null
++++ b/test/default/metamorphic_test.h
+@@ -0,0 +1,10 @@
++#ifndef __METAMORPHIC_TEST_H__
++#define __METAMORPHIC_TEST_H__
++
++int metamorphic_xmain(void);
++
++#define metamorphic_res "\
++OK\n\
++"
++
++#endif /* __METAMORPHIC_TEST_H__ */
+diff --git a/test/default/misuse_test.h b/test/default/misuse_test.h
+new file mode 100644
+index 0000000..f887ad7
+--- /dev/null
++++ b/test/default/misuse_test.h
+@@ -0,0 +1,9 @@
++#ifndef __MISUSE_TEST_H__
++#define __MISUSE_TEST_H__
++
++int misuse_xmain(void);
++
++#define misuse_res "\
++"
++
++#endif /* __MISUSE_TEST_H__ */
+diff --git a/test/default/onetimeauth2_test.h b/test/default/onetimeauth2_test.h
+new file mode 100644
+index 0000000..9452e5f
+--- /dev/null
++++ b/test/default/onetimeauth2_test.h
+@@ -0,0 +1,10 @@
++#ifndef __ONETIMEAUTH2_TEST_H__
++#define __ONETIMEAUTH2_TEST_H__
++
++int onetimeauth2_xmain(void);
++
++#define onetimeauth2_res "\
++0\n\
++"
++
++#endif /* __ONETIMEAUTH2_TEST_H__ */
+diff --git a/test/default/onetimeauth7_test.h b/test/default/onetimeauth7_test.h
+new file mode 100644
+index 0000000..d470446
+--- /dev/null
++++ b/test/default/onetimeauth7_test.h
+@@ -0,0 +1,9 @@
++#ifndef __ONETIMEAUTH7_TEST_H__
++#define __ONETIMEAUTH7_TEST_H__
++
++int onetimeauth7_xmain(void);
++
++#define onetimeauth7_res "\
++"
++
++#endif /* __ONETIMEAUTH7_TEST_H__ */
+diff --git a/test/default/onetimeauth_test.h b/test/default/onetimeauth_test.h
+new file mode 100644
+index 0000000..744cfc3
+--- /dev/null
++++ b/test/default/onetimeauth_test.h
+@@ -0,0 +1,13 @@
++#ifndef __ONETIMEAUTH_TEST_H__
++#define __ONETIMEAUTH_TEST_H__
++
++int onetimeauth_xmain(void);
++
++#define onetimeauth_res "\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5\n\
++,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5\n\
++,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9\n\
++"
++
++#endif /* __ONETIMEAUTH_TEST_H__ */
+diff --git a/test/default/pwhash_argon2i_test.h b/test/default/pwhash_argon2i_test.h
+new file mode 100644
+index 0000000..723cc61
+--- /dev/null
++++ b/test/default/pwhash_argon2i_test.h
+@@ -0,0 +1,20 @@
++#ifndef __PWHASH_ARGON2I_TEST_H__
++#define __PWHASH_ARGON2I_TEST_H__
++
++int pwhash_argon2i_xmain(void);
++
++#define pwhash_argon2i_res "\
++23b803c84eaa25f4b44634cc1e5e37792c53fcd9b1eb20f865329c68e09cbfa9f1968757901b383fce221afe27713f97914a041395bbe1fb70e079e5bed2c7145b1f6154046f5958e9b1b29055454e264d1f2231c316f26be2e3738e83a80315e9a0951ce4b137b52e7d5ee7b37f7d936dcee51362bcf792595e3c896ad5042734fc90c92cae572ce63ff659a2f7974a3bd730d04d525d253ccc38\n\
++0bb3769b064b9c43a9460476ab38c4a9a2470d55d4c992c6e723af895e4c07c09af41f22f90eab583a0c362d177f4677f212482fd145bfb9ac6211635e48461122bb49097b5fb0739d2cd22a39bf03d268e7495d4fd8d710aa156202f0a06e932ff513e6e7c76a4e98b6df5cf922f124791b1076ad904e6897271f5d7d24c5929e2a3b836d0f2f2697c2d758ee79bf1264f3fae65f3744e0f6d7d07ef6e8b35b70c0f88e9036325bfb24ac7f550351486da87aef10d6b0cb77d1cf6e31cf98399c6f241c605c6530dffb4764784f6c0b0bf601d4e4431e8b18dabdc3079c6e264302ade79f61cbd5497c95486340bb891a737223100be0429650\n\
++e9aa073b0b872f15c083d1d7ce52c09f493b827ca78f13a06c1721b45b1e17b24c04e19fe869333135360197a7eb55994fee3e8d9680aedfdf7674f3ad7b84d59d7eab03579ffc10c7093093bc48ec84252aa1b30f40f5e838f1443e15e2772a39f4e774eb052097e8881e94f15457b779fa2af2bbc9a993687657c7704ac8a37c25c1df4289eb4c70da45f2fd46bc0f78259767d3dd478a7c369cf866758bc36d9bd8e2e3c9fb0cf7fd6073ebf630c1f67fa7d303c07da40b36749d157ea37965fef810f2ea05ae6fc7d96a8f3470d73e15b22b42e8d6986dbfe5303256b2b3560372c4452ffb2a04fb7c6691489f70cb46831be0679117f7\n\
++[tv] pwhash failure (maybe intentional): [3]\n\
++c121209f0ba70aed93d49200e5dc82cce013cef25ea31e160bf8db3cf448a59d1a56f6c19259e18ea020553cb75781761d112b2d949a297584c65e60df95ad89c4109825a3171dc6f20b1fd6b0cdfd194861bc2b414295bee5c6c52619e544abce7d520659c3d51de2c60e89948d830695ab38dcb75dd7ab06a4770dd4bc7c8f335519e04b038416b1a7dbd25c026786a8105c5ffe7a0931364f0376ae5772be39b51d91d3281464e0f3a128e7155a68e87cf79626ffca0b2a3022fc8420\n\
++91c337ce8918a5805a59b00bd1819d3eb4356807cbd2a80b271c4b482dce03f5b02ae4eb831ff668cbb327b93c300b41da4852e5547bea8342d518dd9311aaeb5f90eccf66d548f9275631f0b1fd4b299cec5d2e86a59e55dc7b3afab6204447b21d1ef1da824abaf31a25a0d6135c4fe81d34a06816c8a6eab19141f5687108500f3719a862af8c5fee36e130c69921e11ce83dfc72c5ec3b862c1bccc5fd63ad57f432fbcca6f9e18d5a59015950cdf053\n\
++[tv] pwhash failure (maybe intentional): [6]\n\
++e942951dfbc2d508294b10f9e97b47d0cd04e668a043cb95679cc1139df7c27cd54367688725be9d069f5704c12223e7e4ca181fbd0bed18bb4634795e545a6c04a7306933a41a794baedbb628d41bc285e0b9084055ae136f6b63624c874f5a1e1d8be7b0b7227a171d2d7ed578d88bfdcf18323198962d0dcad4126fd3f21adeb1e11d66252ea0c58c91696e91031bfdcc2a9dc0e028d17b9705ba2d7bcdcd1e3ba75b4b1fea\n\
++fd329873387429cb79faaec4f65c35649f65de0aabc1f092ca9dee20029d8ae6c3a97e9940763e1703a7fef5a20eb7f210123fc8c6d3f1745d19d5e3c1eb392ab4a6070c8a6b9ecbeabae0711326e81530099541a882d4bd7733c4a7477ae72b6928c46cd07264172a9d2cfb7d649594f877f8b447d9c01b17996b85db5a71f733f8cc5fd0436540a5b7a1d79de09e20c3abe6515501b3156cd51e\n\
++bbbc4c7963593601d4d685ed9d89682374f8e6b3ce92ce8ccc702728ec8bf839fd7cb8e37ddb09be8c18c7e0ed099949665227a00fb33e1f63ca830dbeb13b29d987b445b3e081cd8428bdb2f9e003e12bea98230fd30842fa193af9169171b550322072c88330ea464cbe02b6ee044374d3f3d174c23617b707159a11926c56601123dcc30508ec84fdb0797b7ab23a77eeefb2a0be2ef45e903c\n\
++OK\n\
++"
++
++#endif /* __PWHASH_ARGON2I_TEST_H__ */
+diff --git a/test/default/pwhash_argon2id_test.h b/test/default/pwhash_argon2id_test.h
+new file mode 100644
+index 0000000..f5dc3bb
+--- /dev/null
++++ b/test/default/pwhash_argon2id_test.h
+@@ -0,0 +1,23 @@
++#ifndef __PWHASH_ARGON2ID_TEST_H__
++#define __PWHASH_ARGON2ID_TEST_H__
++
++int pwhash_argon2id_xmain(void);
++
++#define pwhash_argon2id_res "\
++18acec5d6507739f203d1f5d9f1d862f7c2cdac4f19d2bdff64487e60d969e3ced615337b9eec6ac4461c6ca07f0939741e57c24d0005c7ea171a0ee1e7348249d135b38f222e4dad7b9a033ed83f5ca27277393e316582033c74affe2566a2bea47f91f0fd9fe49ece7e1f79f3ad6e9b23e0277c8ecc4b313225748dd2a80f5679534a0700e246a79a49b3f74eb89ec6205fe1eeb941c73b1fcf1\n\
++26bab5f101560e48c711da4f05e81f5a3802b7a93d5155b9cab153069cc42b8e9f910bfead747652a0708d70e4de0bada37218bd203a1201c36b42f9a269b675b1f30cfc36f35a3030e9c7f57dfba0d341a974c1886f708c3e8297efbfe411bb9d51375264bd7c70d57a8a56fc9de2c1c97c08776803ec2cd0140bba8e61dc0f4ad3d3d1a89b4b710af81bfe35a0eea193e18a6da0f5ec05542c9eefc4584458e1da715611ba09617384748bd43b9bf1f3a6df4ecd091d0875e08d6e2fd8a5c7ce08904b5160cd38167b76ec76ef2d310049055a564da23d4ebd2b87e421cc33c401e12d5cd8d936c9baf75ebdfb557d342d2858fc781da31860\n\
++6eb45e668582d63788ca8f6e930ca60b045a795fca987344f9a7a135aa3b5132b50a34a3864c26581f1f56dd0bcbfafbfa92cd9bff6b24a734cfe88f854aef4bda0a7983120f44936e8ff31d29728ac08ccce6f3f916b3c63962755c23a1fa9bb4e8823fc867bfd18f28980d94bc5874423ab7f96cc0ab78d8fa21fbd00cd3a1d96a73fa439ccc3fc4eab1590677b06cc78b0f674dfb680f23022fb902022dd8620803229c6ddf79a8156ccfce48bbd76c05ab670634f206e5b2e896230baa74a856964dbd8511acb71d75a1506766a125d8ce037f1db72086ebc3bccaefbd8cd9380167c2530386544ebfbeadbe237784d102bb92a10fd242\n\
++[tv] pwhash failure (maybe intentional): [3]\n\
++08d8cd330c57e1b4643241d05bb468ba4ee4e932cd0858816be9ef15360b27bbd06a87130ee92222be267a29b81f5ae8fe8613324cfc4832dc49387fd0602f1c57b4d0f3855db94fb7e12eb05f9a484aed4a4307abf586cd3d55c809bc081541e00b682772fb2066504ff935b8ebc551a2083882f874bc0fae68e56848ae34c91097c3bf0cca8e75c0797eef3efde3f75e005815018db3cf7c109a812264c4de69dcb22322dbbcfa447f5b00ecd1b04a7be1569c8e556adb7bba48adf81d\n\
++d6e9d6cabd42fb9ba7162fe9b8e41d59d3c7034756cb460c9affe393308bd0225ce0371f2e6c3ca32aca2002bf2d3909c6b6e7dfc4a00e850ff4f570f8f749d4bb6f0091e554be67a9095ae1eefaa1a933316cbec3c2fd4a14a5b6941bda9b7eabd821d79abde2475a53af1a8571c7ee46460be415882e0b393f48c12f740a6a72cba9773000602e13b40d3dfa6ac1d4ec43a838b7e3e165fecad4b2498389e60a3ff9f0f8f4b9fca1126e64f49501e38690\n\
++7fb72409b0987f8190c3729710e98c3f80c5a8727d425fdcde7f3644d467fe973f5b5fee683bd3fce812cb9ae5e9921a2d06c2f1905e4e839692f2b934b682f11a2fe2b90482ea5dd234863516dba6f52dc0702d324ec77d860c2e181f84472bd7104fedce071ffa93c5309494ad51623d214447a7b2b1462dc7d5d55a1f6fd5b54ce024118d86f0c6489d16545aaa87b6689dad9f2fb47fda9894f8e12b87d978b483ccd4cc5fd9595cdc7a818452f915ce2f7df95ec12b1c72e3788d473441d884f9748eb14703c21b45d82fd667b85f5b2d98c13303b3fe76285531a826b6fc0fe8e3dddecf\n\
++4e702bc5f891df884c6ddaa243aa846ce3c087fe930fef0f36b3c2be34164ccc295db509254743f18f947159c813bcd5dd8d94a3aec93bbe57605d1fad1aef1112687c3d4ef1cb329d21f1632f626818d766915d886e8d819e4b0b9c9307f4b6afc081e13b0cf31db382ff1bf05a16aac7af696336d75e99f82163e0f371e1d25c4add808e215697ad3f779a51a462f8bf52610af21fc69dba6b072606f2dabca7d4ae1d91d919\n\
++20e7ba6faa2c0a4b07f3ff38e15e252a069c2c62bac3f2785d311764d73e67fd713be342ee938e6df4de6af1a89a44b8589838864457bcfe3cf0f2d329b800ab9f5810b6325588eb4e0c56f99192b2cc76dc8194dc1097fe5ed12ac4214481c03c3597131ba164a56e7187e2da565a8cd529668e9a37faa58a1701c49a14edf7a50dec4143b456cba6d14c957bb655e99ce96bc506961216ef887a\n\
++8fb6ed1862cdd2a399e10956c60dc9b2670338ea59c3414d0443216925ba24c6e89a17f3e56c12893dcbc9bc498e8308aea9627d9c9e47912d6342b631008719edfa2db364b97e60cf47a97ad9aa3b7f139d80ddda44f1ef2af881ce027a15644218cac6cc74751469ae56be0469fbc760825882b3e8abca55daaae5753575106cf867cd69932602c63ec880ad8811d9aa4870a9e0b39fef47c92e\n\
++[tv3] pwhash_argon2id_str failure (maybe intentional): [0]\n\
++[tv3] pwhash_argon2id_str failure (maybe intentional): [1]\n\
++[tv3] pwhash_argon2id_str failure (maybe intentional): [3]\n\
++OK\n\
++"
++
++#endif /* __PWHASH_ARGON2ID_TEST_H__ */
+diff --git a/test/default/pwhash_scrypt_ll_test.h b/test/default/pwhash_scrypt_ll_test.h
+new file mode 100644
+index 0000000..e0f3b72
+--- /dev/null
++++ b/test/default/pwhash_scrypt_ll_test.h
+@@ -0,0 +1,24 @@
++#ifndef __PWHASH_SCRYPT_LL_TEST_H__
++#define __PWHASH_SCRYPT_LL_TEST_H__
++
++int pwhash_scrypt_ll_xmain(void);
++
++#define pwhash_scrypt_ll_res "\
++scrypt('', '', 16, 1, 1, 64) =\n\
++77 d6 57 62 38 65 7b 20 3b 19 ca 42 c1 8a 04 97\n\
++f1 6b 48 44 e3 07 4a e8 df df fa 3f ed e2 14 42\n\
++fc d0 06 9d ed 09 48 f8 32 6a 75 3a 0f c8 1f 17\n\
++e8 d3 e0 fb 2e 0d 36 28 cf 35 e2 0c 38 d1 89 06\n\
++scrypt('password', 'NaCl', 1024, 8, 16, 64) =\n\
++fd ba be 1c 9d 34 72 00 78 56 e7 19 0d 01 e9 fe\n\
++7c 6a d7 cb c8 23 78 30 e7 73 76 63 4b 37 31 62\n\
++2e af 30 d9 2e 22 a3 88 6f f1 09 27 9d 98 30 da\n\
++c7 27 af b9 4a 83 ee 6d 83 60 cb df a2 cc 06 40\n\
++scrypt('pleaseletmein', 'SodiumChloride', 16384, 8, 1, 64) =\n\
++70 23 bd cb 3a fd 73 48 46 1c 06 cd 81 fd 38 eb\n\
++fd a8 fb ba 90 4f 8e 3e a9 b5 43 f6 54 5d a1 f2\n\
++d5 43 29 55 61 3f 0f cf 62 d4 97 05 24 2a 9a f9\n\
++e6 1e 85 dc 0d 65 1e 40 df cf 01 7b 45 57 58 87\n\
++"
++
++#endif /* __PWHASH_SCRYPT_LL_TEST_H__ */
+diff --git a/test/default/pwhash_scrypt_test.h b/test/default/pwhash_scrypt_test.h
+new file mode 100644
+index 0000000..316997e
+--- /dev/null
++++ b/test/default/pwhash_scrypt_test.h
+@@ -0,0 +1,46 @@
++#ifndef __PWHASH_SCRYPT_TEST_H__
++#define __PWHASH_SCRYPT_TEST_H__
++
++int pwhash_scrypt_xmain(void);
++
++#define pwhash_scrypt_res "\
++8d40f5f8c6a1791204f03e19a98cd74f918b6e331b39cfc2415e5014d7738b7bb0a83551fb14a035e07fdd4dc0c60c1a6822ac253918979f6324ff0c87cba75d3b91f88f41ca5414a0f152bdc4d636f42ab2250afd058c19ec31a3374d1bd7133289bf21513ff67cbf8482e626aee9864c58fd05f9ea02e508a10182b7d838157119866f072004987ef6c56683ed207705923921af9d76444a331a\n\
++d985d4c278343a46d82af0c4268b7ae6b6d1d2dd289675ef45bfb6d0648bffe5bab8c91228f3a31b091154a9c1142670a07b92e70a298333066de07db9300e046fd7cacc99780804683df7babdfc9d019047178400b2875bde0a1ad824dda7a422d9ed48475af9a3876378dd3a2f206e34984e223afb82c0c1e4644c9a458f4666379fdd3e2d9206d87e3c32c3977f35826a27590baaa1ec1a3bd7d15a92bc84c95dcfc56c14fca7c4c9810162dfdf9dc08a191e79fe40250b7e07d3a9317d9a5cb56e1062c419a6cd6a9b73128e8ad79ab7efffbb3cc52c1f49f86d2ebb46e6e4846aecdb14c2d046f5380517ff8cc794e4a772a58b93083dad\n\
++ee7e9e1369267ec555981f0ea088ff6f93953abfcb767d88ec3c46393d24cfbaba5e4e26e0f35b5d5259647748476d65cd8881c96f8cda049d9c877b2d33d932e67f4c0df2cb434b4b4900e0c49c3f8ba9663795420577e65d0b456201ad9162fbc485c7b44f2b34e6673aa3692c123021ee3b624c3bb22b808b89613d8ecc7b87da47f57152eb3f7b10ad206f6b09cb6935b347b5e42bc3b8c9c9bcd8d7b7c44929b367fc279dec48ea78e6ee3e2620d7459700bd0aedb1c9aa5a323ca94403927f5e5c2b73bda7c5c3287b62fe51874cfeb1dc3151cd886b26d83ece68833229d2d432798c602d85b0505947207d8430febbe901164b12ce\n\
++pwhash failure\n\
++0000000000\n\
++bcc5c2fd785e4781d1201ed43d84925537e2a540d3de55f5812f29e9dd0a4a00451a5c8ddbb4862c03d45c75bf91b7fb49265feb667ad5c899fdbf2ca19eac67aa5e48595d5b02f8183ab07f71b1ce0d76e5df54919f63810ad0893ded7d1ca18fc956ec06ffd4c3d1f77a00ed53608947b25eea5df6bea02272be15815f974c321a2a9208674fdf59d1d798c2a12f1889df68b0c222b37ee9ef0d6391fc160b0281ec53073cb3a3706ce1d71c3af2f5237a1b3d8545d99012eecc0b4abb\n\
++82765c040c58c1810f8c053ef5c248556299385476bde44bdd91a0d9a239f24e9b1717fd8b23209ffa45b7aa7937296c601b79e77da99e8d2fda0ea4459be2d0900f5bc5a269b5488d873d4632d1baf75965e509ee24b12501a9ce3bbbd8b7d759987d545a1c221a363195e5802d768b3b9e00ebe5ac0ed8ad2362c1c4157b910a40f94adf2561a2b0d3e65dbb06f244e5ac44d362103df54c9b9175777b3db1cdadb03e977ab8a79baf1e1e18ec9f5d0f25c487ddc53d7e81910f83576b44e9caeece26e2eb376569ad3a8cdccbde8bc355210e\n\
++ca9216d4127e2e4a6ee3584b49be106217bb61cc807016d46d0cfbb1fd722e2bbac33541386bdfeac41a299ead22790993fcaa8e1d23bd1c8426afa5ff4c08e731dc476ef834f142c32dfb2c1be12b9978802e63b2cd6f226b1a8df59f0c79154d7ef4296a68ec654538d987104f9a11aca1b7c83ab2ed8fd69da6b88f0bcbd27d3fea01329cecf10c57ec3ba163d57b38801bd6c3b31ce527b33717bb56a46f78fb96be9f2424a21b3284232388cbba6a74\n\
++2732a7566023c8db90a5fdd08dbe6c1b5e70c046d50c5735c8d86a589ba177f69db12d6cc3596319fa27c9e063ed05b8a31970a07dc905\n\
++d7b1ef464be03ce9050b5108e25f0b8e821299986fe0ff89e17fbae65ba9fad167fbd265866ac03efc86ab0b50d46d6740a59adf5949b44f7f9f3ac3f3d4cc9f128966db9099deb1b6b78505242b2401a193820408eb0780b27162ebafb7c505b0e7c32ce66c6efc0be487008c1201454680498a2fc06e00b454e0b20933906bbb0e43b399b9ee46d882f107df1ebdd1e7cd867c9cdba6015b7e80064ae8b3417d969524bec046e782a13b125f058cd36b5d1ae65886ae7caab45a6d98651ada435b8ee11d5c1224232f5f515df974138dd6cf347b730481d4b073af8ff0394fe9f0b8cdfd99f5\n\
++1839be14287053bfcd4ea60db82777fad1a6e9535c388b770743e61235449e668717199defd516c438b3ebd79b3529eb32482ef414525292ea1bbec09da10790a2330a4399f2fe6dd63d80954e3c547a5f1c619db5a30bde495b23f2214b4fa7572851d75246f2817775f0b521acc6efbc7832c9a76de7465e3c65cade88e86c973f85a882bb54f92b983977c6e937c88f083ba68c70fb49497065b158e2e789809b1d4cc9ec2d\n\
++d54916748076b9d9f72198c8fbef563462dc8c706e1ad38abd1fac570016721acd0a7659ab49a47299a996b43597690c0c947143069f35d83e606273dbf2d622321393949b8ed5a68315362c4f84804384d05e0e0e86bc00e3641233f9f975ab46b60ba185c5e5fe47f78efd207e69fd8f6390730828b93b9b3763ea1283caa03bc36726763715de811915681dd214524f5ad4dd386608cac6c7f2\n\
++d54916748076b9d9f72198c8fbef563462dc8c706e1ad38abd1fac570016721acd0a7659ab49a47299a996b43597690c0c947143069f35d83e606273dbf2d622321393949b8ed5a68315362c4f84804384d05e0e0e86bc00e3641233f9f975ab46b60ba185c5e5fe47f78efd207e69fd8f6390730828b93b9b3763ea1283caa03bc36726763715de811915681dd214524f5ad4dd386608cac6c7f2\n\
++pwhash_str failure: [10]\n\
++pwhash_str failure: [11]\n\
++pwhash_str failure: [12]\n\
++pwhash_str failure: [13]\n\
++pwhash_str failure: [14]\n\
++pwhash_str failure: [15]\n\
++pwhash_str failure: [16]\n\
++pwhash_str failure: [17]\n\
++pwhash_str failure: [18]\n\
++pwhash_str failure: [19]\n\
++pwhash_str failure: [20]\n\
++pwhash_str failure: [21]\n\
++pwhash_str failure: [22]\n\
++pwhash_str failure: [23]\n\
++pwhash_str failure: [24]\n\
++pwhash_str failure: [25]\n\
++pwhash_str failure: [26]\n\
++pwhash_str failure: [27]\n\
++pwhash_str failure: [28]\n\
++pwhash_str failure: [29]\n\
++pwhash_str failure: [30]\n\
++pwhash_str failure: [31]\n\
++pwhash_str failure: [32]\n\
++OK\n\
++"
++
++#endif /* __PWHASH_SCRYPT_TEST_H__ */
+diff --git a/test/default/randombytes_test.h b/test/default/randombytes_test.h
+new file mode 100644
+index 0000000..29d8df6
+--- /dev/null
++++ b/test/default/randombytes_test.h
+@@ -0,0 +1,11 @@
++#ifndef __RANDOMBYTES_TEST_H__
++#define __RANDOMBYTES_TEST_H__
++
++int randombytes_xmain(void);
++
++#define randombytes_res "\
++0d8e6cc68715648926732e7ea73250cfaf2d58422083904c841a8ba33b986111f346ba50723a68ae283524a6bded09f83be6b80595856f72e25b86918e8b114bafb94bc8abedd73daab454576b7c5833eb0bf982a1bb4587a5c970ff0810ca3b791d7e12 (deterministic)\n\
++OK\n\
++"
++
++#endif /* __RANDOMBYTES_TEST_H__ */
+diff --git a/test/default/scalarmult2_test.h b/test/default/scalarmult2_test.h
+new file mode 100644
+index 0000000..d3f2152
+--- /dev/null
++++ b/test/default/scalarmult2_test.h
+@@ -0,0 +1,13 @@
++#ifndef __SCALARMULT2_TEST_H__
++#define __SCALARMULT2_TEST_H__
++
++int scalarmult2_xmain(void);
++
++#define scalarmult2_res "\
++ 0xde,0x9e,0xdb,0x7d,0x7b,0x7d,0xc1,0xb4\n\
++,0xd3,0x5b,0x61,0xc2,0xec,0xe4,0x35,0x37\n\
++,0x3f,0x83,0x43,0xc8,0x5b,0x78,0x67,0x4d\n\
++,0xad,0xfc,0x7e,0x14,0x6f,0x88,0x2b,0x4f\n\
++"
++
++#endif /* __SCALARMULT2_TEST_H__ */
+diff --git a/test/default/scalarmult5_test.h b/test/default/scalarmult5_test.h
+new file mode 100644
+index 0000000..20f10a5
+--- /dev/null
++++ b/test/default/scalarmult5_test.h
+@@ -0,0 +1,13 @@
++#ifndef __SCALARMULT5_TEST_H__
++#define __SCALARMULT5_TEST_H__
++
++int scalarmult5_xmain(void);
++
++#define scalarmult5_res "\
++ 0x4a,0x5d,0x9d,0x5b,0xa4,0xce,0x2d,0xe1\n\
++,0x72,0x8e,0x3b,0xf4,0x80,0x35,0x0f,0x25\n\
++,0xe0,0x7e,0x21,0xc9,0x47,0xd1,0x9e,0x33\n\
++,0x76,0xf0,0x9b,0x3c,0x1e,0x16,0x17,0x42\n\
++"
++
++#endif /* __SCALARMULT5_TEST_H__ */
+diff --git a/test/default/scalarmult6_test.h b/test/default/scalarmult6_test.h
+new file mode 100644
+index 0000000..4af1e93
+--- /dev/null
++++ b/test/default/scalarmult6_test.h
+@@ -0,0 +1,13 @@
++#ifndef __SCALARMULT6_TEST_H__
++#define __SCALARMULT6_TEST_H__
++
++int scalarmult6_xmain(void);
++
++#define scalarmult6_res "\
++ 0x4a,0x5d,0x9d,0x5b,0xa4,0xce,0x2d,0xe1\n\
++,0x72,0x8e,0x3b,0xf4,0x80,0x35,0x0f,0x25\n\
++,0xe0,0x7e,0x21,0xc9,0x47,0xd1,0x9e,0x33\n\
++,0x76,0xf0,0x9b,0x3c,0x1e,0x16,0x17,0x42\n\
++"
++
++#endif /* __SCALARMULT6_TEST_H__ */
+diff --git a/test/default/scalarmult7_test.h b/test/default/scalarmult7_test.h
+new file mode 100644
+index 0000000..5646cd6
+--- /dev/null
++++ b/test/default/scalarmult7_test.h
+@@ -0,0 +1,10 @@
++#ifndef __SCALARMULT7_TEST_H__
++#define __SCALARMULT7_TEST_H__
++
++int scalarmult7_xmain(void);
++
++#define scalarmult7_res "\
++1\n\
++"
++
++#endif /* __SCALARMULT7_TEST_H__ */
+diff --git a/test/default/scalarmult8_test.h b/test/default/scalarmult8_test.h
+new file mode 100644
+index 0000000..d69d109
+--- /dev/null
++++ b/test/default/scalarmult8_test.h
+@@ -0,0 +1,74 @@
++#ifndef __SCALARMULT8_TEST_H__
++#define __SCALARMULT8_TEST_H__
++
++int scalarmult8_xmain(void);
++
++#define scalarmult8_res "\
++test case 2 succeeded (acceptable)\n\
++test case 3 succeeded (acceptable)\n\
++test case 4 succeeded (acceptable)\n\
++test case 5 succeeded (acceptable)\n\
++test case 6 succeeded (acceptable)\n\
++test case 7 failed (acceptable)\n\
++test case 8 failed (acceptable)\n\
++test case 9 succeeded (acceptable)\n\
++test case 10 succeeded (acceptable)\n\
++test case 11 succeeded (acceptable)\n\
++test case 12 succeeded (acceptable)\n\
++test case 13 succeeded (acceptable)\n\
++test case 14 succeeded (acceptable)\n\
++test case 22 failed (acceptable)\n\
++test case 23 failed (acceptable)\n\
++test case 24 failed (acceptable)\n\
++test case 25 failed (acceptable)\n\
++test case 26 failed (acceptable)\n\
++test case 27 failed (acceptable)\n\
++test case 28 failed (acceptable)\n\
++test case 29 failed (acceptable)\n\
++test case 30 failed (acceptable)\n\
++test case 31 failed (acceptable)\n\
++test case 32 failed (acceptable)\n\
++test case 33 failed (acceptable)\n\
++test case 34 failed (acceptable)\n\
++test case 35 failed (acceptable)\n\
++test case 36 failed (acceptable)\n\
++test case 37 failed (acceptable)\n\
++test case 38 failed (acceptable)\n\
++test case 39 failed (acceptable)\n\
++test case 40 failed (acceptable)\n\
++test case 41 failed (acceptable)\n\
++test case 42 failed (acceptable)\n\
++test case 43 failed (acceptable)\n\
++test case 44 failed (acceptable)\n\
++test case 45 failed (acceptable)\n\
++test case 46 failed (acceptable)\n\
++test case 47 failed (acceptable)\n\
++test case 48 succeeded (acceptable)\n\
++test case 49 succeeded (acceptable)\n\
++test case 50 succeeded (acceptable)\n\
++test case 51 succeeded (acceptable)\n\
++test case 52 succeeded (acceptable)\n\
++test case 53 succeeded (acceptable)\n\
++test case 54 succeeded (acceptable)\n\
++test case 55 succeeded (acceptable)\n\
++test case 56 succeeded (acceptable)\n\
++test case 57 succeeded (acceptable)\n\
++test case 58 succeeded (acceptable)\n\
++test case 59 succeeded (acceptable)\n\
++test case 60 succeeded (acceptable)\n\
++test case 61 succeeded (acceptable)\n\
++test case 62 succeeded (acceptable)\n\
++test case 63 succeeded (acceptable)\n\
++test case 66 succeeded (acceptable)\n\
++test case 69 succeeded (acceptable)\n\
++test case 71 succeeded (acceptable)\n\
++test case 74 succeeded (acceptable)\n\
++test case 75 succeeded (acceptable)\n\
++test case 77 succeeded (acceptable)\n\
++test case 78 succeeded (acceptable)\n\
++test case 79 succeeded (acceptable)\n\
++test case 86 succeeded (acceptable)\n\
++OK\n\
++"
++
++#endif /* __SCALARMULT8_TEST_H__ */
+diff --git a/test/default/scalarmult_ed25519_test.h b/test/default/scalarmult_ed25519_test.h
+new file mode 100644
+index 0000000..c57834a
+--- /dev/null
++++ b/test/default/scalarmult_ed25519_test.h
+@@ -0,0 +1,10 @@
++#ifndef __SCALARMULT_ED25519_TEST_H__
++#define __SCALARMULT_ED25519_TEST_H__
++
++int scalarmult_ed25519_xmain(void);
++
++#define scalarmult_ed25519_res "\
++OK\n\
++"
++
++#endif /* __SCALARMULT_ED25519_TEST_H__ */
+diff --git a/test/default/scalarmult_ristretto255_test.h b/test/default/scalarmult_ristretto255_test.h
+new file mode 100644
+index 0000000..a0401ea
+--- /dev/null
++++ b/test/default/scalarmult_ristretto255_test.h
+@@ -0,0 +1,27 @@
++#ifndef __SCALARMULT_RISTRETTO255_TEST_H__
++#define __SCALARMULT_RISTRETTO255_TEST_H__
++
++int scalarmult_ristretto255_xmain(void);
++
++#define scalarmult_ristretto255_res "\
++crypto_scalarmult_ristretto255(0) != 0\n\
++0000000000000000000000000000000000000000000000000000000000000000\n\
++e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76\n\
++6a493210f7499cd17fecb510ae0cea23a110e8d5b901f8acadd3095c73a3b919\n\
++94741f5d5d52755ece4f23f044ee27d5d1ea1e2bd196b462166b16152a9d0259\n\
++da80862773358b466ffadfe0b3293ab3d9fd53c5ea6c955358f568322daf6a57\n\
++e882b131016b52c1d3337080187cf768423efccbb517bb495ab812c4160ff44e\n\
++f64746d3c92b13050ed8d80236a7f0007c3b3f962f5ba793d19a601ebb1df403\n\
++44f53520926ec81fbd5a387845beb7df85a96a24ece18738bdcfa6a7822a176d\n\
++903293d8f2287ebe10e2374dc1a53e0bc887e592699f02d077d5263cdd55601c\n\
++02622ace8f7303a31cafc63f8fc48fdc16e1c8c8d234b2f0d6685282a9076031\n\
++20706fd788b2720a1ed2a5dad4952b01f413bcf0e7564de8cdc816689e2db95f\n\
++bce83f8ba5dd2fa572864c24ba1810f9522bc6004afe95877ac73241cafdab42\n\
++e4549ee16b9aa03099ca208c67adafcafa4c3f3e4e5303de6026e3ca8ff84460\n\
++aa52e000df2e16f55fb1032fc33bc42742dad6bd5a8fc0be0167436c5948501f\n\
++46376b80f409b29dc2b5f6f0c52591990896e5716f41477cd30085ab7f10301e\n\
++e0c418f7c8d9c4cdd7395b93ea124f3ad99021bb681dfc3302a9d99a2e53e64e\n\
++OK\n\
++"
++
++#endif /* __SCALARMULT_RISTRETTO255_TEST_H__ */
+diff --git a/test/default/scalarmult_test.h b/test/default/scalarmult_test.h
+new file mode 100644
+index 0000000..af155c1
+--- /dev/null
++++ b/test/default/scalarmult_test.h
+@@ -0,0 +1,13 @@
++#ifndef __SCALARMULT_TEST_H__
++#define __SCALARMULT_TEST_H__
++
++int scalarmult_xmain(void);
++
++#define scalarmult_res "\
++8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a\n\
++de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f\n\
++4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742\n\
++4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742\n\
++"
++
++#endif /* __SCALARMULT_TEST_H__ */
+diff --git a/test/default/secretbox2_test.h b/test/default/secretbox2_test.h
+new file mode 100644
+index 0000000..78029db
+--- /dev/null
++++ b/test/default/secretbox2_test.h
+@@ -0,0 +1,26 @@
++#ifndef __SECRETBOX2_TEST_H__
++#define __SECRETBOX2_TEST_H__
++
++int secretbox2_xmain(void);
++
++#define secretbox2_res "\
++,0xbe,0x07,0x5f,0xc5,0x3c,0x81,0xf2,0xd5\n\
++,0xcf,0x14,0x13,0x16,0xeb,0xeb,0x0c,0x7b\n\
++,0x52,0x28,0xc5,0x2a,0x4c,0x62,0xcb,0xd4\n\
++,0x4b,0x66,0x84,0x9b,0x64,0x24,0x4f,0xfc\n\
++,0xe5,0xec,0xba,0xaf,0x33,0xbd,0x75,0x1a\n\
++,0x1a,0xc7,0x28,0xd4,0x5e,0x6c,0x61,0x29\n\
++,0x6c,0xdc,0x3c,0x01,0x23,0x35,0x61,0xf4\n\
++,0x1d,0xb6,0x6c,0xce,0x31,0x4a,0xdb,0x31\n\
++,0x0e,0x3b,0xe8,0x25,0x0c,0x46,0xf0,0x6d\n\
++,0xce,0xea,0x3a,0x7f,0xa1,0x34,0x80,0x57\n\
++,0xe2,0xf6,0x55,0x6a,0xd6,0xb1,0x31,0x8a\n\
++,0x02,0x4a,0x83,0x8f,0x21,0xaf,0x1f,0xde\n\
++,0x04,0x89,0x77,0xeb,0x48,0xf5,0x9f,0xfd\n\
++,0x49,0x24,0xca,0x1c,0x60,0x90,0x2e,0x52\n\
++,0xf0,0xa0,0x89,0xbc,0x76,0x89,0x70,0x40\n\
++,0xe0,0x82,0xf9,0x37,0x76,0x38,0x48,0x64\n\
++,0x5e,0x07,0x05\n\
++"
++
++#endif /* __SECRETBOX2_TEST_H__ */
+diff --git a/test/default/secretbox7_test.h b/test/default/secretbox7_test.h
+new file mode 100644
+index 0000000..bd98795
+--- /dev/null
++++ b/test/default/secretbox7_test.h
+@@ -0,0 +1,9 @@
++#ifndef __SECRETBOX7_TEST_H__
++#define __SECRETBOX7_TEST_H__
++
++int secretbox7_xmain(void);
++
++#define secretbox7_res "\
++"
++
++#endif /* __SECRETBOX7_TEST_H__ */
+diff --git a/test/default/secretbox8_test.h b/test/default/secretbox8_test.h
+new file mode 100644
+index 0000000..f4b7762
+--- /dev/null
++++ b/test/default/secretbox8_test.h
+@@ -0,0 +1,9 @@
++#ifndef __SECRETBOX8_TEST_H__
++#define __SECRETBOX8_TEST_H__
++
++int secretbox8_xmain(void);
++
++#define secretbox8_res "\
++"
++
++#endif /* __SECRETBOX8_TEST_H__ */
+diff --git a/test/default/secretbox_easy2_test.h b/test/default/secretbox_easy2_test.h
+new file mode 100644
+index 0000000..08c81ef
+--- /dev/null
++++ b/test/default/secretbox_easy2_test.h
+@@ -0,0 +1,14 @@
++#ifndef __SECRETBOX_EASY2_TEST_H__
++#define __SECRETBOX_EASY2_TEST_H__
++
++int secretbox_easy2_xmain(void);
++
++#define secretbox_easy2_res "\
++0\n\
++0\n\
++0\n\
++0\n\
++0\n\
++"
++
++#endif /* __SECRETBOX_EASY2_TEST_H__ */
+diff --git a/test/default/secretbox_easy_test.h b/test/default/secretbox_easy_test.h
+new file mode 100644
+index 0000000..cf251a0
+--- /dev/null
++++ b/test/default/secretbox_easy_test.h
+@@ -0,0 +1,18 @@
++#ifndef __SECRETBOX_EASY_TEST_H__
++#define __SECRETBOX_EASY_TEST_H__
++
++int secretbox_easy_xmain(void);
++
++#define secretbox_easy_res "\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74,0xe3,0x55,0xa5\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74,0xe3,0x55,0xa5\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74,0xe3,0x55,0xa5\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74,0xe3,0x55,0xa5\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74,0xe3,0x55,0xa5\n\
++,0x25,0x39,0x12,0x1d,0x8e,0x23,0x4e,0x65,0x2d,0x65,0x1f,0xa4,0xc8,0xcf,0xf8,0x80,0x8e\n\
++,0x25,0x39,0x12,0x1d,0x8e,0x23,0x4e,0x65,0x2d,0x65,0x1f,0xa4,0xc8,0xcf,0xf8,0x80,0x8e\n\
++,0x8c,0xf3,0x90,0x57,0xc9,0xbc,0xf2,0xba,0x98,0x87,0xfb,0x15,0x9f,0x21,0x0c,0xd8,0x23,0x88,0x8f,0xb1,0x78,0x92,0xb2,0x8e,0xc8,0xa8\n\
++,0xbe,0x07,0x5f,0xc5,0x3c,0x81,0xf2,0xd5,0xcf,0x14,0xd2,0xe8,0xe8,0x1a,0xac,0xd2,0xba,0x1b,0xaa,0x60,0x99,0xe3,0xd9,0x63,0x56,0x18\n\
++"
++
++#endif /* __SECRETBOX_EASY_TEST_H__ */
+diff --git a/test/default/secretbox_test.h b/test/default/secretbox_test.h
+new file mode 100644
+index 0000000..6b22e1c
+--- /dev/null
++++ b/test/default/secretbox_test.h
+@@ -0,0 +1,47 @@
++#ifndef __SECRETBOX_TEST_H__
++#define __SECRETBOX_TEST_H__
++
++int secretbox_xmain(void);
++
++#define secretbox_res "\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5\n\
++,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9\n\
++,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73\n\
++,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce\n\
++,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4\n\
++,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a\n\
++,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b\n\
++,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72\n\
++,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2\n\
++,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38\n\
++,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a\n\
++,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae\n\
++,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea\n\
++,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda\n\
++,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde\n\
++,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3\n\
++,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6\n\
++,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74\n\
++,0xe3,0x55,0xa5\n\
++,0xf3,0xff,0xc7,0x70,0x3f,0x94,0x00,0xe5\n\
++,0x2a,0x7d,0xfb,0x4b,0x3d,0x33,0x05,0xd9\n\
++,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73\n\
++,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce\n\
++,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4\n\
++,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a\n\
++,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b\n\
++,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72\n\
++,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2\n\
++,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38\n\
++,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a\n\
++,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae\n\
++,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea\n\
++,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda\n\
++,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde\n\
++,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3\n\
++,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6\n\
++,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74\n\
++,0xe3,0x55,0xa5\n\
++"
++
++#endif /* __SECRETBOX_TEST_H__ */
+diff --git a/test/default/secretstream_test.h b/test/default/secretstream_test.h
+new file mode 100644
+index 0000000..d0343ce
+--- /dev/null
++++ b/test/default/secretstream_test.h
+@@ -0,0 +1,10 @@
++#ifndef __SECRETSTREAM_TEST_H__
++#define __SECRETSTREAM_TEST_H__
++
++int secretstream_xmain(void);
++
++#define secretstream_res "\
++OK\n\
++"
++
++#endif /* __SECRETSTREAM_TEST_H__ */
+diff --git a/test/default/shorthash_test.h b/test/default/shorthash_test.h
+new file mode 100644
+index 0000000..e0d7436
+--- /dev/null
++++ b/test/default/shorthash_test.h
+@@ -0,0 +1,73 @@
++#ifndef __SHORTHASH_TEST_H__
++#define __SHORTHASH_TEST_H__
++
++int shorthash_xmain(void);
++
++#define shorthash_res "\
++310e0edd47db6f72\n\
++fd67dc93c539f874\n\
++5a4fa9d909806c0d\n\
++2d7efbd796666785\n\
++b7877127e09427cf\n\
++8da699cd64557618\n\
++cee3fe586e46c9cb\n\
++37d1018bf50002ab\n\
++6224939a79f5f593\n\
++b0e4a90bdf82009e\n\
++f3b9dd94c5bb5d7a\n\
++a7ad6b22462fb3f4\n\
++fbe50e86bc8f1e75\n\
++903d84c02756ea14\n\
++eef27a8e90ca23f7\n\
++e545be4961ca29a1\n\
++db9bc2577fcc2a3f\n\
++9447be2cf5e99a69\n\
++9cd38d96f0b3c14b\n\
++bd6179a71dc96dbb\n\
++98eea21af25cd6be\n\
++c7673b2eb0cbf2d0\n\
++883ea3e395675393\n\
++c8ce5ccd8c030ca8\n\
++94af49f6c650adb8\n\
++eab8858ade92e1bc\n\
++f315bb5bb835d817\n\
++adcf6b0763612e2f\n\
++a5c91da7acaa4dde\n\
++716595876650a2a6\n\
++28ef495c53a387ad\n\
++42c341d8fa92d832\n\
++ce7cf2722f512771\n\
++e37859f94623f3a7\n\
++381205bb1ab0e012\n\
++ae97a10fd434e015\n\
++b4a31508beff4d31\n\
++81396229f0907902\n\
++4d0cf49ee5d4dcca\n\
++5c73336a76d8bf9a\n\
++d0a704536ba93e0e\n\
++925958fcd6420cad\n\
++a915c29bc8067318\n\
++952b79f3bc0aa6d4\n\
++f21df2e41d4535f9\n\
++87577519048f53a9\n\
++10a56cf5dfcd9adb\n\
++eb75095ccd986cd0\n\
++51a9cb9ecba312e6\n\
++96afadfc2ce666c7\n\
++72fe52975a4364ee\n\
++5a1645b276d592a1\n\
++b274cb8ebf87870a\n\
++6f9bb4203de7b381\n\
++eaecb2a30b22a87f\n\
++9924a43cc1315724\n\
++bd838d3aafbf8db7\n\
++0b1a2a3265d51aea\n\
++135079a3231ce660\n\
++932b2846e4d70666\n\
++e1915f5cb1eca46c\n\
++f325965ca16d629f\n\
++575ff28e60381be5\n\
++724506eb4c328a95\n\
++"
++
++#endif /* __SHORTHASH_TEST_H__ */
+diff --git a/test/default/sign_test.h b/test/default/sign_test.h
+new file mode 100644
+index 0000000..a4e6fa5
+--- /dev/null
++++ b/test/default/sign_test.h
+@@ -0,0 +1,14 @@
++#ifndef __SIGN_TEST_H__
++#define __SIGN_TEST_H__
++
++int sign_xmain(void);
++
++#define sign_res "\
++1024 tests\n\
++ed25519ph sig: [10c5411e40bd10170fb890d4dfdb6d338c8cb11d2764a216ee54df10977dcdefd8ff755b1eeb3f16fce80e40e7aafc99083dbff43d5031baf04157b48423960d]\n\
++ed25519ph tv sig: [98a70222f0b8121aa9d30f813d683f809e462b469c7ff87639499bb94e6dae4131f85042463c2a355a2003d062adf5aaa10b8c61e636062aaad11c2a26083406]\n\
++pk: [b5076a8474a832daee4dd5b4040983b6623b5f344aca57d4d6ee4baf3f259e6e]\n\
++sk: [421151a459faeade3d247115f94aedae42318124095afabe4d1451a559faedeeb5076a8474a832daee4dd5b4040983b6623b5f344aca57d4d6ee4baf3f259e6e]\n\
++"
++
++#endif /* __SIGN_TEST_H__ */
+diff --git a/test/default/siphashx24_test.h b/test/default/siphashx24_test.h
+new file mode 100644
+index 0000000..f14aee7
+--- /dev/null
++++ b/test/default/siphashx24_test.h
+@@ -0,0 +1,73 @@
++#ifndef __SIPHASHX24_TEST_H__
++#define __SIPHASHX24_TEST_H__
++
++int siphashx24_xmain(void);
++
++#define siphashx24_res "\
++a3817f04ba25a8e66df67214c7550293\n\
++da87c1d86b99af44347659119b22fc45\n\
++8177228da4a45dc7fca38bdef60affe4\n\
++9c70b60c5267a94e5f33b6b02985ed51\n\
++f88164c12d9c8faf7d0f6e7c7bcd5579\n\
++1368875980776f8854527a07690e9627\n\
++14eeca338b208613485ea0308fd7a15e\n\
++a1f1ebbed8dbc153c0b84aa61ff08239\n\
++3b62a9ba6258f5610f83e264f31497b4\n\
++264499060ad9baabc47f8b02bb6d71ed\n\
++00110dc378146956c95447d3f3d0fbba\n\
++0151c568386b6677a2b4dc6f81e5dc18\n\
++d626b266905ef35882634df68532c125\n\
++9869e247e9c08b10d029934fc4b952f7\n\
++31fcefac66d7de9c7ec7485fe4494902\n\
++5493e99933b0a8117e08ec0f97cfc3d9\n\
++6ee2a4ca67b054bbfd3315bf85230577\n\
++473d06e8738db89854c066c47ae47740\n\
++a426e5e423bf4885294da481feaef723\n\
++78017731cf65fab074d5208952512eb1\n\
++9e25fc833f2290733e9344a5e83839eb\n\
++568e495abe525a218a2214cd3e071d12\n\
++4a29b54552d16b9a469c10528eff0aae\n\
++c9d184ddd5a9f5e0cf8ce29a9abf691c\n\
++2db479ae78bd50d8882a8a178a6132ad\n\
++8ece5f042d5e447b5051b9eacb8d8f6f\n\
++9c0b53b4b3c307e87eaee08678141f66\n\
++abf248af69a6eae4bfd3eb2f129eeb94\n\
++0664da1668574b88b935f3027358aef4\n\
++aa4b9dc4bf337de90cd4fd3c467c6ab7\n\
++ea5c7f471faf6bde2b1ad7d4686d2287\n\
++2939b0183223fafc1723de4f52c43d35\n\
++7c3956ca5eeafc3e363e9d556546eb68\n\
++77c6077146f01c32b6b69d5f4ea9ffcf\n\
++37a6986cb8847edf0925f0f1309b54de\n\
++a705f0e69da9a8f907241a2e923c8cc8\n\
++3dc47d1f29c448461e9e76ed904f6711\n\
++0d62bf01e6fc0e1a0d3c4751c5d3692b\n\
++8c03468bca7c669ee4fd5e084bbee7b5\n\
++528a5bb93baf2c9c4473cce5d0d22bd9\n\
++df6a301e95c95dad97ae0cc8c6913bd8\n\
++801189902c857f39e73591285e70b6db\n\
++e617346ac9c231bb3650ae34ccca0c5b\n\
++27d93437efb721aa401821dcec5adf89\n\
++89237d9ded9c5e78d8b1c9b166cc7342\n\
++4a6d8091bf5e7d651189fa94a250b14c\n\
++0e33f96055e7ae893ffc0e3dcf492902\n\
++e61c432b720b19d18ec8d84bdc63151b\n\
++f7e5aef549f782cf379055a608269b16\n\
++438d030fd0b7a54fa837f2ad201a6403\n\
++a590d3ee4fbf04e3247e0d27f286423f\n\
++5fe2c1a172fe93c4b15cd37caef9f538\n\
++2c97325cbd06b36eb2133dd08b3a017c\n\
++92c814227a6bca949ff0659f002ad39e\n\
++dce850110bd8328cfbd50841d6911d87\n\
++67f14984c7da791248e32bb5922583da\n\
++1938f2cf72d54ee97e94166fa91d2a36\n\
++74481e9646ed49fe0f6224301604698e\n\
++57fca5de98a9d6d8006438d0583d8a1d\n\
++9fecde1cefdc1cbed4763674d9575359\n\
++e3040c00eb28f15366ca73cbd872e740\n\
++7697009a6a831dfecca91c5993670f7a\n\
++5853542321f567a005d547a4f04759bd\n\
++5150d1772f50834a503e069a973fbd7c\n\
++"
++
++#endif /* __SIPHASHX24_TEST_H__ */
+diff --git a/test/default/sodium_core_test.h b/test/default/sodium_core_test.h
+new file mode 100644
+index 0000000..e6024ba
+--- /dev/null
++++ b/test/default/sodium_core_test.h
+@@ -0,0 +1,10 @@
++#ifndef __SODIUM_CORE_TEST_H__
++#define __SODIUM_CORE_TEST_H__
++
++int sodium_core_xmain(void);
++
++#define sodium_core_res "\
++misuse_handler()\n\
++"
++
++#endif /* __SODIUM_CORE_TEST_H__ */
+diff --git a/test/default/sodium_utils2_test.h b/test/default/sodium_utils2_test.h
+new file mode 100644
+index 0000000..69a3391
+--- /dev/null
++++ b/test/default/sodium_utils2_test.h
+@@ -0,0 +1,12 @@
++#ifndef __SODIUM_UTILS2_TEST_H__
++#define __SODIUM_UTILS2_TEST_H__
++
++int sodium_utils2_xmain(void);
++
++#define sodium_utils2_res "\
++OK\n\
++Intentional segfault / bus error caught\n\
++OK\n\
++"
++
++#endif /* __SODIUM_UTILS2_TEST_H__ */
+diff --git a/test/default/sodium_utils3_test.h b/test/default/sodium_utils3_test.h
+new file mode 100644
+index 0000000..9ee7715
+--- /dev/null
++++ b/test/default/sodium_utils3_test.h
+@@ -0,0 +1,11 @@
++#ifndef __SODIUM_UTILS3_TEST_H__
++#define __SODIUM_UTILS3_TEST_H__
++
++int sodium_utils3_xmain(void);
++
++#define sodium_utils3_res "\
++Intentional segfault / bus error caught\n\
++OK\n\
++"
++
++#endif /* __SODIUM_UTILS3_TEST_H__ */
+diff --git a/test/default/sodium_utils_test.h b/test/default/sodium_utils_test.h
+new file mode 100644
+index 0000000..6e10824
+--- /dev/null
++++ b/test/default/sodium_utils_test.h
+@@ -0,0 +1,34 @@
++#ifndef __SODIUM_UTILS_TEST_H__
++#define __SODIUM_UTILS_TEST_H__
++
++int sodium_utils_xmain(void);
++
++#define sodium_utils_res "\
++0\n\
++0\n\
++-1\n\
++0\n\
++0\n\
++0\n\
++0\n\
++0\n\
++010000000000000000000000000000000000000000000000\n\
++000000000000000000000000000000000000000000000000\n\
++010100000000000000000000000000000000000000000000\n\
++020000000000000000000000000000000000000000000000\n\
++0001ff000000000000000000000000000000000000000000\n\
++0\n\
++0\n\
++000000000000fffefefefefefefefefefefefefefefefefe\n\
++00000000000000000000fffefefefefefefefefefefefefe\n\
++00000000000000000000000000000000000000000000fffe\n\
++fcfffffffffffbfdfefefefefefefefefefefefefefefefe\n\
++fcfffffffffffffffffffbfdfefefefefefefefefefefefe\n\
++fcfffffffffffffffffffffffffffffffffffffffffffbfd\n\
++fcfffffffffffffffffffffffffffffffffffffffffffbfd\n\
++fcfffffffffffffffffffffffffffffffffffffffffffbfd\n\
++fcfffffffffffffffffffffffffffffffffffffffffffbfd\n\
++fcfffffffffffffffffffffffffffffffffffffffffffbfd\n\
++"
++
++#endif /* __SODIUM_UTILS_TEST_H__ */
+diff --git a/test/default/sodium_version_test.h b/test/default/sodium_version_test.h
+new file mode 100644
+index 0000000..73e9f73
+--- /dev/null
++++ b/test/default/sodium_version_test.h
+@@ -0,0 +1,12 @@
++#ifndef __SODIUM_VERSION_TEST_H__
++#define __SODIUM_VERSION_TEST_H__
++
++int sodium_version_xmain(void);
++
++#define sodium_version_res "\
++1\n\
++1\n\
++1\n\
++"
++
++#endif /* __SODIUM_VERSION_TEST_H__ */
+diff --git a/test/default/stream2_test.h b/test/default/stream2_test.h
+new file mode 100644
+index 0000000..8f8b280
+--- /dev/null
++++ b/test/default/stream2_test.h
+@@ -0,0 +1,11 @@
++#ifndef __STREAM2_TEST_H__
++#define __STREAM2_TEST_H__
++
++int stream2_xmain(void);
++
++#define stream2_res "\
++662b9d0e3463029156069b12f918691a98f7dfb2ca0393c96bbfc6b1fbd630a2\n\
++0cc9ffaf60a99d221b548e9762385a231121ab226d1c610d2661ced26b6ad5ee\n\
++"
++
++#endif /* __STREAM2_TEST_H__ */
+diff --git a/test/default/stream3_test.h b/test/default/stream3_test.h
+new file mode 100644
+index 0000000..3efa885
+--- /dev/null
++++ b/test/default/stream3_test.h
+@@ -0,0 +1,13 @@
++#ifndef __STREAM3_TEST_H__
++#define __STREAM3_TEST_H__
++
++int stream3_xmain(void);
++
++#define stream3_res "\
++,0xee,0xa6,0xa7,0x25,0x1c,0x1e,0x72,0x91\n\
++,0x6d,0x11,0xc2,0xcb,0x21,0x4d,0x3c,0x25\n\
++,0x25,0x39,0x12,0x1d,0x8e,0x23,0x4e,0x65\n\
++,0x2d,0x65,0x1f,0xa4,0xc8,0xcf,0xf8,0x80\n\
++"
++
++#endif /* __STREAM3_TEST_H__ */
+diff --git a/test/default/stream4_test.h b/test/default/stream4_test.h
+new file mode 100644
+index 0000000..bfcc690
+--- /dev/null
++++ b/test/default/stream4_test.h
+@@ -0,0 +1,26 @@
++#ifndef __STREAM4_TEST_H__
++#define __STREAM4_TEST_H__
++
++int stream4_xmain(void);
++
++#define stream4_res "\
++,0x8e,0x99,0x3b,0x9f,0x48,0x68,0x12,0x73\n\
++,0xc2,0x96,0x50,0xba,0x32,0xfc,0x76,0xce\n\
++,0x48,0x33,0x2e,0xa7,0x16,0x4d,0x96,0xa4\n\
++,0x47,0x6f,0xb8,0xc5,0x31,0xa1,0x18,0x6a\n\
++,0xc0,0xdf,0xc1,0x7c,0x98,0xdc,0xe8,0x7b\n\
++,0x4d,0xa7,0xf0,0x11,0xec,0x48,0xc9,0x72\n\
++,0x71,0xd2,0xc2,0x0f,0x9b,0x92,0x8f,0xe2\n\
++,0x27,0x0d,0x6f,0xb8,0x63,0xd5,0x17,0x38\n\
++,0xb4,0x8e,0xee,0xe3,0x14,0xa7,0xcc,0x8a\n\
++,0xb9,0x32,0x16,0x45,0x48,0xe5,0x26,0xae\n\
++,0x90,0x22,0x43,0x68,0x51,0x7a,0xcf,0xea\n\
++,0xbd,0x6b,0xb3,0x73,0x2b,0xc0,0xe9,0xda\n\
++,0x99,0x83,0x2b,0x61,0xca,0x01,0xb6,0xde\n\
++,0x56,0x24,0x4a,0x9e,0x88,0xd5,0xf9,0xb3\n\
++,0x79,0x73,0xf6,0x22,0xa4,0x3d,0x14,0xa6\n\
++,0x59,0x9b,0x1f,0x65,0x4c,0xb4,0x5a,0x74\n\
++,0xe3,0x55,0xa5\n\
++"
++
++#endif /* __STREAM4_TEST_H__ */
+diff --git a/test/default/stream_test.h b/test/default/stream_test.h
+new file mode 100644
+index 0000000..f376485
+--- /dev/null
++++ b/test/default/stream_test.h
+@@ -0,0 +1,92 @@
++#ifndef __STREAM_TEST_H__
++#define __STREAM_TEST_H__
++
++int stream_xmain(void);
++
++#define stream_res "\
++662b9d0e3463029156069b12f918691a98f7dfb2ca0393c96bbfc6b1fbd630a2\n\
++0cc9ffaf60a99d221b548e9762385a231121ab226d1c610d2661ced26b6ad5ee\n\
++00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\n\
++ee010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101\n\
++eea60202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202\n\
++eea6a703030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303\n\
++eea6a725040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404\n\
++eea6a7251c0505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505\n\
++eea6a7251c1e06060606060606060606060606060606060606060606060606060606060606060606060606060606060606060606060606060606060606060606\n\
++eea6a7251c1e72070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707\n\
++eea6a7251c1e72910808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808\n\
++eea6a7251c1e72916d09090909090909090909090909090909090909090909090909090909090909090909090909090909090909090909090909090909090909\n\
++eea6a7251c1e72916d110a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a\n\
++eea6a7251c1e72916d11c20b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b\n\
++eea6a7251c1e72916d11c2cb0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\n\
++eea6a7251c1e72916d11c2cb210d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d\n\
++eea6a7251c1e72916d11c2cb214d0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\n\
++eea6a7251c1e72916d11c2cb214d3c0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\n\
++eea6a7251c1e72916d11c2cb214d3c25101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010\n\
++eea6a7251c1e72916d11c2cb214d3c25251111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n\
++eea6a7251c1e72916d11c2cb214d3c25253912121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212\n\
++eea6a7251c1e72916d11c2cb214d3c25253912131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d1414141414141414141414141414141414141414141414141414141414141414141414141414141414141414\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e15151515151515151515151515151515151515151515151515151515151515151515151515151515151515\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e23161616161616161616161616161616161616161616161616161616161616161616161616161616161616\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e1717171717171717171717171717171717171717171717171717171717171717171717171717171717\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e6518181818181818181818181818181818181818181818181818181818181818181818181818181818\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d191919191919191919191919191919191919191919191919191919191919191919191919191919\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651f1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa41c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c81d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cf1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff81f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff8802020202020202020202020202020202020202020202020202020202020202020\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff8803021212121212121212121212121212121212121212121212121212121212121\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e222222222222222222222222222222222222222222222222222222222222\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e642323232323232323232323232323232323232323232323232323232323\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a24242424242424242424242424242424242424242424242424242424\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74252525252525252525252525252525252525252525252525252525\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e92626262626262626262626262626262626262626262626262626\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e027272727272727272727272727272727272727272727272727\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a6282828282828282828282828282828282828282828282828\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d2929292929292929292929292929292929292929292929\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d822a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d82432b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243ac2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd92d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9172e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177a2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab530303030303030303030303030303030\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a313131313131313131313131313131\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1b3232323232323232323232323232\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb33333333333333333333333333\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d343434343434343434343434\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a3535353535353535353535\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f36363636363636363636\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d373737373737373737\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d703838383838383838\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c39393939393939\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c093a3a3a3a3a3a\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c093c3b3b3b3b3b\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c093c5e3c3c3c3c\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c093c5e553d3d3d\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c093c5e55853e3e\n\
++eea6a7251c1e72916d11c2cb214d3c252539121d8e234e652d651fa4c8cff880309e645a74e9e0a60d8243acd9177ab51a1beb8d5a2f5d700c093c5e5585573f\n\
++b46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44\n\
++e825afc24db1b82ca241ef61bbd68003af106fbc07c41df1493b963b5ce45b72540ababca323c71ca3c903e1eec355121fbe9fad8bef90721c819eeba906ef7300b84696929a86d2a95aacebef2f38c489617398a39bc36762b5de6ccf544dde7fa47a839e3bf36903e3b7e9539c5c1c1794cfc991a414e2eef16bcf1b16d07cfb1ff0d77e5940a858f9025563334efeea808e3a82a54a0998e5587fddcb8b48e05de4cdb6ed1df7ddfca886d7122590844bc060178e13ba22a3c60f6fd53bb48f12931a32c81cbdde25e2fe3141682ff0443a9fb890e0520d328f91e19c4c0b0d05bd391351459dd5b15da237cfb3c36c95cfbfb076637b9181d9d9b42ae8ee3655eef4662a0c8737e5620ed7760a577afac32aa37baa35323a52287dfba632abcbff3e40aee172648c3d6f8e468262a49bbc2fb7876e97bb9d06ce6038e9eb425927287fb9ac67e41be494a883668602f4fcf76cc2c6bc62c3240bb63c233316630a645d5309af5c49813b8cc23e149ce40db089c7124431935e93fcc34dd1326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe\n\
++00b84696929a86d2a95aacebef2f38c489617398a39bc36762b5de6ccf544dde7fa47a839e3bf36903e3b7e9539c5c1c1794cfc991a414e2eef16bcf1b16d07cfb1ff0d77e5940a858f9025563334efeea808e3a82a54a0998e5587fddcb8b48e05de4cdb6ed1df7ddfca886d7122590844bc060178e13ba22a3c60f6fd53bb48f12931a32c81cbdde25e2fe3141682ff0443a9fb890e0520d328f91e19c4c0b0d05bd391351459dd5b15da237cfb3c36c95cfbfb076637b9181d9d9b42ae8ee3655eef4662a0c8737e5620ed7760a577afac32aa37baa35323a52287dfba632abcbff3e40aee172648c3d6f8e468262a49bbc2fb7876e97bb9d06ce6038e9eb425927287fb9ac67e41be494a883668602f4fcf76cc2c6bc62c3240bb63c233316630a645d5309af5c49813b8cc23e149ce40db089c7124431935e93fcc34dd1326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44\n\
++fb1ff0d77e5940a858f9025563334efeea808e3a82a54a0998e5587fddcb8b48e05de4cdb6ed1df7ddfca886d7122590844bc060178e13ba22a3c60f6fd53bb48f12931a32c81cbdde25e2fe3141682ff0443a9fb890e0520d328f91e19c4c0b0d05bd391351459dd5b15da237cfb3c36c95cfbfb076637b9181d9d9b42ae8ee3655eef4662a0c8737e5620ed7760a577afac32aa37baa35323a52287dfba632abcbff3e40aee172648c3d6f8e468262a49bbc2fb7876e97bb9d06ce6038e9eb425927287fb9ac67e41be494a883668602f4fcf76cc2c6bc62c3240bb63c233316630a645d5309af5c49813b8cc23e149ce40db089c7124431935e93fcc34dd1326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef5\n\
++8f12931a32c81cbdde25e2fe3141682ff0443a9fb890e0520d328f91e19c4c0b0d05bd391351459dd5b15da237cfb3c36c95cfbfb076637b9181d9d9b42ae8ee3655eef4662a0c8737e5620ed7760a577afac32aa37baa35323a52287dfba632abcbff3e40aee172648c3d6f8e468262a49bbc2fb7876e97bb9d06ce6038e9eb425927287fb9ac67e41be494a883668602f4fcf76cc2c6bc62c3240bb63c233316630a645d5309af5c49813b8cc23e149ce40db089c7124431935e93fcc34dd1326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0\n\
++3655eef4662a0c8737e5620ed7760a577afac32aa37baa35323a52287dfba632abcbff3e40aee172648c3d6f8e468262a49bbc2fb7876e97bb9d06ce6038e9eb425927287fb9ac67e41be494a883668602f4fcf76cc2c6bc62c3240bb63c233316630a645d5309af5c49813b8cc23e149ce40db089c7124431935e93fcc34dd1326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58\n\
++425927287fb9ac67e41be494a883668602f4fcf76cc2c6bc62c3240bb63c233316630a645d5309af5c49813b8cc23e149ce40db089c7124431935e93fcc34dd1326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbb\n\
++326fc6b1b8e71c37a3ee97a334f2c6bf579c5e986858a88b07136dd6b254543b16e14f38c7cb22cdb41a9028e3a6af9233c45ba06d1667746d48fc7b5c47601237fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766e\n\
++37fb2bde1e5a5551a1b4bf848734310103edb75a815e4ced8be43163ca13b3e399e91bf32b28de0b37c17d155f7129e23aec3deb2416122d7008a5684d5d0080f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2d\n\
++f15e5eef787d292097cd781b3f95449b5f5a059a2cfbcd2cb10cc88a4759f2227f20d550c4cee567ab3e297191e8f1c3d537f1fc265c93ce900ae588d7d6a971cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ac\n\
++cb0f0ae663a41347797bc4384568e439e10fa3cb24fefddf51202b17e35e5e3aba42fb067d15854bdeb400e8e96dfd097d5ffa793f3135cc819edefbf18c26c7e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f2808\n\
++e7a830988e8e1612a06c2d1f3bc03efb7ce5ca6538c4be7ba033a8f369fc479d527ca82cbc8198ef815ba7946fb7f4e7f503d280bddc767e39c4fb0ed54c86065a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f28083f085c8094de717acd2516b631760110c176bff91d3e8cd4d2df79f79d450e54a5007e34caf791d9ac10aa98f45e52d987addf59f4beb5e62ef59e2e1b199413\n\
++5a301ce502d083eeabcbcfd79dfc0de676d444c500d83d123367639d741e4fc4d87eea89f203fadd7e38f9a17b01a34ffe48f2469565751aca063c59614007c41aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f28083f085c8094de717acd2516b631760110c176bff91d3e8cd4d2df79f79d450e54a5007e34caf791d9ac10aa98f45e52d987addf59f4beb5e62ef59e2e1b1994131fa61652a5574f50fa159d47f8f28776e25e21b51103b91afc8345cfbedf46586e17269bfb521ae07f2cd202d308110abcb2b6f0157a55bc6aa6936812c1074d\n\
++1aff83247f8daae106f5cd50177b4b98388e6963cf51baaa1de17e90831b5977016aa71973485b4d8524b7aa4f6b7e0a8d994662b922aaab519ab0f8e0d1513ccf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f28083f085c8094de717acd2516b631760110c176bff91d3e8cd4d2df79f79d450e54a5007e34caf791d9ac10aa98f45e52d987addf59f4beb5e62ef59e2e1b1994131fa61652a5574f50fa159d47f8f28776e25e21b51103b91afc8345cfbedf46586e17269bfb521ae07f2cd202d308110abcb2b6f0157a55bc6aa6936812c1074dcd3dc1365d431608687e158b5b3622375e0ddda9cfccb2f16b4a966fc3ecababaa3ea4f8311b37c4578c4692a0d2bdd251c18a886c9b48671531db2759828959\n\
++cf9906615f1bb36a01a9916b27484414e3f3b559e52cf3380b422df71eda463fd1ef24a8d84e82d9718fb46d51d13687352ea76737209d618e77119b066161e2d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f28083f085c8094de717acd2516b631760110c176bff91d3e8cd4d2df79f79d450e54a5007e34caf791d9ac10aa98f45e52d987addf59f4beb5e62ef59e2e1b1994131fa61652a5574f50fa159d47f8f28776e25e21b51103b91afc8345cfbedf46586e17269bfb521ae07f2cd202d308110abcb2b6f0157a55bc6aa6936812c1074dcd3dc1365d431608687e158b5b3622375e0ddda9cfccb2f16b4a966fc3ecababaa3ea4f8311b37c4578c4692a0d2bdd251c18a886c9b48671531db27598289593cf82813da4f43eb854142ef39c4e5950f86b29e291737413396ae4c62f4472fe12659e12b61b84619a96b03a386dd6adb6b74ce09bc11330482e01564d3eb1a\n\
++d93cc6ac5cb77a7a0d14988e3355e07a2f02bed2f8cec08807c544efd8ccc5ca3475e8be3143997d402aecfb56e80697f57179e6d631e38741ff3ef57a7ff80cb46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f28083f085c8094de717acd2516b631760110c176bff91d3e8cd4d2df79f79d450e54a5007e34caf791d9ac10aa98f45e52d987addf59f4beb5e62ef59e2e1b1994131fa61652a5574f50fa159d47f8f28776e25e21b51103b91afc8345cfbedf46586e17269bfb521ae07f2cd202d308110abcb2b6f0157a55bc6aa6936812c1074dcd3dc1365d431608687e158b5b3622375e0ddda9cfccb2f16b4a966fc3ecababaa3ea4f8311b37c4578c4692a0d2bdd251c18a886c9b48671531db27598289593cf82813da4f43eb854142ef39c4e5950f86b29e291737413396ae4c62f4472fe12659e12b61b84619a96b03a386dd6adb6b74ce09bc11330482e01564d3eb1a688a80b912ad6d8ce2b939e06e7ecc18c358772ea0c92e82ef26d9bbe342a18babc0d54f676ed9c380fc990a7d576c958d19f6e15fda4fe08752bb8d1eedb05f\n\
++b46af0bf761b78533e01a0dd7e07216c9710ef35f09a28d1e5fa469b602472ca5085f6dbcc6a6b51fb89986f8feca85658d05701f5677d0bb340a1f2c769547219f5420c62ffff7d1304dad82b6dec2bdc59ec12a9e18a774eed128c2c90610a9d4c75c0817d64817a76bbc12746971ae897af210a072c1bc9fb044e086b7bfe85fad95d5c2bbb28c12de5755b1ccde63e93cc892b4d2bcbd7dc0706b094c2492e329e3b9a98a9cbc7d01031cf1d5861f576e1291df6286c28146b0b4df9ad44a8d40ce05f73fa3de1a92f948c38fe88a296db696a16742c5073aed1f26c6289675c28c763ab90a070b643ecf1c50f4165b82cf5b8eda4137903765f42cbaef571f6303486a899aef83ca9c8c1e53af717293a6e219675aa1f479eac02d30df16649fc1c83b24855617385b5330b054c13f8fe8670ea2383552fe7fa096a6ff0d90d3922c26b77fb632041df8a3c585f295488aa98d73bc6a3a43eac5644b59440e02ed8a6b9a8acb9f33e732c1850ed6f811975a84b65cb8775df2f55f15f58af8a27936cf507dcc7ec480ffce410373c81374fddcbad758a1976894d58e68d84f3da8a0bbbfd3d62d09679378ee94686866e0ef101e05ccb7cc8fdf6f31cbbf757c4d17aa607bc1decad9a65b8120adb7ef3b9d18a9c07226adf6f73f93c2ff79956f5e19b7c613dff1e907a8381863eb9ca536b44a3034cd522d6caa1766eda2dadd40a0f32380a30c0a0be3ad991007c8778ec855f0c2e9869718f07562ef2bce1d6fa7b551454eda2f86a514d0cd754188715d5f73cbe47d940b8a98a2de9cb66cba3830b2e732aa836df30b279f434ac98182114990d0b8d423813f75b5527dfa7982a167712380786bda08836976c21358a0d50e735f3efcb59ff69ace37ddc48ef2b83bcc1931cf6673dfa726ac5229b83be548b60416ed5c7daf3a3201db9aadd1ffe632a7d3012d94668d5191010dd35d8ba9dc881005e112f28083f085c8094de717acd2516b631760110c176bff91d3e8cd4d2df79f79d450e54a5007e34caf791d9ac10aa98f45e52d987addf59f4beb5e62ef59e2e1b1994131fa61652a5574f50fa159d47f8f28776e25e21b51103b91afc8345cfbedf46586e17269bfb521ae07f2cd202d308110abcb2b6f0157a55bc6aa6936812c1074dcd3dc1365d431608687e158b5b3622375e0ddda9cfccb2f16b4a966fc3ecababaa3ea4f8311b37c4578c4692a0d2bdd251c18a886c9b48671531db27598289593cf82813da4f43eb854142ef39c4e5950f86b29e291737413396ae4c62f4472fe12659e12b61b84619a96b03a386dd6adb6b74ce09bc11330482e01564d3eb1a688a80b912ad6d8ce2b939e06e7ecc18c358772ea0c92e82ef26d9bbe342a18babc0d54f676ed9c380fc990a7d576c958d19f6e15fda4fe08752bb8d1eedb05fbb420713aa2c9df64fc3fcb136d739466a36b38c515e44b1fd8e04717ab838bb8ad38ee6613c173d1d973f478cb0abcd6e69ac2570b8c9b78264ceb9d4a975c8\n\
++"
++
++#endif /* __STREAM_TEST_H__ */
+diff --git a/test/default/verify1_test.h b/test/default/verify1_test.h
+new file mode 100644
+index 0000000..9773782
+--- /dev/null
++++ b/test/default/verify1_test.h
+@@ -0,0 +1,11 @@
++#ifndef __VERIFY1_TEST_H__
++#define __VERIFY1_TEST_H__
++
++int verify1_xmain(void);
++
++#define verify1_res "\
++OK\n\
++OK\n\
++"
++
++#endif /* __VERIFY1_TEST_H__ */
+diff --git a/test/default/xchacha20_test.h b/test/default/xchacha20_test.h
+new file mode 100644
+index 0000000..acc3674
+--- /dev/null
++++ b/test/default/xchacha20_test.h
+@@ -0,0 +1,14 @@
++#ifndef __XCHACHA20_TEST_H__
++#define __XCHACHA20_TEST_H__
++
++int xchacha20_xmain(void);
++
++#define xchacha20_res "\
++tv_hchacha20: ok\n\
++3e34c160a966ddfbd52d38f6a440a77256c1134ad54653db427dfdfc72f0f995768039052ec2ec4e6fe02c655d7d95681fabd417c087ad17f177510ba09d4cfe7beb8f7c9b8330d746310f9e29583e9ef240156015faafeb24a4d002d6337b7bcec8b54a64ef704e1ae3247d79625d267cbacd1c90e4a2df2f72d4090babf88c90e65a086c464ec1753c49d3b8ad02f2a3c0808e1695c5d77cec6f6f12578ae4ed077a2046e06644d14af65ae90f2869a6f1f910b83a7a3cfec8dd390621a511\n\
++tv_stream_xchacha20: ok\n\
++tv_secretbox_xchacha20: ok\n\
++tv_box_xchacha20poly1305: ok\n\
++"
++
++#endif /* __XCHACHA20_TEST_H__ */
+-- 
+2.25.1
+

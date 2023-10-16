@@ -1,0 +1,3 @@
+menuconfig LIBFLEXOSMICROBENCHMARKS
+    bool "libflexosmicrobenchmarks: microbenchmarks for flexos primitives"
+    default n

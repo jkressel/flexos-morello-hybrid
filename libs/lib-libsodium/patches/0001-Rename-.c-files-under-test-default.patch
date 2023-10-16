@@ -1,0 +1,477 @@
+From ef413af2649a603798b5266edaad575e966581a8 Mon Sep 17 00:00:00 2001
+From: Michalis Pappas <Michalis.Pappas@opensynergy.com>
+Date: Sat, 13 Nov 2021 11:02:12 +0100
+Subject: [PATCH 1/5] Rename .c files under test/default/
+
+Rename .c files under test/default/ as some use the same names as
+files under src/libsodium/, which causes problems on Unikraft builds.
+
+The rename patter is: mv <file>.c <file>_test.c
+---
+ test/default/{aead_aes256gcm2.c => aead_aes256gcm2_test.c}        | 0
+ test/default/{aead_aes256gcm.c => aead_aes256gcm_test.c}          | 0
+ .../{aead_chacha20poly13052.c => aead_chacha20poly13052_test.c}   | 0
+ .../{aead_chacha20poly1305.c => aead_chacha20poly1305_test.c}     | 0
+ .../{aead_xchacha20poly1305.c => aead_xchacha20poly1305_test.c}   | 0
+ test/default/{auth2.c => auth2_test.c}                            | 0
+ test/default/{auth3.c => auth3_test.c}                            | 0
+ test/default/{auth5.c => auth5_test.c}                            | 0
+ test/default/{auth6.c => auth6_test.c}                            | 0
+ test/default/{auth7.c => auth7_test.c}                            | 0
+ test/default/{auth.c => auth_test.c}                              | 0
+ test/default/{box2.c => box2_test.c}                              | 0
+ test/default/{box7.c => box7_test.c}                              | 0
+ test/default/{box8.c => box8_test.c}                              | 0
+ test/default/{box_easy2.c => box_easy2_test.c}                    | 0
+ test/default/{box_easy.c => box_easy_test.c}                      | 0
+ test/default/{box_seal.c => box_seal_test.c}                      | 0
+ test/default/{box_seed.c => box_seed_test.c}                      | 0
+ test/default/{box.c => box_test.c}                                | 0
+ test/default/{chacha20.c => chacha20_test.c}                      | 0
+ test/default/{codecs.c => codecs_test.c}                          | 0
+ test/default/{core1.c => core1_test.c}                            | 0
+ test/default/{core2.c => core2_test.c}                            | 0
+ test/default/{core3.c => core3_test.c}                            | 0
+ test/default/{core4.c => core4_test.c}                            | 0
+ test/default/{core5.c => core5_test.c}                            | 0
+ test/default/{core6.c => core6_test.c}                            | 0
+ test/default/{core_ed25519.c => core_ed25519_test.c}              | 0
+ test/default/{core_ristretto255.c => core_ristretto255_test.c}    | 0
+ test/default/{ed25519_convert.c => ed25519_convert_test.c}        | 0
+ test/default/{generichash2.c => generichash2_test.c}              | 0
+ test/default/{generichash3.c => generichash3_test.c}              | 0
+ test/default/{generichash.c => generichash_test.c}                | 0
+ test/default/{hash3.c => hash3_test.c}                            | 0
+ test/default/{hash.c => hash_test.c}                              | 0
+ test/default/{kdf.c => kdf_test.c}                                | 0
+ test/default/{keygen.c => keygen_test.c}                          | 0
+ test/default/{kx.c => kx_test.c}                                  | 0
+ test/default/{metamorphic.c => metamorphic_test.c}                | 0
+ test/default/{misuse.c => misuse_test.c}                          | 0
+ test/default/{onetimeauth2.c => onetimeauth2_test.c}              | 0
+ test/default/{onetimeauth7.c => onetimeauth7_test.c}              | 0
+ test/default/{onetimeauth.c => onetimeauth_test.c}                | 0
+ test/default/{pwhash_argon2i.c => pwhash_argon2i_test.c}          | 0
+ test/default/{pwhash_argon2id.c => pwhash_argon2id_test.c}        | 0
+ test/default/{pwhash_scrypt_ll.c => pwhash_scrypt_ll_test.c}      | 0
+ test/default/{pwhash_scrypt.c => pwhash_scrypt_test.c}            | 0
+ test/default/{randombytes.c => randombytes_test.c}                | 0
+ test/default/{scalarmult2.c => scalarmult2_test.c}                | 0
+ test/default/{scalarmult5.c => scalarmult5_test.c}                | 0
+ test/default/{scalarmult6.c => scalarmult6_test.c}                | 0
+ test/default/{scalarmult7.c => scalarmult7_test.c}                | 0
+ test/default/{scalarmult8.c => scalarmult8_test.c}                | 0
+ test/default/{scalarmult_ed25519.c => scalarmult_ed25519_test.c}  | 0
+ .../{scalarmult_ristretto255.c => scalarmult_ristretto255_test.c} | 0
+ test/default/{scalarmult.c => scalarmult_test.c}                  | 0
+ test/default/{secretbox2.c => secretbox2_test.c}                  | 0
+ test/default/{secretbox7.c => secretbox7_test.c}                  | 0
+ test/default/{secretbox8.c => secretbox8_test.c}                  | 0
+ test/default/{secretbox_easy2.c => secretbox_easy2_test.c}        | 0
+ test/default/{secretbox_easy.c => secretbox_easy_test.c}          | 0
+ test/default/{secretbox.c => secretbox_test.c}                    | 0
+ test/default/{secretstream.c => secretstream_test.c}              | 0
+ test/default/{shorthash.c => shorthash_test.c}                    | 0
+ test/default/{sign.c => sign_test.c}                              | 0
+ test/default/{siphashx24.c => siphashx24_test.c}                  | 0
+ test/default/{sodium_core.c => sodium_core_test.c}                | 0
+ test/default/{sodium_utils2.c => sodium_utils2_test.c}            | 0
+ test/default/{sodium_utils3.c => sodium_utils3_test.c}            | 0
+ test/default/{sodium_utils.c => sodium_utils_test.c}              | 0
+ test/default/{sodium_version.c => sodium_version_test.c}          | 0
+ test/default/{stream2.c => stream2_test.c}                        | 0
+ test/default/{stream3.c => stream3_test.c}                        | 0
+ test/default/{stream4.c => stream4_test.c}                        | 0
+ test/default/{stream.c => stream_test.c}                          | 0
+ test/default/{verify1.c => verify1_test.c}                        | 0
+ test/default/{xchacha20.c => xchacha20_test.c}                    | 0
+ 77 files changed, 0 insertions(+), 0 deletions(-)
+ rename test/default/{aead_aes256gcm2.c => aead_aes256gcm2_test.c} (100%)
+ rename test/default/{aead_aes256gcm.c => aead_aes256gcm_test.c} (100%)
+ rename test/default/{aead_chacha20poly13052.c => aead_chacha20poly13052_test.c} (100%)
+ rename test/default/{aead_chacha20poly1305.c => aead_chacha20poly1305_test.c} (100%)
+ rename test/default/{aead_xchacha20poly1305.c => aead_xchacha20poly1305_test.c} (100%)
+ rename test/default/{auth2.c => auth2_test.c} (100%)
+ rename test/default/{auth3.c => auth3_test.c} (100%)
+ rename test/default/{auth5.c => auth5_test.c} (100%)
+ rename test/default/{auth6.c => auth6_test.c} (100%)
+ rename test/default/{auth7.c => auth7_test.c} (100%)
+ rename test/default/{auth.c => auth_test.c} (100%)
+ rename test/default/{box2.c => box2_test.c} (100%)
+ rename test/default/{box7.c => box7_test.c} (100%)
+ rename test/default/{box8.c => box8_test.c} (100%)
+ rename test/default/{box_easy2.c => box_easy2_test.c} (100%)
+ rename test/default/{box_easy.c => box_easy_test.c} (100%)
+ rename test/default/{box_seal.c => box_seal_test.c} (100%)
+ rename test/default/{box_seed.c => box_seed_test.c} (100%)
+ rename test/default/{box.c => box_test.c} (100%)
+ rename test/default/{chacha20.c => chacha20_test.c} (100%)
+ rename test/default/{codecs.c => codecs_test.c} (100%)
+ rename test/default/{core1.c => core1_test.c} (100%)
+ rename test/default/{core2.c => core2_test.c} (100%)
+ rename test/default/{core3.c => core3_test.c} (100%)
+ rename test/default/{core4.c => core4_test.c} (100%)
+ rename test/default/{core5.c => core5_test.c} (100%)
+ rename test/default/{core6.c => core6_test.c} (100%)
+ rename test/default/{core_ed25519.c => core_ed25519_test.c} (100%)
+ rename test/default/{core_ristretto255.c => core_ristretto255_test.c} (100%)
+ rename test/default/{ed25519_convert.c => ed25519_convert_test.c} (100%)
+ rename test/default/{generichash2.c => generichash2_test.c} (100%)
+ rename test/default/{generichash3.c => generichash3_test.c} (100%)
+ rename test/default/{generichash.c => generichash_test.c} (100%)
+ rename test/default/{hash3.c => hash3_test.c} (100%)
+ rename test/default/{hash.c => hash_test.c} (100%)
+ rename test/default/{kdf.c => kdf_test.c} (100%)
+ rename test/default/{keygen.c => keygen_test.c} (100%)
+ rename test/default/{kx.c => kx_test.c} (100%)
+ rename test/default/{metamorphic.c => metamorphic_test.c} (100%)
+ rename test/default/{misuse.c => misuse_test.c} (100%)
+ rename test/default/{onetimeauth2.c => onetimeauth2_test.c} (100%)
+ rename test/default/{onetimeauth7.c => onetimeauth7_test.c} (100%)
+ rename test/default/{onetimeauth.c => onetimeauth_test.c} (100%)
+ rename test/default/{pwhash_argon2i.c => pwhash_argon2i_test.c} (100%)
+ rename test/default/{pwhash_argon2id.c => pwhash_argon2id_test.c} (100%)
+ rename test/default/{pwhash_scrypt_ll.c => pwhash_scrypt_ll_test.c} (100%)
+ rename test/default/{pwhash_scrypt.c => pwhash_scrypt_test.c} (100%)
+ rename test/default/{randombytes.c => randombytes_test.c} (100%)
+ rename test/default/{scalarmult2.c => scalarmult2_test.c} (100%)
+ rename test/default/{scalarmult5.c => scalarmult5_test.c} (100%)
+ rename test/default/{scalarmult6.c => scalarmult6_test.c} (100%)
+ rename test/default/{scalarmult7.c => scalarmult7_test.c} (100%)
+ rename test/default/{scalarmult8.c => scalarmult8_test.c} (100%)
+ rename test/default/{scalarmult_ed25519.c => scalarmult_ed25519_test.c} (100%)
+ rename test/default/{scalarmult_ristretto255.c => scalarmult_ristretto255_test.c} (100%)
+ rename test/default/{scalarmult.c => scalarmult_test.c} (100%)
+ rename test/default/{secretbox2.c => secretbox2_test.c} (100%)
+ rename test/default/{secretbox7.c => secretbox7_test.c} (100%)
+ rename test/default/{secretbox8.c => secretbox8_test.c} (100%)
+ rename test/default/{secretbox_easy2.c => secretbox_easy2_test.c} (100%)
+ rename test/default/{secretbox_easy.c => secretbox_easy_test.c} (100%)
+ rename test/default/{secretbox.c => secretbox_test.c} (100%)
+ rename test/default/{secretstream.c => secretstream_test.c} (100%)
+ rename test/default/{shorthash.c => shorthash_test.c} (100%)
+ rename test/default/{sign.c => sign_test.c} (100%)
+ rename test/default/{siphashx24.c => siphashx24_test.c} (100%)
+ rename test/default/{sodium_core.c => sodium_core_test.c} (100%)
+ rename test/default/{sodium_utils2.c => sodium_utils2_test.c} (100%)
+ rename test/default/{sodium_utils3.c => sodium_utils3_test.c} (100%)
+ rename test/default/{sodium_utils.c => sodium_utils_test.c} (100%)
+ rename test/default/{sodium_version.c => sodium_version_test.c} (100%)
+ rename test/default/{stream2.c => stream2_test.c} (100%)
+ rename test/default/{stream3.c => stream3_test.c} (100%)
+ rename test/default/{stream4.c => stream4_test.c} (100%)
+ rename test/default/{stream.c => stream_test.c} (100%)
+ rename test/default/{verify1.c => verify1_test.c} (100%)
+ rename test/default/{xchacha20.c => xchacha20_test.c} (100%)
+
+diff --git a/test/default/aead_aes256gcm2.c b/test/default/aead_aes256gcm2_test.c
+similarity index 100%
+rename from test/default/aead_aes256gcm2.c
+rename to test/default/aead_aes256gcm2_test.c
+diff --git a/test/default/aead_aes256gcm.c b/test/default/aead_aes256gcm_test.c
+similarity index 100%
+rename from test/default/aead_aes256gcm.c
+rename to test/default/aead_aes256gcm_test.c
+diff --git a/test/default/aead_chacha20poly13052.c b/test/default/aead_chacha20poly13052_test.c
+similarity index 100%
+rename from test/default/aead_chacha20poly13052.c
+rename to test/default/aead_chacha20poly13052_test.c
+diff --git a/test/default/aead_chacha20poly1305.c b/test/default/aead_chacha20poly1305_test.c
+similarity index 100%
+rename from test/default/aead_chacha20poly1305.c
+rename to test/default/aead_chacha20poly1305_test.c
+diff --git a/test/default/aead_xchacha20poly1305.c b/test/default/aead_xchacha20poly1305_test.c
+similarity index 100%
+rename from test/default/aead_xchacha20poly1305.c
+rename to test/default/aead_xchacha20poly1305_test.c
+diff --git a/test/default/auth2.c b/test/default/auth2_test.c
+similarity index 100%
+rename from test/default/auth2.c
+rename to test/default/auth2_test.c
+diff --git a/test/default/auth3.c b/test/default/auth3_test.c
+similarity index 100%
+rename from test/default/auth3.c
+rename to test/default/auth3_test.c
+diff --git a/test/default/auth5.c b/test/default/auth5_test.c
+similarity index 100%
+rename from test/default/auth5.c
+rename to test/default/auth5_test.c
+diff --git a/test/default/auth6.c b/test/default/auth6_test.c
+similarity index 100%
+rename from test/default/auth6.c
+rename to test/default/auth6_test.c
+diff --git a/test/default/auth7.c b/test/default/auth7_test.c
+similarity index 100%
+rename from test/default/auth7.c
+rename to test/default/auth7_test.c
+diff --git a/test/default/auth.c b/test/default/auth_test.c
+similarity index 100%
+rename from test/default/auth.c
+rename to test/default/auth_test.c
+diff --git a/test/default/box2.c b/test/default/box2_test.c
+similarity index 100%
+rename from test/default/box2.c
+rename to test/default/box2_test.c
+diff --git a/test/default/box7.c b/test/default/box7_test.c
+similarity index 100%
+rename from test/default/box7.c
+rename to test/default/box7_test.c
+diff --git a/test/default/box8.c b/test/default/box8_test.c
+similarity index 100%
+rename from test/default/box8.c
+rename to test/default/box8_test.c
+diff --git a/test/default/box_easy2.c b/test/default/box_easy2_test.c
+similarity index 100%
+rename from test/default/box_easy2.c
+rename to test/default/box_easy2_test.c
+diff --git a/test/default/box_easy.c b/test/default/box_easy_test.c
+similarity index 100%
+rename from test/default/box_easy.c
+rename to test/default/box_easy_test.c
+diff --git a/test/default/box_seal.c b/test/default/box_seal_test.c
+similarity index 100%
+rename from test/default/box_seal.c
+rename to test/default/box_seal_test.c
+diff --git a/test/default/box_seed.c b/test/default/box_seed_test.c
+similarity index 100%
+rename from test/default/box_seed.c
+rename to test/default/box_seed_test.c
+diff --git a/test/default/box.c b/test/default/box_test.c
+similarity index 100%
+rename from test/default/box.c
+rename to test/default/box_test.c
+diff --git a/test/default/chacha20.c b/test/default/chacha20_test.c
+similarity index 100%
+rename from test/default/chacha20.c
+rename to test/default/chacha20_test.c
+diff --git a/test/default/codecs.c b/test/default/codecs_test.c
+similarity index 100%
+rename from test/default/codecs.c
+rename to test/default/codecs_test.c
+diff --git a/test/default/core1.c b/test/default/core1_test.c
+similarity index 100%
+rename from test/default/core1.c
+rename to test/default/core1_test.c
+diff --git a/test/default/core2.c b/test/default/core2_test.c
+similarity index 100%
+rename from test/default/core2.c
+rename to test/default/core2_test.c
+diff --git a/test/default/core3.c b/test/default/core3_test.c
+similarity index 100%
+rename from test/default/core3.c
+rename to test/default/core3_test.c
+diff --git a/test/default/core4.c b/test/default/core4_test.c
+similarity index 100%
+rename from test/default/core4.c
+rename to test/default/core4_test.c
+diff --git a/test/default/core5.c b/test/default/core5_test.c
+similarity index 100%
+rename from test/default/core5.c
+rename to test/default/core5_test.c
+diff --git a/test/default/core6.c b/test/default/core6_test.c
+similarity index 100%
+rename from test/default/core6.c
+rename to test/default/core6_test.c
+diff --git a/test/default/core_ed25519.c b/test/default/core_ed25519_test.c
+similarity index 100%
+rename from test/default/core_ed25519.c
+rename to test/default/core_ed25519_test.c
+diff --git a/test/default/core_ristretto255.c b/test/default/core_ristretto255_test.c
+similarity index 100%
+rename from test/default/core_ristretto255.c
+rename to test/default/core_ristretto255_test.c
+diff --git a/test/default/ed25519_convert.c b/test/default/ed25519_convert_test.c
+similarity index 100%
+rename from test/default/ed25519_convert.c
+rename to test/default/ed25519_convert_test.c
+diff --git a/test/default/generichash2.c b/test/default/generichash2_test.c
+similarity index 100%
+rename from test/default/generichash2.c
+rename to test/default/generichash2_test.c
+diff --git a/test/default/generichash3.c b/test/default/generichash3_test.c
+similarity index 100%
+rename from test/default/generichash3.c
+rename to test/default/generichash3_test.c
+diff --git a/test/default/generichash.c b/test/default/generichash_test.c
+similarity index 100%
+rename from test/default/generichash.c
+rename to test/default/generichash_test.c
+diff --git a/test/default/hash3.c b/test/default/hash3_test.c
+similarity index 100%
+rename from test/default/hash3.c
+rename to test/default/hash3_test.c
+diff --git a/test/default/hash.c b/test/default/hash_test.c
+similarity index 100%
+rename from test/default/hash.c
+rename to test/default/hash_test.c
+diff --git a/test/default/kdf.c b/test/default/kdf_test.c
+similarity index 100%
+rename from test/default/kdf.c
+rename to test/default/kdf_test.c
+diff --git a/test/default/keygen.c b/test/default/keygen_test.c
+similarity index 100%
+rename from test/default/keygen.c
+rename to test/default/keygen_test.c
+diff --git a/test/default/kx.c b/test/default/kx_test.c
+similarity index 100%
+rename from test/default/kx.c
+rename to test/default/kx_test.c
+diff --git a/test/default/metamorphic.c b/test/default/metamorphic_test.c
+similarity index 100%
+rename from test/default/metamorphic.c
+rename to test/default/metamorphic_test.c
+diff --git a/test/default/misuse.c b/test/default/misuse_test.c
+similarity index 100%
+rename from test/default/misuse.c
+rename to test/default/misuse_test.c
+diff --git a/test/default/onetimeauth2.c b/test/default/onetimeauth2_test.c
+similarity index 100%
+rename from test/default/onetimeauth2.c
+rename to test/default/onetimeauth2_test.c
+diff --git a/test/default/onetimeauth7.c b/test/default/onetimeauth7_test.c
+similarity index 100%
+rename from test/default/onetimeauth7.c
+rename to test/default/onetimeauth7_test.c
+diff --git a/test/default/onetimeauth.c b/test/default/onetimeauth_test.c
+similarity index 100%
+rename from test/default/onetimeauth.c
+rename to test/default/onetimeauth_test.c
+diff --git a/test/default/pwhash_argon2i.c b/test/default/pwhash_argon2i_test.c
+similarity index 100%
+rename from test/default/pwhash_argon2i.c
+rename to test/default/pwhash_argon2i_test.c
+diff --git a/test/default/pwhash_argon2id.c b/test/default/pwhash_argon2id_test.c
+similarity index 100%
+rename from test/default/pwhash_argon2id.c
+rename to test/default/pwhash_argon2id_test.c
+diff --git a/test/default/pwhash_scrypt_ll.c b/test/default/pwhash_scrypt_ll_test.c
+similarity index 100%
+rename from test/default/pwhash_scrypt_ll.c
+rename to test/default/pwhash_scrypt_ll_test.c
+diff --git a/test/default/pwhash_scrypt.c b/test/default/pwhash_scrypt_test.c
+similarity index 100%
+rename from test/default/pwhash_scrypt.c
+rename to test/default/pwhash_scrypt_test.c
+diff --git a/test/default/randombytes.c b/test/default/randombytes_test.c
+similarity index 100%
+rename from test/default/randombytes.c
+rename to test/default/randombytes_test.c
+diff --git a/test/default/scalarmult2.c b/test/default/scalarmult2_test.c
+similarity index 100%
+rename from test/default/scalarmult2.c
+rename to test/default/scalarmult2_test.c
+diff --git a/test/default/scalarmult5.c b/test/default/scalarmult5_test.c
+similarity index 100%
+rename from test/default/scalarmult5.c
+rename to test/default/scalarmult5_test.c
+diff --git a/test/default/scalarmult6.c b/test/default/scalarmult6_test.c
+similarity index 100%
+rename from test/default/scalarmult6.c
+rename to test/default/scalarmult6_test.c
+diff --git a/test/default/scalarmult7.c b/test/default/scalarmult7_test.c
+similarity index 100%
+rename from test/default/scalarmult7.c
+rename to test/default/scalarmult7_test.c
+diff --git a/test/default/scalarmult8.c b/test/default/scalarmult8_test.c
+similarity index 100%
+rename from test/default/scalarmult8.c
+rename to test/default/scalarmult8_test.c
+diff --git a/test/default/scalarmult_ed25519.c b/test/default/scalarmult_ed25519_test.c
+similarity index 100%
+rename from test/default/scalarmult_ed25519.c
+rename to test/default/scalarmult_ed25519_test.c
+diff --git a/test/default/scalarmult_ristretto255.c b/test/default/scalarmult_ristretto255_test.c
+similarity index 100%
+rename from test/default/scalarmult_ristretto255.c
+rename to test/default/scalarmult_ristretto255_test.c
+diff --git a/test/default/scalarmult.c b/test/default/scalarmult_test.c
+similarity index 100%
+rename from test/default/scalarmult.c
+rename to test/default/scalarmult_test.c
+diff --git a/test/default/secretbox2.c b/test/default/secretbox2_test.c
+similarity index 100%
+rename from test/default/secretbox2.c
+rename to test/default/secretbox2_test.c
+diff --git a/test/default/secretbox7.c b/test/default/secretbox7_test.c
+similarity index 100%
+rename from test/default/secretbox7.c
+rename to test/default/secretbox7_test.c
+diff --git a/test/default/secretbox8.c b/test/default/secretbox8_test.c
+similarity index 100%
+rename from test/default/secretbox8.c
+rename to test/default/secretbox8_test.c
+diff --git a/test/default/secretbox_easy2.c b/test/default/secretbox_easy2_test.c
+similarity index 100%
+rename from test/default/secretbox_easy2.c
+rename to test/default/secretbox_easy2_test.c
+diff --git a/test/default/secretbox_easy.c b/test/default/secretbox_easy_test.c
+similarity index 100%
+rename from test/default/secretbox_easy.c
+rename to test/default/secretbox_easy_test.c
+diff --git a/test/default/secretbox.c b/test/default/secretbox_test.c
+similarity index 100%
+rename from test/default/secretbox.c
+rename to test/default/secretbox_test.c
+diff --git a/test/default/secretstream.c b/test/default/secretstream_test.c
+similarity index 100%
+rename from test/default/secretstream.c
+rename to test/default/secretstream_test.c
+diff --git a/test/default/shorthash.c b/test/default/shorthash_test.c
+similarity index 100%
+rename from test/default/shorthash.c
+rename to test/default/shorthash_test.c
+diff --git a/test/default/sign.c b/test/default/sign_test.c
+similarity index 100%
+rename from test/default/sign.c
+rename to test/default/sign_test.c
+diff --git a/test/default/siphashx24.c b/test/default/siphashx24_test.c
+similarity index 100%
+rename from test/default/siphashx24.c
+rename to test/default/siphashx24_test.c
+diff --git a/test/default/sodium_core.c b/test/default/sodium_core_test.c
+similarity index 100%
+rename from test/default/sodium_core.c
+rename to test/default/sodium_core_test.c
+diff --git a/test/default/sodium_utils2.c b/test/default/sodium_utils2_test.c
+similarity index 100%
+rename from test/default/sodium_utils2.c
+rename to test/default/sodium_utils2_test.c
+diff --git a/test/default/sodium_utils3.c b/test/default/sodium_utils3_test.c
+similarity index 100%
+rename from test/default/sodium_utils3.c
+rename to test/default/sodium_utils3_test.c
+diff --git a/test/default/sodium_utils.c b/test/default/sodium_utils_test.c
+similarity index 100%
+rename from test/default/sodium_utils.c
+rename to test/default/sodium_utils_test.c
+diff --git a/test/default/sodium_version.c b/test/default/sodium_version_test.c
+similarity index 100%
+rename from test/default/sodium_version.c
+rename to test/default/sodium_version_test.c
+diff --git a/test/default/stream2.c b/test/default/stream2_test.c
+similarity index 100%
+rename from test/default/stream2.c
+rename to test/default/stream2_test.c
+diff --git a/test/default/stream3.c b/test/default/stream3_test.c
+similarity index 100%
+rename from test/default/stream3.c
+rename to test/default/stream3_test.c
+diff --git a/test/default/stream4.c b/test/default/stream4_test.c
+similarity index 100%
+rename from test/default/stream4.c
+rename to test/default/stream4_test.c
+diff --git a/test/default/stream.c b/test/default/stream_test.c
+similarity index 100%
+rename from test/default/stream.c
+rename to test/default/stream_test.c
+diff --git a/test/default/verify1.c b/test/default/verify1_test.c
+similarity index 100%
+rename from test/default/verify1.c
+rename to test/default/verify1_test.c
+diff --git a/test/default/xchacha20.c b/test/default/xchacha20_test.c
+similarity index 100%
+rename from test/default/xchacha20.c
+rename to test/default/xchacha20_test.c
+-- 
+2.25.1
+

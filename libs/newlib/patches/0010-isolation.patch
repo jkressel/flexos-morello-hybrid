@@ -1,0 +1,74 @@
+diff --color -urNp newlib-2.5.0.20170922/newlib/libc/reent/fstatr.c newlib-2.5.0.20170922-flexos/newlib/libc/reent/fstatr.c
+--- newlib-2.5.0.20170922/newlib/libc/reent/fstatr.c	2021-07-24 16:31:13.770487724 +0200
++++ newlib-2.5.0.20170922-flexos/newlib/libc/reent/fstatr.c	2021-07-24 16:41:36.017837379 +0200
+@@ -5,6 +5,7 @@
+ #include <unistd.h>
+ #include <sys/stat.h>
+ #include <_syslist.h>
++#include <flexos/isolation.h>
+ 
+ /* Some targets provides their own versions of these functions.  Those
+    targets should define REENTRANT_SYSCALLS_PROVIDED in TARGET_CFLAGS.  */
+@@ -59,7 +60,10 @@ _fstat_r (ptr, fd, pstat)
+   int ret;
+ 
+   errno = 0;
+-  if ((ret = _fstat (fd, pstat)) == -1 && errno != 0)
++  struct stat _pstat __attribute__((flexos_whitelist));
++  flexos_gate_r(libvfscore, ret, fstat, fd, &_pstat);
++  memcpy(pstat, &_pstat, sizeof(*pstat));
++  if (ret == -1 && errno != 0)
+     ptr->_errno = errno;
+   return ret;
+ }
+diff --color -urNp newlib-2.5.0.20170922/newlib/libc/reent/gettimeofdayr.c newlib-2.5.0.20170922-flexos/newlib/libc/reent/gettimeofdayr.c
+--- newlib-2.5.0.20170922/newlib/libc/reent/gettimeofdayr.c	2021-07-24 16:32:37.486398285 +0200
++++ newlib-2.5.0.20170922-flexos/newlib/libc/reent/gettimeofdayr.c	2021-07-24 16:31:29.754470651 +0200
+@@ -8,6 +8,7 @@
+ #include <sys/time.h>
+ #include <sys/times.h>
+ #include <_syslist.h>
++#include <flexos/isolation.h>
+ 
+ /* Some targets provides their own versions of these functions.  Those
+    targets should define REENTRANT_SYSCALLS_PROVIDED in TARGET_CFLAGS.  */
+@@ -66,9 +67,15 @@ _DEFUN (_gettimeofday_r, (ptr, ptimeval,
+      void *ptimezone)
+ {
+   int ret;
++  struct timeval _ptimeval __attribute__((flexos_whitelist));
++  /* this argument is actually obsolete */
++  UK_CTASSERT(ptimezone == NULL);
+ 
+   errno = 0;
+-  if ((ret = _gettimeofday (ptimeval, ptimezone)) == -1 && errno != 0)
++  flexos_gate_r(libuktime, ret, _gettimeofday, &_ptimeval, NULL);
++  ptimeval->tv_sec = _ptimeval.tv_sec;
++  ptimeval->tv_usec = _ptimeval.tv_usec;
++  if (ret == -1 && errno != 0)
+     ptr->_errno = errno;
+   return ret;
+ }
+diff --color -urNp newlib-2.5.0.20170922/newlib/libc/reent/writer.c newlib-2.5.0.20170922-flexos/newlib/libc/reent/writer.c
+--- newlib-2.5.0.20170922/newlib/libc/reent/writer.c	2021-07-24 16:31:13.770487724 +0200
++++ newlib-2.5.0.20170922-flexos/newlib/libc/reent/writer.c	2021-07-24 17:55:37.333239199 +0200
+@@ -3,6 +3,7 @@
+ #include <reent.h>
+ #include <unistd.h>
+ #include <_syslist.h>
++#include <flexos/isolation.h>
+ 
+ /* Some targets provides their own versions of this functions.  Those
+    targets should define REENTRANT_SYSCALLS_PROVIDED in TARGET_CFLAGS.  */
+@@ -55,7 +56,10 @@ _DEFUN (_write_r, (ptr, fd, buf, cnt),
+   _ssize_t ret;
+ 
+   errno = 0;
+-  if ((ret = (_ssize_t)_write (fd, buf, cnt)) == -1 && errno != 0)
++  ssize_t rret;
++  flexos_gate_r(libvfscore, rret, write, fd, buf, cnt);
++  ret = (_ssize_t) rret;
++  if (ret == -1 && errno != 0)
+     ptr->_errno = errno;
+   return ret;
+ }

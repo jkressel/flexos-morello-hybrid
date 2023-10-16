@@ -1,0 +1,4 @@
+Memory Access::=RA,WA
+Call::=XA
+API::=
+Requires::=R,W,X

@@ -1,0 +1,4 @@
+menuconfig LIBFLEXOSEXAMPLE
+    bool "libflexosexample: example isolated library"
+    select LIBFLEXOS
+    default n

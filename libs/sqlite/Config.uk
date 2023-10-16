@@ -1,0 +1,13 @@
+menuconfig LIBSQLITE
+    bool "SQLite"
+    default y
+    select LIBUKMMAP
+    select LIBPOSIX_SYSINFO
+    select LIBNEWLIBC
+    select LIBPTHREAD_EMBEDDED
+
+if LIBSQLITE
+config LIBSQLITE_MAIN_FUNCTION
+    bool "Provide main function"
+    default n
+endif

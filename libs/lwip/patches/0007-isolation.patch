@@ -1,0 +1,218 @@
+diff --color -urNp lwip-2.1.2/src/api/api_lib.c lwip-2.1.2-flexos/src/api/api_lib.c
+--- lwip-2.1.2/src/api/api_lib.c	2018-08-07 13:38:00.000000000 +0200
++++ lwip-2.1.2-flexos/src/api/api_lib.c	2021-05-02 17:08:54.826097083 +0200
+@@ -69,6 +69,8 @@
+ #include "lwip/priv/tcp_priv.h"
+ #include "lwip/priv/tcpip_priv.h"
+ 
++#include <flexos/isolation.h>
++
+ #ifdef LWIP_HOOK_FILENAME
+ #include LWIP_HOOK_FILENAME
+ #endif
+@@ -170,7 +172,7 @@ netconn_new_with_proto_and_callback(enum
+       sys_sem_free(&conn->op_completed);
+ #endif /* !LWIP_NETCONN_SEM_PER_THREAD */
+       sys_mbox_free(&conn->recvmbox);
+-      memp_free(MEMP_NETCONN, conn);
++      flexos_free_whitelist(conn);
+       API_MSG_VAR_FREE(msg);
+       return NULL;
+     }
+diff --color -urNp lwip-2.1.2/src/api/api_msg.c lwip-2.1.2-flexos/src/api/api_msg.c
+--- lwip-2.1.2/src/api/api_msg.c	2018-07-02 17:26:20.000000000 +0200
++++ lwip-2.1.2-flexos/src/api/api_msg.c	2021-05-02 17:08:54.830097042 +0200
+@@ -692,6 +692,8 @@ lwip_netconn_do_newconn(void *m)
+   TCPIP_APIMSG_ACK(msg);
+ }
+ 
++#include <flexos/isolation.h>
++
+ /**
+  * Create a new netconn (of a specific type) that has a callback function.
+  * The corresponding pcb is NOT created!
+@@ -708,7 +710,8 @@ netconn_alloc(enum netconn_type t, netco
+   int size;
+   u8_t init_flags = 0;
+ 
+-  conn = (struct netconn *)memp_malloc(MEMP_NETCONN);
++  //conn = (struct netconn *)memp_malloc(MEMP_NETCONN);
++  conn = (struct netconn *)flexos_calloc_whitelist(1, sizeof(struct netconn));
+   if (conn == NULL) {
+     return NULL;
+   }
+@@ -780,7 +783,7 @@ netconn_alloc(enum netconn_type t, netco
+   conn->flags = init_flags;
+   return conn;
+ free_and_return:
+-  memp_free(MEMP_NETCONN, conn);
++  flexos_free_whitelist(conn);
+   return NULL;
+ }
+ 
+@@ -812,7 +815,7 @@ netconn_free(struct netconn *conn)
+   sys_sem_set_invalid(&conn->op_completed);
+ #endif
+ 
+-  memp_free(MEMP_NETCONN, conn);
++  flexos_free_whitelist(conn);
+ }
+ 
+ /**
+diff --color -urNp lwip-2.1.2/src/api/netdb.c lwip-2.1.2-flexos/src/api/netdb.c
+--- lwip-2.1.2/src/api/netdb.c	2017-09-17 19:56:25.000000000 +0200
++++ lwip-2.1.2-flexos/src/api/netdb.c	2021-05-02 17:08:54.834097001 +0200
+@@ -36,6 +36,7 @@
+  */
+ 
+ #include "lwip/netdb.h"
++#include <flexos/isolation.h>
+ 
+ #if LWIP_DNS && LWIP_SOCKET
+ 
+@@ -239,7 +240,7 @@ lwip_freeaddrinfo(struct addrinfo *ai)
+ 
+   while (ai != NULL) {
+     next = ai->ai_next;
+-    memp_free(MEMP_NETDB, ai);
++    flexos_free_whitelist(ai);
+     ai = next;
+   }
+ }
+@@ -305,7 +306,7 @@ lwip_getaddrinfo(const char *nodename, c
+   if (servname != NULL) {
+     /* service name specified: convert to port number
+      * @todo?: currently, only ASCII integers (port numbers) are supported (AI_NUMERICSERV)! */
+-    port_nr = atoi(servname);
++    flexos_gate_r(libnewlibc, port_nr, atoi, servname);
+     if ((port_nr <= 0) || (port_nr > 0xffff)) {
+       return EAI_SERVICE;
+     }
+@@ -361,7 +362,7 @@ lwip_getaddrinfo(const char *nodename, c
+   /* If this fails, please report to lwip-devel! :-) */
+   LWIP_ASSERT("total_size <= NETDB_ELEM_SIZE: please report this!",
+               total_size <= NETDB_ELEM_SIZE);
+-  ai = (struct addrinfo *)memp_malloc(MEMP_NETDB);
++  ai = (struct addrinfo *)flexos_malloc_whitelist(total_size);
+   if (ai == NULL) {
+     return EAI_MEMORY;
+   }
+diff --color -urNp lwip-2.1.2/src/api/tcpip.c lwip-2.1.2-flexos/src/api/tcpip.c
+--- lwip-2.1.2/src/api/tcpip.c	2018-10-24 20:32:35.000000000 +0200
++++ lwip-2.1.2-flexos/src/api/tcpip.c	2021-05-02 17:11:08.912708913 +0200
+@@ -58,10 +58,12 @@
+ /* global variables */
+ static tcpip_init_done_fn tcpip_init_done;
+ static void *tcpip_init_done_arg;
++__section(".data_shared")
+ static sys_mbox_t tcpip_mbox;
+ 
+ #if LWIP_TCPIP_CORE_LOCKING
+ /** The global semaphore to lock the stack. */
++__section(".data_shared")
+ sys_mutex_t lock_tcpip_core;
+ #endif /* LWIP_TCPIP_CORE_LOCKING */
+ 
+@@ -113,6 +115,8 @@ again:
+ }
+ #endif /* !LWIP_TIMERS */
+ 
++#include <flexos/isolation.h>
++
+ /**
+  * The main lwIP thread. This thread has exclusive access to lwIP core functions
+  * (unless access to them is not locked). Other threads communicate with this
+@@ -123,10 +127,10 @@ again:
+  *
+  * @param arg unused argument
+  */
+-static void
+-tcpip_thread(void *arg)
++__attribute__((libc_callback)) static void
++_tcpip_thread(void *arg)
+ {
+-  struct tcpip_msg *msg;
++  struct tcpip_msg *msg __attribute__((flexos_whitelist));
+   LWIP_UNUSED_ARG(arg);
+ 
+   LWIP_MARK_TCPIP_THREAD();
+@@ -149,6 +153,15 @@ tcpip_thread(void *arg)
+   }
+ }
+ 
++void
++tcpip_thread(void *arg)
++{
++#if CONFIG_LIBFLEXOS_INTELPKU
++  wrpkru(0x3ffffffc); /* EVIL HACK THIS SHOULD ALREADY BE SET */
++#endif
++  _tcpip_thread(arg);
++}
++
+ /* Handle a single tcpip_msg
+  * This is in its own function for access by tests only.
+  */
+diff --color -urNp lwip-2.1.2/src/core/pbuf.c lwip-2.1.2-flexos/src/core/pbuf.c
+--- lwip-2.1.2/src/core/pbuf.c	2018-07-19 21:41:43.000000000 +0200
++++ lwip-2.1.2-flexos/src/core/pbuf.c	2021-05-02 17:08:54.846096875 +0200
+@@ -1046,6 +1046,7 @@ pbuf_copy_partial(const struct pbuf *buf
+         buf_copy_len = len;
+       }
+       /* copy the necessary parts of the buffer */
++      /* NOTE FLEXOS: we'll crash here if lwip doesn't have permissions to access passed user data */
+       MEMCPY(&((char *)dataptr)[left], &((char *)p->payload)[offset], buf_copy_len);
+       copied_total = (u16_t)(copied_total + buf_copy_len);
+       left = (u16_t)(left + buf_copy_len);
+diff --color -urNp lwip-2.1.2/src/core/tcp_out.c lwip-2.1.2-flexos/src/core/tcp_out.c
+--- lwip-2.1.2/src/core/tcp_out.c	2018-10-24 20:32:36.000000000 +0200
++++ lwip-2.1.2-flexos/src/core/tcp_out.c	2021-05-02 17:08:54.850096834 +0200
+@@ -62,6 +62,8 @@
+ 
+ #include "lwip/opt.h"
+ 
++#include <flexos/isolation.h>
++
+ #if LWIP_TCP /* don't build if not configured for use in lwipopts.h */
+ 
+ #include "lwip/priv/tcp_priv.h"
+@@ -613,6 +615,7 @@ tcp_write(struct tcp_pcb *pcb, const voi
+       }
+       LWIP_ASSERT("tcp_write: check that first pbuf can hold the complete seglen",
+                   (p->len >= seglen));
++      /* NOTE FLEXOS: we'll crash here if lwip doesn't have permissions to access passed user data */
+       TCP_DATA_COPY2((char *)p->payload + optlen, (const u8_t *)arg + pos, seglen, &chksum, &chksum_swapped);
+     } else {
+       /* Copy is not set: First allocate a pbuf for holding the data.
+diff --color -urNp lwip-2.1.2/src/core/udp.c lwip-2.1.2-flexos/src/core/udp.c
+--- lwip-2.1.2/src/core/udp.c	2018-10-24 20:32:36.000000000 +0200
++++ lwip-2.1.2-flexos/src/core/udp.c	2021-05-02 17:08:54.854096793 +0200
+@@ -65,6 +65,8 @@
+ 
+ #include <string.h>
+ 
++#include <flexos/isolation.h>
++
+ #ifndef UDP_LOCAL_PORT_RANGE_START
+ /* From http://www.iana.org/assignments/port-numbers:
+    "The Dynamic and/or Private Ports are those from 49152 through 65535" */
+diff --color -urNp lwip-2.1.2/src/include/lwip/arch.h lwip-2.1.2-flexos/src/include/lwip/arch.h
+--- lwip-2.1.2/src/include/lwip/arch.h	2018-10-24 20:32:36.000000000 +0200
++++ lwip-2.1.2-flexos/src/include/lwip/arch.h	2021-05-02 17:08:54.858096751 +0200
+@@ -225,8 +225,16 @@ typedef int ssize_t;
+ #define lwip_tolower(c)           (lwip_isupper(c) ? (c) - 'A' + 'a' : c)
+ #define lwip_toupper(c)           (lwip_islower(c) ? (c) - 'a' + 'A' : c)
+ #else
++#include <flexos/isolation.h>
+ #include <ctype.h>
+-#define lwip_isdigit(c)           isdigit((unsigned char)(c))
++static int __maybe_unused _isdigit_flexos_wrapper(int c)
++{
++	volatile int ret;
++	flexos_gate_r(libc, ret, isdigit, c);
++	return ret;
++}
++
++#define lwip_isdigit(c)           _isdigit_flexos_wrapper((unsigned char)(c))
+ #define lwip_isxdigit(c)          isxdigit((unsigned char)(c))
+ #define lwip_islower(c)           islower((unsigned char)(c))
+ #define lwip_isspace(c)           isspace((unsigned char)(c))

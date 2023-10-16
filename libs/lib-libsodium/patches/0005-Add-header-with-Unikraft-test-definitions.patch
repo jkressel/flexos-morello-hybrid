@@ -1,0 +1,111 @@
+From 3c1bbd145d4c675d937620c5b95879f45d4731be Mon Sep 17 00:00:00 2001
+From: Michalis Pappas <Michalis.Pappas@opensynergy.com>
+Date: Sat, 13 Nov 2021 13:43:55 +0100
+Subject: [PATCH 5/5] Add header with Unikraft test definitions
+
+Introduce a header that includes the headers of all individual tests
+and defines the uk_sodium_test structure.
+
+---
+ test/default/uk_sodium_test_defs.h | 89 ++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+ create mode 100644 test/default/uk_sodium_test_defs.h
+
+diff --git a/test/default/uk_sodium_test_defs.h b/test/default/uk_sodium_test_defs.h
+new file mode 100644
+index 0000000..bed7da4
+--- /dev/null
++++ b/test/default/uk_sodium_test_defs.h
+@@ -0,0 +1,89 @@
++#ifndef __SODIUM_UK_TEST_DEFS_H__
++#define __SODIUM_UK_TEST_DEFS_H__
++
++#include <aead_aes256gcm2_test.h>
++#include <aead_aes256gcm_test.h>
++#include <aead_chacha20poly13052_test.h>
++#include <aead_chacha20poly1305_test.h>
++#include <aead_xchacha20poly1305_test.h>
++#include <auth2_test.h>
++#include <auth3_test.h>
++#include <auth5_test.h>
++#include <auth6_test.h>
++#include <auth7_test.h>
++#include <auth_test.h>
++#include <box2_test.h>
++#include <box7_test.h>
++#include <box8_test.h>
++#include <box_easy2_test.h>
++#include <box_easy_test.h>
++#include <box_seal_test.h>
++#include <box_seed_test.h>
++#include <box_test.h>
++#include <chacha20_test.h>
++#include <codecs_test.h>
++#include <core1_test.h>
++#include <core2_test.h>
++#include <core3_test.h>
++#include <core4_test.h>
++#include <core5_test.h>
++#include <core6_test.h>
++#include <core_ed25519_test.h>
++#include <core_ristretto255_test.h>
++#include <ed25519_convert_test.h>
++#include <generichash2_test.h>
++#include <generichash3_test.h>
++#include <generichash_test.h>
++#include <hash2_test.h>
++#include <hash3_test.h>
++#include <hash_test.h>
++#include <kdf_test.h>
++#include <keygen_test.h>
++#include <kx_test.h>
++#include <metamorphic_test.h>
++#include <misuse_test.h>
++#include <onetimeauth2_test.h>
++#include <onetimeauth7_test.h>
++#include <onetimeauth_test.h>
++#include <pwhash_argon2id_test.h>
++#include <pwhash_argon2i_test.h>
++#include <pwhash_scrypt_ll_test.h>
++#include <pwhash_scrypt_test.h>
++#include <randombytes_test.h>
++#include <scalarmult2_test.h>
++#include <scalarmult5_test.h>
++#include <scalarmult6_test.h>
++#include <scalarmult7_test.h>
++#include <scalarmult8_test.h>
++#include <scalarmult_ed25519_test.h>
++#include <scalarmult_ristretto255_test.h>
++#include <scalarmult_test.h>
++#include <secretbox2_test.h>
++#include <secretbox7_test.h>
++#include <secretbox8_test.h>
++#include <secretbox_easy2_test.h>
++#include <secretbox_easy_test.h>
++#include <secretbox_test.h>
++#include <secretstream_test.h>
++#include <shorthash_test.h>
++#include <sign_test.h>
++#include <siphashx24_test.h>
++#include <sodium_core_test.h>
++#include <sodium_utils2_test.h>
++#include <sodium_utils3_test.h>
++#include <sodium_utils_test.h>
++#include <sodium_version_test.h>
++#include <stream2_test.h>
++#include <stream3_test.h>
++#include <stream4_test.h>
++#include <stream_test.h>
++#include <verify1_test.h>
++#include <xchacha20_test.h>
++
++struct uk_sodium_test {
++       char *name;
++       char *exp;
++       int (*func)(void);
++};
++
++#endif /* __SODIUM_UK_TEST_DEFS_H__ */
+-- 
+2.25.1
+

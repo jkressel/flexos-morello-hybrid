@@ -1,0 +1,20 @@
+menuconfig LIBSODIUM
+	bool "libsodium: A modern, portable, easy to use crypto library."
+	default n
+	select LIBNEWLIBC
+	select LIBUKSWRAND
+	select LIBPOSIX_EVENT
+
+if LIBSODIUM
+	config LIBSODIUM_TEST
+		bool "Enable libsodium tests"
+		select LIBUKTEST
+		default n
+		select LIBSODIUM_TEST_MINIMAL
+		help
+			Enables all libsodium tests.
+
+	config LIBSODIUM_TEST_MINIMAL
+		bool
+		default n
+endif
