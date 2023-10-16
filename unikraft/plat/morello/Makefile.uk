@@ -1,0 +1,63 @@
+##
+## MORELLO platform registration
+##
+$(eval $(call addplat_s,morello,$(CONFIG_PLAT_MORELLO)))
+
+##
+## MORELLO platform library registration
+##
+$(eval $(call addplatlib,morello,libmorelloplat))
+
+##
+## Platform library definitions
+##
+LIBMORELLOPLAT_ASINCLUDES-y        += -I$(LIBMORELLOPLAT_BASE)/include
+LIBMORELLOPLAT_ASINCLUDES-y        += -I$(UK_PLAT_COMMON_BASE)/include
+LIBMORELLOPLAT_CINCLUDES-y         += -I$(LIBMORELLOPLAT_BASE)/include
+LIBMORELLOPLAT_CINCLUDES-y         += -I$(UK_PLAT_COMMON_BASE)/include
+LIBMORELLOPLAT_CINCLUDES-y         += -I$(UK_PLAT_DRIVERS_BASE)/include
+#CC = ~/llvm-project-releases/bin/clang
+#AS = ~/llvm-project-releases/bin/clang
+LIBMORELLOPLAT_ASFLAGS             += -DMORELLOPLAT
+#LIBMORELLOPLAT_ASFLAGS             += -g -target aarch64-none-elf -march=morello
+LIBMORELLOPLAT_CFLAGS              += -g -DMORELLOPLAT -march=morello
+LIBMORELLOPLAT_CXXFLAGS            += -g -DMORELLOPLAT
+
+##
+## Default Linker script
+UK_PLAT_MORELLO_DEF_LDS            := $(LIBMORELLOPLAT_BASE)/link.lds.S
+
+##
+## Architecture library definitions
+##
+ifeq ($(findstring y,$(CONFIG_MORELLO_PRINTF_SERIAL_CONSOLE) $(CONFIG_MORELLO_KERNEL_SERIAL_CONSOLE) $(CONFIG_MORELLO_DEBUG_SERIAL_CONSOLE)),y)
+## TODO: Check if both implementations are actually doing the same thing
+#LIBMORELLOPLAT_SRCS-$(CONFIG_ARCH_ARM_64) += $(UK_PLAT_COMMON_BASE)/arm/pl011.c|common
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/serial_console.c
+endif
+LIBMORELLOPLAT_SRCS-$(CONFIG_ARCH_ARM_64) += $(UK_PLAT_COMMON_BASE)/arm/cpu_native.c|common
+LIBMORELLOPLAT_SRCS-$(CONFIG_ARCH_ARM_64) += $(UK_PLAT_COMMON_BASE)/arm/generic_timer.c|common
+LIBMORELLOPLAT_SRCS-y += $(UK_PLAT_COMMON_BASE)/arm/fp_arm64.c|common
+ifeq ($(CONFIG_HAVE_SCHED),y)
+LIBMORELLOPLAT_SRCS-$(CONFIG_ARCH_ARM_64) += $(UK_PLAT_COMMON_BASE)/arm/thread_start64.S|common
+LIBMORELLOPLAT_SRCS-y += $(UK_PLAT_COMMON_BASE)/thread.c|common
+LIBMORELLOPLAT_SRCS-y += $(UK_PLAT_COMMON_BASE)/sw_ctx.c|common
+endif
+
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/start.S
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/irq_asm.S
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/morello_info_asm.S
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/morello_info.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/entry.S
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/mm.S
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/console.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/io.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/irq.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/lcpu.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/memory.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/setup.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/shutdown.c
+LIBMORELLOPLAT_SRCS-y				+= $(LIBMORELLOPLAT_BASE)/time.c
+LIBMORELLOPLAT_SRCS-y				+= $(UK_PLAT_COMMON_BASE)/lcpu.c|common
+LIBMORELLOPLAT_SRCS-y				+= $(UK_PLAT_COMMON_BASE)/memory.c|common
+LIBMORELLOPLAT_SRCS-y				+= $(UK_PLAT_MORELLO_DEF_LDS)

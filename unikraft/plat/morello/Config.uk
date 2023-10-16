@@ -1,0 +1,33 @@
+menuconfig PLAT_MORELLO
+       bool "Morello"
+       default n
+       depends on ARCH_ARM_64
+       help
+          Create a Unikraft image that runs on a Morello Machine
+
+if (PLAT_MORELLO)
+
+menu "Console Options"
+config MORELLO_PRINTF_SERIAL_CONSOLE
+        bool "Serial console for printf"
+        default y
+        depends on ARCH_ARM_64
+        help
+          Choose serial console for printf
+
+config MORELLO_KERNEL_SERIAL_CONSOLE
+        bool "Serial console for the kernel prints"
+        default n
+        depends on ARCH_ARM_64
+        help
+          Choose serial console for the kernel printing
+
+config MORELLO_DEBUG_SERIAL_CONSOLE
+        bool "Serial console for the debug prints"
+        default n
+        depends on ARCH_ARM_64
+        help
+          Choose serial console for the debug printing
+endmenu
+
+endif

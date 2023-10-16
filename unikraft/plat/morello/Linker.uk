@@ -1,0 +1,60 @@
+MORELLO_LDFLAGS-y	 += -Wl,-m,aarch64elf
+ifeq ($(CONFIG_ARM64_ERRATUM_843419),y)
+MORELLO_LDFLAGS-y	+= -mfix-cortex-a53-843419
+endif
+
+
+##
+## Link image
+##
+MORELLO_IMAGE := $(BUILD_DIR)/$(CONFIG_UK_NAME)_morello-$(CONFIG_UK_ARCH)
+MORELLO_ELF_IMAGE := $(MORELLO_IMAGE).elf
+
+MORELLO_LD_SCRIPT_FLAGS := $(addprefix -Wl$(comma)-dT$(comma),\
+			 $(UK_PLAT_MORELLO_DEF_LDS))
+MORELLO_LD_SCRIPT_FLAGS += $(addprefix -Wl$(comma)-T$(comma),\
+			$(LIBMORELLOPLAT_DEF_LDS) $(EXTRA_LD_SCRIPT-y))
+
+$(MORELLO_ELF_IMAGE): $(MORELLO_ALIBS) $(MORELLO_ALIBS-y) $(MORELLO_OLIBS) $(MORELLO_OLIBS-y) \
+		    $(UK_ALIBS) $(UK_ALIBS-y) $(UK_OLIBS) $(UK_OLIBS-y)
+	$(call build_cmd,LD,,$(MORELLO_IMAGE).ld.o,\
+	       $(LD) -r $(LIBLDFLAGS) $(LIBLDFLAGS-y) \
+			$(MORELLO_LDFLAGS) $(MORELLO_LDFLAGS-y) \
+			$(MORELLO_OLIBS) $(MORELLO_OLIBS-y) \
+			$(UK_OLIBS) $(UK_OLIBS-y) \
+			-lgcc \
+			-Wl$(comma)--start-group \
+			$(MORELLO_ALIBS) $(MORELLO_ALIBS-y) \
+			$(UK_ALIBS) $(UK_ALIBS-y) \
+			-Wl$(comma)--end-group \
+			-o $(MORELLO_IMAGE).ld.o)
+	$(call build_cmd,OBJCOPY,,$(MORELLO_IMAGE).o,\
+		$(OBJCOPY) -w -G _start \
+			$(MORELLO_IMAGE).ld.o $(MORELLO_IMAGE).o)
+	$(call build_cmd,LD,,$@,\
+	       $(LD) $(LDFLAGS) $(LDFLAGS-y) \
+		     $(MORELLO_LDFLAGS) $(MORELLO_LDFLAGS-y) \
+		     $(MORELLO_LD_SCRIPT_FLAGS) \
+		     $(MORELLO_IMAGE).o -o $@)
+
+$(MORELLO_IMAGE): $(MORELLO_IMAGE).elf
+	$(call build_cmd,SCSTRIP,,$@,\
+		$(SCRIPTS_DIR)/sect-strip.py \
+			$(SECT_STRIP_FLAGS) $(SECT_STRIP_FLAGS-y) \
+			--with-objcopy=$(OBJCOPY) \
+			$< -o $@)
+	$(call build_cmd,OBJCOPY,,$(MORELLO_IMAGE).img,\
+		$(OBJCOPY) -O binary $(MORELLO_ELF_IMAGE) $(BUILD_DIR)/kernel8.img)
+
+# register images to the build
+ifeq ($(CONFIG_PLAT_MORELLO),y)
+UK_DEBUG_IMAGES-y                     += $(MORELLO_ELF_IMAGE)
+UK_IMAGES-y                           += $(MORELLO_IMAGE)
+endif
+
+# ...for cleaning:
+LIBMORELLOPLAT_CLEAN += $(call build_clean,$(MORELLO_IMAGE).o)
+LIBMORELLOPLAT_CLEAN += $(call build_clean,$(MORELLO_IMAGE).ld.o)
+LIBMORELLOPLAT_CLEAN += $(call build_clean,$(MORELLO_IMAGE).elf)
+LIBMORELLOPLAT_CLEAN += $(call build_clean,$(MORELLO_IMAGE).img)
+LIBMORELLOPLAT_CLEAN += $(call build_clean,$(BUILD_DIR)/kernel8.img)
