@@ -1,0 +1,12 @@
+diff --color -urNp TLSF-2.4.6/src/tlsf.c TLSF-2.4.6-mpk/src/tlsf.c
+--- TLSF-2.4.6/src/tlsf.c	2009-10-06 11:25:15.000000000 +0200
++++ TLSF-2.4.6-mpk/src/tlsf.c	2021-01-05 08:58:52.441200404 +0100
+@@ -252,7 +252,7 @@ static __inline__ bhdr_t *process_area(v
+ static __inline__ void *get_new_area(size_t * size);
+ #endif
+ 
+-static const int table[] = {
++static const int table[] __section(".data_shared") = {
+     -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4,
+     4, 4,
+     4, 4, 4, 4, 4, 4, 4,

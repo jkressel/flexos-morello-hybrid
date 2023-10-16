@@ -1,0 +1,160 @@
+From: Hugo Lefeuvre <hugo.lefeuvre@neclab.eu>
+Subject: Adapt TLSF interface to Unikraft
+ - expose MAX_LOG2_SLI, users might want to modify this
+ - do not rely on static metadata; pass it as argument to the allocation
+   interface
+diff -urNp TLSF-2.4.6/src/tlsf.c TLSF-patched/src/tlsf.c
+--- TLSF-2.4.6/src/tlsf.c	2009-10-06 11:25:15.000000000 +0200
++++ TLSF-patched/src/tlsf.c	2020-06-26 13:49:03.231027270 +0200
+@@ -74,7 +74,6 @@
+ #define	USE_SBRK 	(0)
+ #endif
+ 
+-
+ #if TLSF_USE_LOCKS
+ #include "target.h"
+ #else
+@@ -129,7 +128,7 @@
+ #define BLOCK_ALIGN (sizeof(void *) * 2)
+ 
+ #define MAX_FLI		(30)
+-#define MAX_LOG2_SLI	(5)
++#define MAX_LOG2_SLI	CONFIG_TLSF_LOG2_SLI
+ #define MAX_SLI		(1 << MAX_LOG2_SLI)     /* MAX_SLI = 2^MAX_LOG2_SLI */
+ 
+ #define FLI_OFFSET	(6)     /* tlsf structure just will manage blocks bigger */
+@@ -451,8 +450,6 @@ static __inline__ bhdr_t *process_area(v
+ /******************** Begin of the allocator code *****************/
+ /******************************************************************/
+ 
+-static char *mp = NULL;         /* Default memory pool. */
+-
+ /******************************************************************/
+ size_t init_memory_pool(size_t mem_pool_size, void *mem_pool)
+ {
+@@ -472,13 +469,10 @@ size_t init_memory_pool(size_t mem_pool_
+     tlsf = (tlsf_t *) mem_pool;
+     /* Check if already initialised */
+     if (tlsf->tlsf_signature == TLSF_SIGNATURE) {
+-        mp = mem_pool;
+-        b = GET_NEXT_BLOCK(mp, ROUNDUP_SIZE(sizeof(tlsf_t)));
++        b = GET_NEXT_BLOCK(mem_pool, ROUNDUP_SIZE(sizeof(tlsf_t)));
+         return b->size & BLOCK_SIZE;
+     }
+ 
+-    mp = mem_pool;
+-
+     /* Zeroing the memory pool */
+     memset(mem_pool, 0, sizeof(tlsf_t));
+ 
+@@ -615,13 +609,13 @@ void destroy_memory_pool(void *mem_pool)
+ 
+ 
+ /******************************************************************/
+-void *tlsf_malloc(size_t size)
++void *tlsf_malloc(size_t size, void *mem_pool)
+ {
+ /******************************************************************/
+     void *ret;
+ 
+ #if USE_MMAP || USE_SBRK
+-    if (!mp) {
++    if (!mem_pool) {
+         size_t area_size;
+         void *area;
+ 
+@@ -634,60 +628,60 @@ void *tlsf_malloc(size_t size)
+     }
+ #endif
+ 
+-    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+-    ret = malloc_ex(size, mp);
++    ret = malloc_ex(size, mem_pool);
+ 
+-    TLSF_RELEASE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_RELEASE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+     return ret;
+ }
+ 
+ /******************************************************************/
+-void tlsf_free(void *ptr)
++void tlsf_free(void *ptr, void *mem_pool)
+ {
+ /******************************************************************/
+ 
+-    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+-    free_ex(ptr, mp);
++    free_ex(ptr, mem_pool);
+ 
+-    TLSF_RELEASE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_RELEASE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+ }
+ 
+ /******************************************************************/
+-void *tlsf_realloc(void *ptr, size_t size)
++void *tlsf_realloc(void *ptr, size_t size, void *mem_pool)
+ {
+ /******************************************************************/
+     void *ret;
+ 
+ #if USE_MMAP || USE_SBRK
+-	if (!mp) {
+-		return tlsf_malloc(size);
++	if (!mem_pool) {
++		return tlsf_malloc(size, mem_pool);
+ 	}
+ #endif
+ 
+-    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+-    ret = realloc_ex(ptr, size, mp);
++    ret = realloc_ex(ptr, size, mem_pool);
+ 
+-    TLSF_RELEASE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_RELEASE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+     return ret;
+ }
+ 
+ /******************************************************************/
+-void *tlsf_calloc(size_t nelem, size_t elem_size)
++void *tlsf_calloc(size_t nelem, size_t elem_size, void *mem_pool)
+ {
+ /******************************************************************/
+     void *ret;
+ 
+-    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_ACQUIRE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+-    ret = calloc_ex(nelem, elem_size, mp);
++    ret = calloc_ex(nelem, elem_size, mem_pool);
+ 
+-    TLSF_RELEASE_LOCK(&((tlsf_t *)mp)->lock);
++    TLSF_RELEASE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
+     return ret;
+ }
+diff -urNp TLSF-2.4.6/src/tlsf.h TLSF-patched/src/tlsf.h
+--- TLSF-2.4.6/src/tlsf.h	2009-10-06 11:25:22.000000000 +0200
++++ TLSF-patched/src/tlsf.h	2020-06-26 09:24:01.159699745 +0200
+@@ -31,9 +31,9 @@ extern void free_ex(void *, void *);
+ extern void *realloc_ex(void *, size_t, void *);
+ extern void *calloc_ex(size_t, size_t, void *);
+ 
+-extern void *tlsf_malloc(size_t size);
+-extern void tlsf_free(void *ptr);
+-extern void *tlsf_realloc(void *ptr, size_t size);
+-extern void *tlsf_calloc(size_t nelem, size_t elem_size);
++extern void *tlsf_malloc(size_t size, void *);
++extern void tlsf_free(void *ptr, void *);
++extern void *tlsf_realloc(void *ptr, size_t size, void *);
++extern void *tlsf_calloc(size_t nelem, size_t elem_size, void *);
+ 
+ #endif

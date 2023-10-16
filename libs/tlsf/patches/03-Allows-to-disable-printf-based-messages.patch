@@ -1,0 +1,29 @@
+From 7faa1bd587977f2ed5f94b6aa344694ca3205762 Mon Sep 17 00:00:00 2001
+From: Cyril Soldani <cyril.soldani@uliege.be>
+Date: Fri, 12 Feb 2021 12:45:40 +0100
+Subject: [PATCH] Allows to disable printf-based messages
+
+`-DUSE_PRINTF=0` was of no use because the code was using `#ifndef`
+instead of `#if` like for the other flags.
+
+Signed-off-by: Cyril Soldani <cyril.soldani@uliege.be>
+---
+ src/tlsf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tlsf.c b/src/tlsf.c
+index 8abf4af..a05e85f 100644
+--- a/src/tlsf.c
++++ b/src/tlsf.c
+@@ -168,7 +168,7 @@
+ #define PAGE_SIZE (getpagesize())
+ #endif
+ 
+-#ifdef USE_PRINTF
++#if USE_PRINTF
+ #include <stdio.h>
+ # define PRINT_MSG(fmt, args...) printf(fmt, ## args)
+ # define ERROR_MSG(fmt, args...) printf(fmt, ## args)
+-- 
+2.30.0
+

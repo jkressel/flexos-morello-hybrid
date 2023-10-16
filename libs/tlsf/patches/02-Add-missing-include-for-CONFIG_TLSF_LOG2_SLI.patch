@@ -1,0 +1,26 @@
+From 309625c8b5a3e598ef055b0579c7e27e90238c70 Mon Sep 17 00:00:00 2001
+From: Cyril Soldani <cyril.soldani@uliege.be>
+Date: Fri, 12 Feb 2021 10:18:49 +0100
+Subject: [PATCH] Add missing include for CONFIG_TLSF_LOG2_SLI
+
+Signed-off-by: Cyril Soldani <cyril.soldani@uliege.be>
+---
+ src/tlsf.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/tlsf.c b/src/tlsf.c
+index 58294b6..8abf4af 100644
+--- a/src/tlsf.c
++++ b/src/tlsf.c
+@@ -106,6 +106,8 @@
+ #include <sys/mman.h>
+ #endif
+ 
++#include <uk/config.h>
++
+ #include "tlsf.h"
+ 
+ #if !defined(__GNUC__)
+-- 
+2.30.0
+

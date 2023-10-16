@@ -1,0 +1,26 @@
+# Invisible option that is used to detect
+# if LIBTLSF is available for configuration
+config LIBTLSF_INCLUDED
+	   bool
+	   default y
+
+menuconfig LIBTLSF
+	   bool "TLSF - real-time dynamic memory allocator"
+	   select LIBUKALLOC_IFMALLOC
+	   default n
+
+if LIBTLSF
+	config TLSF_LOG2_SLI
+		int "log2 of second level index (SLI)"
+		default 5
+		help
+			The Second Level Index subdivides linearily the first level lists.
+
+			The SLI has to be a power of two and is here represented as log2
+			of the number of second level divisions.
+
+			For instance, TLSF_LOG2_SLI = 5 implies 32 second level divisions.
+
+			Higher values of SLI imply less fragmentation, at the cost of an
+			increased space overhead of metadata.
+endif

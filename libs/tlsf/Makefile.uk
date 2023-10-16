@@ -1,0 +1,77 @@
+#  libtlsf Makefile.uk
+#
+#  Authors: Hugo Lefeuvre <hugo.lefeuvre@neclab.eu>
+#
+#
+#  Copyright (c) 2020, NEC Europe Ltd., NEC Corporation. All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. Neither the name of the copyright holder nor the names of its
+#     contributors may be used to endorse or promote products derived from
+#     this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+#  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+#  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+#  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+#  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#  POSSIBILITY OF SUCH DAMAGE.
+
+################################################################################
+# Library registration
+################################################################################
+$(eval $(call addlib_s,libtlsf,$(CONFIG_LIBTLSF)))
+
+################################################################################
+# Sources
+################################################################################
+LIBTLSF_VERSION=2.4.6
+LIBTLSF_URL=http://wks.gii.upv.es/tlsf/files/src/TLSF-$(LIBTLSF_VERSION).tbz2
+LIBTLSF_DIR=TLSF-$(LIBTLSF_VERSION)
+
+LIBTLSF_PATCHDIR=$(LIBTLSF_BASE)/patches
+$(eval $(call fetch,libtlsf,$(LIBTLSF_URL),TLSF-$(LIBTLSF_VERSION).tbz2))
+$(eval $(call patch,libtlsf,$(LIBTLSF_PATCHDIR),$(LIBTLSF_DIR)))
+
+################################################################################
+# Helpers
+################################################################################
+LIBTLSF=$(LIBTLSF_ORIGIN)/$(LIBTLSF_DIR)
+
+################################################################################
+# Library includes
+################################################################################
+
+CINCLUDES-$(CONFIG_LIBTLSF) +=	-I$(LIBTLSF_BASE)		\
+				-I$(LIBTLSF_BASE)/include	\
+				-I$(LIBTLSF)/src
+
+################################################################################
+# Global flags
+################################################################################
+
+# no locks, no sbrk, no mmap
+CFLAGS-$(CONFIG_LIBTLSF) +=  -DTLSF_USE_LOCKS=0 -DUSE_MMAP=0 -DUSE_SBRK=0 -DUSE_PRINTF=0
+
+################################################################################
+# Glue code
+################################################################################
+LIBTLSF_SRCS-y += $(LIBTLSF_BASE)/glue.c
+
+################################################################################
+# Sources
+################################################################################
+LIBTLSF_SRCS-y += $(LIBTLSF)/src/tlsf.c
