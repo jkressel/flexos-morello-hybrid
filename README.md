@@ -6,6 +6,10 @@ We published a paper exploring the design space and trade-offs:
 
 <em>Kressel, J. A., Lefeuvre, H., & Olivier, P. (Accepted/In press). Software Compartmentalization Trade-Offs with Hardware Capabilities. In 12th Workshop on Programming Languages and Operating Systems (PLOS 2023), October 23, 2023, Koblenz, Germany</em> DOI: [https://doi.org/10.1145/3623759.3624550](https://doi.org/10.1145/3623759.3624550)
 
+> **Abstract**:  Compartmentalization is a form of defensive software design in which an application is broken down into isolated but communicating components. Retrofitting compartmentalization into existing applications is often thought to be expensive from the engineering effort and performance overhead points of view. Still, recent years have seen proposals of compartmentalization methods with promises of low engineering efforts and reduced performance impact. ARM Morello combines a modern ARM processor with an implementation of Capability Hardware Enhanced RISC Instructions (CHERI) aiming to provide efficient and secure compartmentalization. Past works exploring CHERI-based compartmentalization were restricted to emulated/FPGA prototypes.
+
+In this paper, we explore possible compartmentalization schemes with CHERI on the Morello chip. We propose two approaches representing different trade-offs in terms of engineering effort, security, scalability, and performance impact. We describe and implement these approaches on a prototype OS running bare metal on the Morello chip, compartmentalize two popular applications, and investigate the performance overheads. Furthermore, we show that compartmentalization can be achieved with an engineering cost that can be quite low if one is willing to trade off on scalability and security, and that performance overheads are similar to other intra-address space isolation mechanisms.
+
 Learn more about CHERI including hybrid mode [here](https://www.cl.cam.ac.uk/research/security/ctsrd/cheri/).
 
 ## This repo
