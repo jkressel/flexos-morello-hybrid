@@ -1,0 +1,5 @@
+$(eval $(call addlib_s,libuksp,$(CONFIG_LIBUKSP)))
+
+CINCLUDES-y += -I$(LIBUKSP_BASE)/include
+
+LIBUKSP_SRCS-y += $(LIBUKSP_BASE)/ssp.c

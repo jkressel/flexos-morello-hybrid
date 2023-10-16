@@ -1,0 +1,14 @@
+menuconfig LIBKASAN
+	bool "kasan: Kernel Address Sanitizer(KVM x86 only)"
+	default n
+	help
+		Experimental. Available only under KVM x86_64.
+
+if LIBKASAN
+
+config LIBKASAN_GLOBAL
+	bool "Global Kernel Address Sanitizer"
+	default n
+	help
+		Enable Kernel Address Sanitizer globally.
+endif

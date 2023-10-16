@@ -1,0 +1,13 @@
+@return{{ rule_nr }}@
+expression list EL;
+expression ret, var;
+@@
+- var = {{ fname }}(EL);
++ flexos_gate({{ lname }}, var, {{ fname }}, EL);
+
+@noreturn{{ rule_nr }}@
+expression list EL;
+expression ret, var;
+@@
+- {{ fname }}(EL);
++ flexos_gate({{ lname }}, {{ fname }}, EL);

@@ -1,0 +1,83 @@
+menuconfig LIBFLEXOS
+    bool "flexos - FlexOS core libraries"
+    select UKPLAT_MEMRNAME
+    default y
+
+if LIBFLEXOS
+choice
+	prompt "FlexOS backend (no nested isolation for now)"
+	default LIBFLEXOS_NONE
+
+config LIBFLEXOS_INTELPKU
+	bool "Enable Intel MPK/PKU support in FlexOS"
+	select HAVE_X86PKU
+	select DYNAMIC_PT
+	select PT_API
+
+config LIBFLEXOS_VMEPT
+	bool "Enable VM/EPT support in FlexOS"
+	select DYNAMIC_PT
+	select PT_API
+
+if LIBFLEXOS_VMEPT
+config LIBFLEXOS_VMEPT_LIBRARY
+	bool "Build a library compartment (not main app)"
+endif # LIBFLEXOS_VMEPT
+
+config LIBFLEXOS_NONE
+	bool "Function call gate instanciations (debugging)"
+
+config LIBFLEXOS_MORELLO
+        bool "Using the morello backend for isolation"
+endchoice
+
+if LIBFLEXOS_INTELPKU
+choice
+	prompt "System-wide gate instrumentations"
+	default LIBFLEXOS_GATE_INTELPKU_NO_INSTRUMENT
+
+config LIBFLEXOS_GATE_INTELPKU_DBG
+       bool "Enable gate sanity checks"
+
+config LIBFLEXOS_GATE_INTELPKU_COUNT_EXECUTIONS
+	bool "Count gate executions"
+	help
+	  Count gate executions and show functions that triggered the switch.
+
+config LIBFLEXOS_GATE_INTELPKU_NO_INSTRUMENT
+	bool "Do not instrument the gate"
+endchoice
+
+choice
+	prompt "PKU Gate type"
+	default LIBFLEXOS_GATE_INTELPKU_PRIVATE_STACKS
+	help
+	  Set the default gate type.
+
+config LIBFLEXOS_GATE_INTELPKU_PRIVATE_STACKS
+	bool "Never share the stack"
+	help
+	  Each thread has one stack per compartment.
+
+config LIBFLEXOS_GATE_INTELPKU_SHARED_STACKS
+	bool "Always share the stack"
+	help
+	  Always share the stack. Only the heap is isolated!
+endchoice
+
+if LIBFLEXOS_GATE_INTELPKU_PRIVATE_STACKS
+# note: DSS and shared stacks doesn't make sense
+# note: for now we only support DSS with PKU
+config LIBFLEXOS_ENABLE_DSS
+	bool "Enable Data Shadow Stack"
+endif # LIBFLEXOS_GATE_INTELPKU_PRIVATE_STACKS
+
+endif # LIBFLEXOS_GATE_INTELPKU
+
+config LIBFLEXOS_COMP_HEAP_SIZE
+	int "Size of per-compartment heaps"
+	default "10000"
+
+config LIBFLEXOS_DEBUG
+	bool "Enable various debugging tools"
+endif # LIBFLEXOS
