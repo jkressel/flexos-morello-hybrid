@@ -1,0 +1,6 @@
+$(eval $(call addlib,appflexosexample))
+APPFLEXOSEXAMPLE_SRCS-y += $(APPFLEXOSEXAMPLE_BASE)/main.c
+APPFLEXOSEXAMPLE_SRCS-y += $(APPFLEXOSEXAMPLE_BASE)/common.c
+# to test reentrance, comment line 2 and uncomment line 5
+#APPFLEXOSEXAMPLE_SRCS-y += $(APPFLEXOSEXAMPLE_BASE)/test-reentrance.c
+#APPFLEXOSEXAMPLE_SRCS-y += $(APPFLEXOSEXAMPLE_BASE)/test-concurrency.c

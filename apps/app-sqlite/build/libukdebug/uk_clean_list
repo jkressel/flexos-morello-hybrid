@@ -1,0 +1,10 @@
+/root/.unikraft/apps/app-sqlite/build/libukdebug/print.o
+/root/.unikraft/apps/app-sqlite/build/libukdebug/print.d
+/root/.unikraft/apps/app-sqlite/build/libukdebug/snprintf.o
+/root/.unikraft/apps/app-sqlite/build/libukdebug/snprintf.d
+/root/.unikraft/apps/app-sqlite/build/libukdebug/outf.o
+/root/.unikraft/apps/app-sqlite/build/libukdebug/outf.d
+/root/.unikraft/apps/app-sqlite/build/libukdebug/hexdump.o
+/root/.unikraft/apps/app-sqlite/build/libukdebug/hexdump.d
+/root/.unikraft/apps/app-sqlite/build/libukdebug.ld.o
+/root/.unikraft/apps/app-sqlite/build/libukdebug.o

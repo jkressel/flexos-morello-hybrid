@@ -1,0 +1,95 @@
+diff -urNp newlib.orig/newlib/libc/machine/aarch64/strchr.S newlib-2.5.0.20170922/newlib/libc/machine/aarch64/strchr.S
+--- newlib.orig/newlib/libc/machine/aarch64/strchr.S	2022-11-27 13:30:40.272258099 +0000
++++ newlib-2.5.0.20170922/newlib/libc/machine/aarch64/strchr.S	2022-11-27 13:33:35.081262888 +0000
+@@ -117,7 +117,7 @@ def_fn strchr
+ 	addp	vend1.16b, vend1.16b, vend2.16b		// 128->64
+ 	lsr	tmp1, tmp3, tmp1
+ 
+-	mov	tmp3, vend1.2d[0]
++	mov	tmp3, vend1.d[0]
+ 	bic	tmp1, tmp3, tmp1	// Mask padding bits.
+ 	cbnz	tmp1, .Ltail
+ 
+@@ -132,7 +132,7 @@ def_fn strchr
+ 	orr	vend2.16b, vhas_nul2.16b, vhas_chr2.16b
+ 	orr	vend1.16b, vend1.16b, vend2.16b
+ 	addp	vend1.2d, vend1.2d, vend1.2d
+-	mov	tmp1, vend1.2d[0]
++	mov	tmp1, vend1.d[0]
+ 	cbz	tmp1, .Lloop
+ 
+ 	/* Termination condition found.  Now need to establish exactly why
+@@ -146,7 +146,7 @@ def_fn strchr
+ 	addp	vend1.16b, vend1.16b, vend2.16b		// 256->128
+ 	addp	vend1.16b, vend1.16b, vend2.16b		// 128->64
+ 
+-	mov	tmp1, vend1.2d[0]
++	mov	tmp1, vend1.d[0]
+ .Ltail:
+ 	/* Count the trailing zeros, by bit reversing...  */
+ 	rbit	tmp1, tmp1
+diff -urNp newlib.orig/newlib/libc/machine/aarch64/strchrnul.S newlib-2.5.0.20170922/newlib/libc/machine/aarch64/strchrnul.S
+--- newlib.orig/newlib/libc/machine/aarch64/strchrnul.S	2022-11-27 13:30:40.272258099 +0000
++++ newlib-2.5.0.20170922/newlib/libc/machine/aarch64/strchrnul.S	2022-11-27 13:43:29.284091502 +0000
+@@ -109,7 +109,7 @@ def_fn strchrnul
+ 	addp	vend1.16b, vend1.16b, vend1.16b		// 128->64
+ 	lsr	tmp1, tmp3, tmp1
+ 
+-	mov	tmp3, vend1.2d[0]
++	mov	tmp3, vend1.d[0]
+ 	bic	tmp1, tmp3, tmp1	// Mask padding bits.
+ 	cbnz	tmp1, .Ltail
+ 
+@@ -124,7 +124,7 @@ def_fn strchrnul
+ 	orr	vhas_chr2.16b, vhas_nul2.16b, vhas_chr2.16b
+ 	orr	vend1.16b, vhas_chr1.16b, vhas_chr2.16b
+ 	addp	vend1.2d, vend1.2d, vend1.2d
+-	mov	tmp1, vend1.2d[0]
++	mov	tmp1, vend1.d[0]
+ 	cbz	tmp1, .Lloop
+ 
+ 	/* Termination condition found.  Now need to establish exactly why
+@@ -134,7 +134,7 @@ def_fn strchrnul
+ 	addp	vend1.16b, vhas_chr1.16b, vhas_chr2.16b		// 256->128
+ 	addp	vend1.16b, vend1.16b, vend1.16b		// 128->64
+ 
+-	mov	tmp1, vend1.2d[0]
++	mov	tmp1, vend1.d[0]
+ .Ltail:
+ 	/* Count the trailing zeros, by bit reversing...  */
+ 	rbit	tmp1, tmp1
+diff -urNp newlib.orig/newlib/libc/machine/aarch64/strrchr.S newlib-2.5.0.20170922/newlib/libc/machine/aarch64/strrchr.S
+--- newlib.orig/newlib/libc/machine/aarch64/strrchr.S	2022-11-27 13:30:40.272258099 +0000
++++ newlib-2.5.0.20170922/newlib/libc/machine/aarch64/strrchr.S	2022-11-27 13:42:17.737221825 +0000
+@@ -120,10 +120,10 @@ def_fn strrchr
+ 	addp	vhas_chr1.16b, vhas_chr1.16b, vhas_chr2.16b	// 256->128
+ 	addp	vhas_nul1.16b, vhas_nul1.16b, vhas_nul1.16b	// 128->64
+ 	addp	vhas_chr1.16b, vhas_chr1.16b, vhas_chr1.16b	// 128->64
+-	mov	nul_match, vhas_nul1.2d[0]
++	mov	nul_match, vhas_nul1.d[0]
+ 	lsl	tmp1, tmp1, #1
+ 	mov	const_m1, #~0
+-	mov	chr_match, vhas_chr1.2d[0]
++	mov	chr_match, vhas_chr1.d[0]
+ 	lsr	tmp3, const_m1, tmp1
+ 
+ 	bic	nul_match, nul_match, tmp3	// Mask padding bits.
+@@ -146,15 +146,15 @@ def_fn strrchr
+ 	addp	vhas_chr1.16b, vhas_chr1.16b, vhas_chr2.16b	// 256->128
+ 	addp	vend1.16b, vend1.16b, vend1.16b	// 128->64
+ 	addp	vhas_chr1.16b, vhas_chr1.16b, vhas_chr1.16b	// 128->64
+-	mov	nul_match, vend1.2d[0]
+-	mov	chr_match, vhas_chr1.2d[0]
++	mov	nul_match, vend1.d[0]
++	mov	chr_match, vhas_chr1.d[0]
+ 	cbz	nul_match, .Lloop
+ 
+ 	and	vhas_nul1.16b, vhas_nul1.16b, vrepmask_0.16b
+ 	and	vhas_nul2.16b, vhas_nul2.16b, vrepmask_0.16b
+ 	addp	vhas_nul1.16b, vhas_nul1.16b, vhas_nul2.16b
+ 	addp	vhas_nul1.16b, vhas_nul1.16b, vhas_nul1.16b
+-	mov	nul_match, vhas_nul1.2d[0]
++	mov	nul_match, vhas_nul1.d[0]
+ 
+ .Ltail:
+ 	/* Work out exactly where the string ends.  */

@@ -1,0 +1,5 @@
+$(eval $(call addlib,appflexosmicrobenchmarks))
+APPFLEXOSMICROBENCHMARKS_SRCS-y += $(APPFLEXOSMICROBENCHMARKS_BASE)/main.c
+
+APPFLEXOSMICROBENCHMARKS_ASFLAGS += -g -target aarch64-none-elf -march=morello
+APPFLEXOSMICROBENCHMARKS_CFLAGS += -g -target aarch64-none-elf -march=morello -mabi=aapcs

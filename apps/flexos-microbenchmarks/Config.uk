@@ -1,0 +1,7 @@
+### Invisible option for dependencies
+config APPFLEXOSMICROBENCHMARKS_DEPENDENCIES
+	bool
+	default y
+	select LIBFLEXOS
+	select LIBFLEXOSMICROBENCHMARKS
+	select LIBNEWLIBC

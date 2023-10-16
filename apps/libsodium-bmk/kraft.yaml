@@ -1,0 +1,35 @@
+---
+specification: '0.6'
+name: flexos-example
+unikraft:
+  version: staging
+  kconfig:
+    - CONFIG_LIBFLEXOS=y
+targets:
+  - architecture: arm64
+    platform: morello
+compartments:
+  - name: comp1
+    mechanism:
+      driver: morello
+      noisolstack: false
+    default: true
+  - name: comp2
+    mechanism:
+      driver: morello
+      noisolstack: true
+libraries:
+  newlib:
+    version: staging
+    kconfig:
+      - CONFIG_LIBNEWLIBC=y
+      - CONFIG_LIBNEWLIBM=y
+    compartment: comp1
+  flexos-example:
+    version: staging
+    compartment: comp2
+  lib-libsodium:
+    version: staging
+    compartment: comp1
+volumes: {}
+networks: {}

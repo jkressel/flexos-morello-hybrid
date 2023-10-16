@@ -1,0 +1,8 @@
+/root/.unikraft/apps/app-sqlite/build/libukboot/boot.o
+/root/.unikraft/apps/app-sqlite/build/libukboot/boot.d
+/root/.unikraft/apps/app-sqlite/build/libukboot/version.o
+/root/.unikraft/apps/app-sqlite/build/libukboot/version.d
+/root/.unikraft/apps/app-sqlite/build/libukboot/banner.o
+/root/.unikraft/apps/app-sqlite/build/libukboot/banner.d
+/root/.unikraft/apps/app-sqlite/build/libukboot.ld.o
+/root/.unikraft/apps/app-sqlite/build/libukboot.o
